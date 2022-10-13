@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/companyFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.zadanie.HomeFragment"
+        android:label="Moja firma"
+        tools:layout="@layout/fragment_home">
+        <argument
+            android:name="name"
+            android:defaultValue="Vaše meno"
+            app:argType="string" />
+        <argument
+            android:name="companyName"
+            android:defaultValue="Podnik"
+            app:argType="string" />
+        <argument
+            android:name="latitude"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="longitude"
+            android:defaultValue="null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/InputDataFragment"
+        android:name="com.example.zadanie.InputDataFragment"
+        android:label="Pridajte firmu"
+        tools:layout="@layout/fragment_input_data">
+        <action
+            android:id="@+id/action_inputData_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <activity
+        android:id="@+id/mainActivity"
+        android:label="@string/mainActivity"
+        app:action="android.intent.action.VIEW"
+        app:dataPattern="https://example.com?userId={userId}"
+        app:targetPackage="com.example.android.another.app">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+    </activity>
+    <fragment
+        android:id="@+id/companyFragment"
+        android:name="com.example.zadanie.CompanyFragment"
+        android:label="Firmy"
+        tools:layout="@layout/fragment_company">
+        <action
+            android:id="@+id/action_companyFragment_to_InputDataFragment"
+            app:destination="@id/InputDataFragment" />
+        <action
+            android:id="@+id/action_companyFragment_to_companyDetailFragment"
+            app:destination="@id/companyDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/companyDetailFragment"
+        android:name="com.example.zadanie.CompanyDetailFragment"
+        android:label="Detail firmy"
+        tools:layout="@layout/fragment_company_detail">
+        <argument
+            android:name="companyName"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="type"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="openingHours"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="web"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="tel"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+</navigation>

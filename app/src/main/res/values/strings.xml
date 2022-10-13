@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Zadanie</string>
+    <string name="drinkimage">drinkImage</string>
+    <string name="pour">pour</string>
+    <string name="pourdrink">pourDrink</string>
+    <string name="mainActivity" />
+    <string name="zadjte_meno">Zadjte meno</string>
+    <string name="zadajte_meno">Zadajte meno</string>
+    <string name="zadajte_daje">Zadajte údaje</string>
+    <string name="meno">Meno</string>
+    <string name="zemepisn_d_ka">Zemepisná dĺžka</string>
+    <string name="meno_podniku">Meno podniku</string>
+    <string name="zemepisn_rka">Zemepisná šírka</string>
+    <string name="zadajte_udaje">Zadajte údaje</string>
+    <string name="potvrdi">Potvrdiť</string>
+    <string name="asd">asd</string>
+    <string name="Name" />
+    <string name="yourname">YourName</string>
+    <string name="companyName" />
+    <string name="yourcompany">YourCompany</string>
+    <string name="show_on_map">Show on Map</string>
+    <string name="zadat_firmu">Zadať firmu</string>
+    <string name="vymazat">Vymazať</string>
+    <string name="deleteitem">deleteItem</string>
+    <string name="pridat_firmu">Pridat firmu</string>
+    <string name="sortbyname">sortByName</string>
+    <string name="sort">SORT</string>
+</resources>
