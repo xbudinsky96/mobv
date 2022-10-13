@@ -27,7 +27,6 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         val view = inflater.inflate(R.layout.fragment_company, container, false)
         val dataSource = CompanyDataSource()
 
-
         var companies = context?.let { dataSource.getCompanies(it) }!!
         //filter null name companies
         companies = Company(companies.elements.filter { it.tags.name != null } as MutableList<Element>)

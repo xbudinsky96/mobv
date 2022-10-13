@@ -19,7 +19,8 @@ import com.example.zadanie.model.Company
 import com.example.zadanie.model.Element
 import java.util.*
 
-class ItemAdapter(private val fragment: Fragment, dataset: Company): RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(private val fragment: Fragment, dataset: Company):
+    RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     private var data = dataset
     private var dataIsSorted: Boolean = false
@@ -68,8 +69,8 @@ class ItemAdapter(private val fragment: Fragment, dataset: Company): RecyclerVie
 
     fun sortData(){
         data = if(isSorted()) {
-            Company(data.elements.sortedBy { it.tags.name.lowercase(Locale.ROOT) } as MutableList<Element>)
-        } else{
+            Company(data.elements.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Element>)
+        } else {
             Company(data.elements.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed() as MutableList<Element>)
         }
         setData(data)
