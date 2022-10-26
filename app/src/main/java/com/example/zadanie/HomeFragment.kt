@@ -12,8 +12,11 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.navArgs
+import com.example.zadanie.databinding.FragmentCompanyBinding
+import com.example.zadanie.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
+    private lateinit var binding: FragmentHomeBinding
     private val args: HomeFragmentArgs by navArgs()
     private val SEARCHPREFIX = "https://www.google.com/maps/@"
 
@@ -22,11 +25,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-        val nameTitle: TextView = view.findViewById(R.id.nameTitle)
-        val companyName: TextView = view.findViewById(R.id.companyName)
-        val showOnMapButton: Button = view.findViewById(R.id.showOnMap)
+    ): View {
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        val nameTitle: TextView = binding.nameTitle
+        val companyName: TextView = binding.companyName
+        val showOnMapButton: Button = binding.showOnMap
         val latitude = args.latitude
         val longitude = args.longitude
 
@@ -45,6 +48,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-        return view
+        return binding.root
     }
 }

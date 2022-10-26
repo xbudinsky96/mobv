@@ -8,20 +8,23 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.example.zadanie.databinding.FragmentInputDataBinding
 import com.google.android.material.textfield.TextInputEditText
 
 class InputDataFragment : Fragment(R.layout.fragment_input_data) {
+    private lateinit var binding: FragmentInputDataBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_input_data, container, false)
-        val button: Button = view.findViewById(R.id.submitData)
-        val nameInput: TextInputEditText = view.findViewById(R.id.inputName)
-        val companyInput: TextInputEditText = view.findViewById(R.id.companyInput)
-        val longitude: TextInputEditText = view.findViewById(R.id.longitude)
-        val latitude: TextInputEditText = view.findViewById(R.id.latitude)
+    ): View {
+        binding = FragmentInputDataBinding.inflate(inflater, container, false)
+        val button: Button = binding.submitData
+        val nameInput: TextInputEditText = binding.inputName
+        val companyInput: TextInputEditText = binding.companyInput
+        val longitude: TextInputEditText = binding.longitude
+        val latitude: TextInputEditText = binding.latitude
 
 
         button.setOnClickListener{
@@ -41,6 +44,6 @@ class InputDataFragment : Fragment(R.layout.fragment_input_data) {
             }
         }
 
-        return view
+        return binding.root
     }
 }
