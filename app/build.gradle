@@ -4,6 +4,7 @@ plugins {
 }
 
 apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: 'kotlin-kapt'
 
 android {
     namespace 'com.example.zadanie'
@@ -74,6 +75,15 @@ dependencies {
     // Jetpack Compose Integration
     //noinspection GradleDependency
     implementation "androidx.navigation:navigation-compose:$nav_version"
-
     implementation 'com.google.code.gson:gson:2.9.1'
+    implementation "com.squareup.okhttp3:okhttp:4.10.0"
+    implementation 'com.squareup.retrofit2:retrofit:2.7.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    // Room components
+    implementation "androidx.room:room-runtime:2.4.3"
+    kapt "androidx.room:room-compiler:2.4.3"
+    implementation "androidx.room:room-ktx:2.4.3"
+    kapt "androidx.room:room-testing:2.4.3"
+
 }

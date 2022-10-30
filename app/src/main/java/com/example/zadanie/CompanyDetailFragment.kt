@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.navigation.fragment.navArgs
-import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.databinding.FragmentCompanyDetailBinding
 
 class CompanyDetailFragment : Fragment() {
@@ -22,9 +21,9 @@ class CompanyDetailFragment : Fragment() {
     ): View {
         binding = FragmentCompanyDetailBinding.inflate(inflater, container, false)
         val companyTextDetail: TextView = binding.companyDetailText
-        val openingHours = if(args.openingHours != null) "\n\nOtváracie hodiny: \n" + args.openingHours + "\n" else ""
-        val tel = if(args.tel != null) "\n\nTelefónne čislo: \n" + args.tel + "\n" else ""
-        val web = if(args.web != null) "\n\nWeb: \n" + args.web + "\n" else ""
+        val openingHours = if(args.openingHours != "") "\n\nOtváracie hodiny: \n" + args.openingHours + "\n" else ""
+        val tel = if(args.tel != "") "\n\nTelefónne čislo: \n" + args.tel + "\n" else ""
+        val web = if(args.web != "") "\n\nWeb: \n" + args.web + "\n" else ""
 
         companyTextDetail.text =
                 "${args.companyName}\n\n\n" +

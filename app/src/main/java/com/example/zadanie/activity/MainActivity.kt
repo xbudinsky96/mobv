@@ -1,4 +1,4 @@
-package com.example.zadanie
+package com.example.zadanie.activity
 
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.example.zadanie.R
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
