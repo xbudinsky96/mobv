@@ -35,13 +35,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         binding = FragmentCompanyBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
         val pullToRefresh: SwipeRefreshLayout = binding.refreshLayout
-        var companies = context?.let { dataSource.getCompanies(it) }!!
-        companies = Company(companies.elements.filter {
-                    it.tags.name != null &&
-                    it.tags.name != "" &&
-                    it.tags.name.isNotEmpty()
-        } as MutableList<Element>)
-        insertDataToDataBase(companies)
+        dataSource.fetchData(companyViewModel, requireContext())
 
         val recyclerView = binding.recyclerView
         val sortButton: Button = binding.sortCompanies
@@ -58,7 +52,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         }
 
         pullToRefresh.setOnRefreshListener {
-            insertDataToDataBase(companies)
+            dataSource.fetchData(companyViewModel, requireContext())
             pullToRefresh.isRefreshing = false
         }
 
@@ -66,12 +60,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
             val action = CompanyFragmentDirections.actionCompanyFragmentToInputDataFragment()
             findNavController().navigate(action)
         }
-        return binding.root
-    }
 
-    private fun insertDataToDataBase(company: Company) {
-        company.elements.forEach { element ->
-            companyViewModel.addCompany(element)
-        }
+        return binding.root
     }
 }

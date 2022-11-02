@@ -13,7 +13,6 @@ class Converters {
                 tag.description + "&&" +
                 tag.email + "&&" +
                 tag.food + "&&" +
-                tag.url + "&&" +
                 tag.website + "&&" +
                 tag.opening_hours
     }
@@ -29,8 +28,7 @@ class Converters {
             details[4],
             details[5],
             details[6],
-            details[7],
-            details[8]
+            details[7]
         )
     }
 

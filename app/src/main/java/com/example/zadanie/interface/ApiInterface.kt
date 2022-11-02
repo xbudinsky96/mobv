@@ -17,7 +17,4 @@ interface ApiInterface {
         "Content-Type: application/json"
     )
     fun getAmenities(@Body post : Post): Call<Companies>
-
-    @GET("home_feed")
-    fun getUsers() : Call<Entity>
 }

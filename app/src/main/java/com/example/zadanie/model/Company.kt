@@ -2,7 +2,6 @@ package com.example.zadanie.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
 
 data class Company(
     val elements: MutableList<Element>
@@ -30,7 +29,6 @@ data class Tags(
     val description: String,
     val email: String,
     val food: String,
-    val url: String,
     val website: String,
     val opening_hours: String
 )
