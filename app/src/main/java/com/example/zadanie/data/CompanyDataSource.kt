@@ -15,6 +15,7 @@ class CompanyDataSource {
     fun getCompanies(context: Context): Company? {
         val jsonString = loadJson(context)
         val users = fetchCompaniesFromAPI()
+        fetchData()
         return Gson().fromJson(jsonString, Company::class.java)
     }
 
@@ -51,30 +52,9 @@ class CompanyDataSource {
             .build()
             .create(ApiInterface::class.java)
 
-        val retrofitBuilderCompany = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://data.mongodb-api.com/app/data-fswjp/endpoint/data/v1/action/")
-            .build()
-            .create(ApiInterface::class.java)
-
-        val retrofitData = retrofitBuilderCompany.getCompany()
-
-        retrofitData.enqueue(object: retrofit2.Callback<MutableList<Element>> {
-            override fun onResponse(call: Call<MutableList<Element>>, response: Response<MutableList<Element>>) {
-                val body = response.body()
-                println("COMPANY API FETCH")
-                println(body)
-            }
-
-            override fun onFailure(call: Call<MutableList<Element>>, t: Throwable) {
-                println("Failed to fetch data")
-            }
-
-        })
-
         val retrofitUsers = retrofitBuilderUsers.getUsers()
 
-        retrofitUsers.enqueue(object: retrofit2.Callback<User> {
+        retrofitUsers.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 val body = response.body()
                 println(body?.videos)
@@ -87,7 +67,7 @@ class CompanyDataSource {
         })
     }
 
-    suspend fun fetchData() {
+    fun fetchData() {
         val retrofitBuilderCompany = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://data.mongodb-api.com/app/data-fswjp/endpoint/data/v1/action/")
@@ -96,14 +76,14 @@ class CompanyDataSource {
 
         val create = retrofitBuilderCompany.create(Post("bars", "mobvapp", "Cluster0"))
 
-        create.enqueue(object: Callback<Company> {
-            override fun onResponse(call: Call<Company>, response: Response<Company>) {
+        create.enqueue(object: Callback<Element> {
+            override fun onResponse(call: Call<Element>, response: Response<Element>) {
                 val body = response.body()
                 println("COMPANY API FETCH")
                 println(body)
             }
 
-            override fun onFailure(call: Call<Company>, t: Throwable) {
+            override fun onFailure(call: Call<Element>, t: Throwable) {
                 println("Failed to fetch data")
             }
 
