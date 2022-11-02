@@ -2,11 +2,11 @@ package com.example.zadanie.data
 
 import android.content.Context
 import com.example.zadanie.`interface`.ApiInterface
-import com.example.zadanie.model.Company
-import com.example.zadanie.model.Element
-import com.example.zadanie.model.User
-import com.example.zadanie.model.Video
+import com.example.zadanie.model.*
 import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.InputStream
@@ -60,13 +60,13 @@ class CompanyDataSource {
         val retrofitData = retrofitBuilderCompany.getCompany()
 
         retrofitData.enqueue(object: retrofit2.Callback<MutableList<Element>> {
-            override fun onResponse(call: retrofit2.Call<MutableList<Element>>, response: retrofit2.Response<MutableList<Element>>) {
+            override fun onResponse(call: Call<MutableList<Element>>, response: Response<MutableList<Element>>) {
                 val body = response.body()
                 println("COMPANY API FETCH")
                 println(body)
             }
 
-            override fun onFailure(call: retrofit2.Call<MutableList<Element>>, t: Throwable) {
+            override fun onFailure(call: Call<MutableList<Element>>, t: Throwable) {
                 println("Failed to fetch data")
             }
 
@@ -75,13 +75,36 @@ class CompanyDataSource {
         val retrofitUsers = retrofitBuilderUsers.getUsers()
 
         retrofitUsers.enqueue(object: retrofit2.Callback<User> {
-            override fun onResponse(call: retrofit2.Call<User>, response: retrofit2.Response<User>) {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
                 val body = response.body()
                 println(body?.videos)
             }
 
-            override fun onFailure(call: retrofit2.Call<User>, t: Throwable) {
+            override fun onFailure(call: Call<User>, t: Throwable) {
                 println("fail")
+            }
+
+        })
+    }
+
+    suspend fun fetchData() {
+        val retrofitBuilderCompany = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://data.mongodb-api.com/app/data-fswjp/endpoint/data/v1/action/")
+            .build()
+            .create(ApiInterface::class.java)
+
+        val create = retrofitBuilderCompany.create(Post("bars", "mobvapp", "Cluster0"))
+
+        create.enqueue(object: Callback<Company> {
+            override fun onResponse(call: Call<Company>, response: Response<Company>) {
+                val body = response.body()
+                println("COMPANY API FETCH")
+                println(body)
+            }
+
+            override fun onFailure(call: Call<Company>, t: Throwable) {
+                println("Failed to fetch data")
             }
 
         })

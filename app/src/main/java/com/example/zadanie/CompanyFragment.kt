@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.zadanie.adapter.ElementAdapter
 import com.example.zadanie.data.CompanyDataSource
 import com.example.zadanie.databinding.FragmentCompanyBinding
@@ -33,7 +34,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
     ): View {
         binding = FragmentCompanyBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
-        //val dataSource = CompanyDataSource()
+        val pullToRefresh: SwipeRefreshLayout = binding.refreshLayout
         var companies = context?.let { dataSource.getCompanies(it) }!!
         companies = Company(companies.elements.filter {
                     it.tags.name != null &&
@@ -47,19 +48,19 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         val ownCompany: Button = binding.addCompany
 
         val adapter = ElementAdapter(this, companyViewModel)
-        companyViewModel.readData.observe(viewLifecycleOwner, Observer {
-                elements ->
+        companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
             adapter.setElements(elements)
             recyclerView.adapter = adapter
-
-            //insertDataToDataBase(companies)
 
             sortButton.setOnClickListener {
                 adapter.sortData()
             }
-        })
+        }
 
-
+        pullToRefresh.setOnRefreshListener {
+            insertDataToDataBase(companies)
+            pullToRefresh.isRefreshing = false
+        }
 
         ownCompany.setOnClickListener {
             val action = CompanyFragmentDirections.actionCompanyFragmentToInputDataFragment()
