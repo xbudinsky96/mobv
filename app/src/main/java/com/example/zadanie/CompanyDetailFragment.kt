@@ -68,7 +68,6 @@ class CompanyDetailFragment : Fragment() {
 
             if(latitude.isNotEmpty() && longitude.isNotEmpty()) {
                 val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${latitude},${longitude},16z")
-                println(queryUrl)
                 val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
                 startActivity(showOnMap)
             }
