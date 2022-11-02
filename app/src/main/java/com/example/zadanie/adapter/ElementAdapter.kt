@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.zadanie.CompanyFragmentDirections
 import com.example.zadanie.R
+import com.example.zadanie.fragment.CompanyFragmentDirections
 import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.Element
 import java.util.*

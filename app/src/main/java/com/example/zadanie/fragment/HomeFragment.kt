@@ -1,4 +1,4 @@
-package com.example.zadanie
+package com.example.zadanie.fragment
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.navArgs
+import com.example.zadanie.R
 import com.example.zadanie.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment(R.layout.fragment_home) {

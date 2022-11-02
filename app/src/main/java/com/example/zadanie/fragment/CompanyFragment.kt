@@ -1,4 +1,4 @@
-package com.example.zadanie
+package com.example.zadanie.fragment
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -9,16 +9,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.zadanie.R
 import com.example.zadanie.adapter.ElementAdapter
 import com.example.zadanie.data.CompanyDataSource
 import com.example.zadanie.databinding.FragmentCompanyBinding
-import com.example.zadanie.model.Company
 import com.example.zadanie.model.CompanyViewModel
-import com.example.zadanie.model.Element
 
 class CompanyFragment : Fragment(R.layout.fragment_company) {
     private lateinit var binding: FragmentCompanyBinding
@@ -35,13 +33,13 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         binding = FragmentCompanyBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
         val pullToRefresh: SwipeRefreshLayout = binding.refreshLayout
-        dataSource.fetchData(companyViewModel, requireContext())
-
         val recyclerView = binding.recyclerView
         val sortButton: Button = binding.sortCompanies
         val ownCompany: Button = binding.addCompany
-
         val adapter = ElementAdapter(this, companyViewModel)
+
+        dataSource.fetchData(companyViewModel, requireContext())
+
         companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
             adapter.setElements(elements)
             recyclerView.adapter = adapter

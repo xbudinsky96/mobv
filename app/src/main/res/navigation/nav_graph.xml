@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.zadanie.HomeFragment"
+        android:name="com.example.zadanie.fragment.HomeFragment"
         android:label="My company"
         tools:layout="@layout/fragment_home">
         <argument
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/InputDataFragment"
-        android:name="com.example.zadanie.InputDataFragment"
+        android:name="com.example.zadanie.fragment.InputDataFragment"
         android:label="Add company"
         tools:layout="@layout/fragment_input_data">
         <action
@@ -51,7 +51,7 @@
     </activity>
     <fragment
         android:id="@+id/companyFragment"
-        android:name="com.example.zadanie.CompanyFragment"
+        android:name="com.example.zadanie.fragment.CompanyFragment"
         android:label="Companies"
         tools:layout="@layout/fragment_company">
         <action
@@ -63,7 +63,7 @@
     </fragment>
     <fragment
         android:id="@+id/companyDetailFragment"
-        android:name="com.example.zadanie.CompanyDetailFragment"
+        android:name="com.example.zadanie.fragment.CompanyDetailFragment"
         android:label="Company details"
         tools:layout="@layout/fragment_company_detail">
         <argument

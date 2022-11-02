@@ -1,4 +1,4 @@
-package com.example.zadanie
+package com.example.zadanie.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.example.zadanie.R
 import com.example.zadanie.databinding.FragmentInputDataBinding
 import com.google.android.material.textfield.TextInputEditText
 
