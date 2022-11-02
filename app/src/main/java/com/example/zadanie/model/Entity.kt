@@ -1,6 +1,6 @@
 package com.example.zadanie.model
 
-data class User(
+data class Entity(
     val videos: MutableList<Video>
 )
 

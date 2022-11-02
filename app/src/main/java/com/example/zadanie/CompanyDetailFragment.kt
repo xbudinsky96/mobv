@@ -30,9 +30,6 @@ class CompanyDetailFragment : Fragment() {
         val telButton: Button = binding.telefon
         val mapButton: Button = binding.map
 
-        println("ID = " + args.id)
-        println("name = " + args.companyName)
-
         val openingHours = if(args.openingHours != "") "\n\nOpening hours: \n" + args.openingHours + "\n" else ""
         val tel = if(args.tel != "") "\n\nPhone number: \n" + args.tel + "\n" else ""
         val web = if(args.web != "") "\n\nWeb: \n" + args.web + "\n" else ""

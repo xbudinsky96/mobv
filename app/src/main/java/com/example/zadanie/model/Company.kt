@@ -8,6 +8,10 @@ data class Company(
     val elements: MutableList<Element>
 )
 
+data class Companies(
+    val documents: MutableList<Element>
+)
+
 @Entity(tableName = "company_table")
 data class Element(
     @PrimaryKey(autoGenerate = false)

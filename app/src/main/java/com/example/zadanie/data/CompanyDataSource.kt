@@ -14,7 +14,7 @@ import java.io.InputStream
 class CompanyDataSource {
     fun getCompanies(context: Context): Company? {
         val jsonString = loadJson(context)
-        val users = fetchCompaniesFromAPI()
+        fetchCompaniesFromAPI()
         fetchData()
         return Gson().fromJson(jsonString, Company::class.java)
     }
@@ -54,13 +54,13 @@ class CompanyDataSource {
 
         val retrofitUsers = retrofitBuilderUsers.getUsers()
 
-        retrofitUsers.enqueue(object: Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
+        retrofitUsers.enqueue(object: Callback<Entity> {
+            override fun onResponse(call: Call<Entity>, response: Response<Entity>) {
                 val body = response.body()
-                println(body?.videos)
+                println(body)
             }
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
+            override fun onFailure(call: Call<Entity>, t: Throwable) {
                 println("fail")
             }
 
@@ -74,19 +74,19 @@ class CompanyDataSource {
             .build()
             .create(ApiInterface::class.java)
 
-        val create = retrofitBuilderCompany.create(Post("bars", "mobvapp", "Cluster0"))
+        val companies = retrofitBuilderCompany.getAmenities(Post("bars", "mobvapp", "Cluster0"))
 
-        create.enqueue(object: Callback<Element> {
-            override fun onResponse(call: Call<Element>, response: Response<Element>) {
+        //println(companies.body())
+
+        companies.enqueue(object: Callback<Companies> {
+            override fun onResponse(call: Call<Companies>, response: Response<Companies>) {
                 val body = response.body()
-                println("COMPANY API FETCH")
                 println(body)
             }
 
-            override fun onFailure(call: Call<Element>, t: Throwable) {
-                println("Failed to fetch data")
+            override fun onFailure(call: Call<Companies>, t: Throwable) {
+                println("API fail")
             }
-
         })
     }
 }
