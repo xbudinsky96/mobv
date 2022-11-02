@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,23 +11,52 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
-        android:text="@string/sort"
-        tools:ignore="RtlHardcoded" />
+        android:layout_marginStart="162dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="162dp"
+        android:text="@string/sort_list"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="NotSibling,RtlHardcoded" />
 
     <Button
         android:id="@+id/addCompany"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:text="@string/pridat_firmu" />
+        android:layout_marginStart="135dp"
+        android:layout_marginEnd="136dp"
+        android:layout_marginBottom="1dp"
+        android:text="@string/add_company"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recycler_view"
+        tools:ignore="NotSibling" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refreshlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".CompanyFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
         android:scrollbars="vertical"
-        app:layoutManager="LinearLayoutManager">
-
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
     </androidx.recyclerview.widget.RecyclerView>
 
-</FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

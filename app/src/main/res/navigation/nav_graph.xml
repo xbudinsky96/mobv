@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.zadanie.HomeFragment"
-        android:label="Moja firma"
+        android:label="My company"
         tools:layout="@layout/fragment_home">
         <argument
             android:name="name"
@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/InputDataFragment"
         android:name="com.example.zadanie.InputDataFragment"
-        android:label="Pridajte firmu"
+        android:label="Add company"
         tools:layout="@layout/fragment_input_data">
         <action
             android:id="@+id/action_inputData_to_homeFragment"
@@ -52,7 +52,7 @@
     <fragment
         android:id="@+id/companyFragment"
         android:name="com.example.zadanie.CompanyFragment"
-        android:label="Firmy"
+        android:label="Companies"
         tools:layout="@layout/fragment_company">
         <action
             android:id="@+id/action_companyFragment_to_InputDataFragment"
@@ -64,7 +64,7 @@
     <fragment
         android:id="@+id/companyDetailFragment"
         android:name="com.example.zadanie.CompanyDetailFragment"
-        android:label="Detail firmy"
+        android:label="Company details"
         tools:layout="@layout/fragment_company_detail">
         <argument
             android:name="companyName"
@@ -86,6 +86,15 @@
             android:name="tel"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="lat"
+            app:argType="string" />
+        <argument
+            android:name="lon"
+            app:argType="string" />
+        <argument
+            android:name="id"
+            app:argType="long" />
     </fragment>
 
 </navigation>

@@ -38,12 +38,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         //47.97530277530897, 18.15310231159761
         showOnMapButton.setOnClickListener {
             if(latitude != null && latitude.isNotEmpty() && longitude != null && longitude.isNotEmpty()) {
-                val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${longitude},${latitude},12z")
-                val intent = Intent(Intent.ACTION_VIEW, queryUrl)
-                startActivity(intent)
+                val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${latitude},${longitude},16z")
+                val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
+                startActivity(showOnMap)
             }
             else{
-                Toast.makeText(activity, "Nezadali ste údaje polohy!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "No location provided!", Toast.LENGTH_SHORT).show()
             }
         }
 

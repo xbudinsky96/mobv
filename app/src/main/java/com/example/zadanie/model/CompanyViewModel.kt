@@ -22,4 +22,10 @@ class CompanyViewModel(application: Application): AndroidViewModel(application) 
             repository.addCompany(element)
         }
     }
+
+    fun deleteCompany(element: Element) {
+        viewModelScope.launch {
+            repository.deleteCompany(element)
+        }
+    }
 }

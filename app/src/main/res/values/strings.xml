@@ -25,4 +25,14 @@
     <string name="pridat_firmu">Pridat firmu</string>
     <string name="sortbyname">sortByName</string>
     <string name="sort">SORT</string>
+    <string name="call_us">CALL US</string>
+    <string name="visit_webpage">VISIT WEBPAGE</string>
+    <string name="add_company">Add company</string>
+    <string name="sort_list">Sort list</string>
+    <string name="fill_your_data">Fill your data</string>
+    <string name="name">Name</string>
+    <string name="name_of_company">Name of company</string>
+    <string name="confirm">Confirm</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
 </resources>

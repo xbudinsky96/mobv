@@ -22,6 +22,7 @@ import com.example.zadanie.model.Element
 class CompanyFragment : Fragment(R.layout.fragment_company) {
     private lateinit var binding: FragmentCompanyBinding
     private lateinit var companyViewModel: CompanyViewModel
+    private val dataSource = CompanyDataSource()
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingInflatedId")
@@ -32,28 +33,33 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
     ): View {
         binding = FragmentCompanyBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
-        val dataSource = CompanyDataSource()
-
+        //val dataSource = CompanyDataSource()
         var companies = context?.let { dataSource.getCompanies(it) }!!
-        //filter null name companies
-        companies = Company(companies.elements.filter { it.tags != null } as MutableList<Element>)
-
+        companies = Company(companies.elements.filter {
+                    it.tags.name != null &&
+                    it.tags.name != "" &&
+                    it.tags.name.isNotEmpty()
+        } as MutableList<Element>)
         insertDataToDataBase(companies)
 
         val recyclerView = binding.recyclerView
         val sortButton: Button = binding.sortCompanies
         val ownCompany: Button = binding.addCompany
 
-        val adapter = ElementAdapter(this)
+        val adapter = ElementAdapter(this, companyViewModel)
         companyViewModel.readData.observe(viewLifecycleOwner, Observer {
                 elements ->
             adapter.setElements(elements)
             recyclerView.adapter = adapter
 
+            //insertDataToDataBase(companies)
+
             sortButton.setOnClickListener {
                 adapter.sortData()
             }
         })
+
+
 
         ownCompany.setOnClickListener {
             val action = CompanyFragmentDirections.actionCompanyFragmentToInputDataFragment()
