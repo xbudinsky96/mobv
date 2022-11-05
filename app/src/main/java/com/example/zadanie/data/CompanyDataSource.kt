@@ -47,7 +47,7 @@ class CompanyDataSource {
             .build()
             .create(ApiInterface::class.java)
 
-        val companies = retrofitBuilderCompany.getAmenities(Post("bars", "mobvapp", "Cluster0"))
+        val companies = retrofitBuilderCompany.getAmenities(PostPub("bars", "mobvapp", "Cluster0"))
 
         companies.enqueue(object: Callback<Companies> {
             override fun onResponse(call: Call<Companies>, response: Response<Companies>) {
@@ -56,7 +56,7 @@ class CompanyDataSource {
                     insertDataToDataBase(companyViewModel, body.documents)
                 }
                 else {
-                    Toast.makeText(context, "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
                 }
             }
 

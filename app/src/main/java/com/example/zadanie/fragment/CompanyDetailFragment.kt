@@ -31,13 +31,14 @@ class CompanyDetailFragment : Fragment() {
         val mapButton: Button = binding.map
 
         val openingHours = if(args.openingHours != "") "\n\nOpening hours: \n" + args.openingHours + "\n" else ""
-        val tel = if(args.tel != "") "\n\nPhone number: \n" + args.tel + "\n" else ""
-        val web = if(args.web != "") "\n\nWeb: \n" + args.web + "\n" else ""
+        val tel = if(args.tel != "") args.tel + "\n" else ""
+        val web = if(args.web != "") args.web + "\n" else ""
+        val type = if(args.type != "") args.type + "\n\n" else ""
+        val contact = if(tel != "" || web != "") "Contact us: \n" else ""
 
         companyTextDetail.text =
-                "${args.companyName}\n\n\n" +
-                "Type: ${args.type}" +
-                openingHours + tel + web
+                "${args.companyName}\n" +
+                type + contact + tel + web + openingHours
 
         webButton.setOnClickListener {
             if(web != "") {

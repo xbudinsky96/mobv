@@ -38,8 +38,6 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         val ownCompany: Button = binding.addCompany
         val adapter = ElementAdapter(this, companyViewModel)
 
-        dataSource.fetchData(companyViewModel, requireContext())
-
         companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
             adapter.setElements(elements)
             recyclerView.adapter = adapter
@@ -50,7 +48,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         }
 
         pullToRefresh.setOnRefreshListener {
-            dataSource.fetchData(companyViewModel, requireContext())
+            fetchDataFromAPI()
             pullToRefresh.isRefreshing = false
         }
 
@@ -60,5 +58,9 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         }
 
         return binding.root
+    }
+
+    private fun fetchDataFromAPI() {
+        dataSource.fetchData(companyViewModel, requireContext())
     }
 }
