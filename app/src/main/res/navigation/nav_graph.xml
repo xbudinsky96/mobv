@@ -96,5 +96,26 @@
             android:name="id"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.zadanie.ui.login.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_registrationFragment"
+            app:destination="@id/registrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registrationFragment"
+        android:name="com.example.zadanie.ui.login.RegistrationFragment"
+        android:label="Register"
+        tools:layout="@layout/fragment_registration" >
+        <action
+            android:id="@+id/action_registrationFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
+    </fragment>
 
 </navigation>

@@ -14,14 +14,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.zadanie.R
 import com.example.zadanie.adapter.ElementAdapter
-import com.example.zadanie.data.CompanyDataSource
+import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.model.CompanyViewModel
 
 class CompanyFragment : Fragment(R.layout.fragment_company) {
     private lateinit var binding: FragmentCompanyBinding
     private lateinit var companyViewModel: CompanyViewModel
-    private val dataSource = CompanyDataSource()
+    private val service = ApiService()
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("MissingInflatedId")
@@ -61,6 +61,8 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
     }
 
     private fun fetchDataFromAPI() {
-        dataSource.fetchData(companyViewModel, requireContext())
+        service.fetchCompanies(companyViewModel, requireContext())
+        //service.getCompanyByID(requireContext(), "10073969719")
+        service.fetchNearbyCompanies(48.143483, 17.108513, requireContext())
     }
 }

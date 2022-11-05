@@ -6,8 +6,14 @@ data class PostPub(
     val dataSource: String
 )
 
-data class PostRegister(
-    val api_key: String = "asd",
-    val database: String,
-    val dataSource: String
+data class PostCredentials(
+    val api_key: String,
+    val name: String,
+    val password: String
+)
+
+data class PostRefreshToken(
+    val api_key: String,
+    val uid: String,
+    val refresh: String
 )
