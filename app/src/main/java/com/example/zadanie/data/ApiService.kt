@@ -1,8 +1,6 @@
 package com.example.zadanie.data
 
 import android.content.Context
-import android.graphics.Path.Direction
-import android.text.Layout.Directions
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
@@ -10,8 +8,6 @@ import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import com.example.zadanie.`interface`.ApiInterface
 import com.example.zadanie.`interface`.apiKey
 import com.example.zadanie.model.*
-import com.example.zadanie.ui.login.LoginFragment
-import com.example.zadanie.ui.login.LoginFragmentDirections
 import com.example.zadanie.ui.login.RegistrationFragment
 import com.example.zadanie.ui.login.RegistrationFragmentDirections
 import okhttp3.internal.and
@@ -112,10 +108,84 @@ class ApiService {
         })
     }
 
+    fun getCompaniesWithMembers(uid: Int) {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://zadanie.mpage.sk/")
+            .build()
+            .create(ApiInterface::class.java)
+        val companies = retrofitBuilder.getCompaniesWithMembers(PostPubsWithMembers(apiKey, uid.toString()))
+        companies.enqueue(object: Callback<Company> {
+            override fun onResponse(call: Call<Company>, response: Response<Company>) {
+                val body = response.body()
+                if(body != null) {
+                    TODO()
+                }
+                else {
+                    TODO()
+                }
+            }
+
+            override fun onFailure(call: Call<Company>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+    fun checkInCompany(uid: Int, company: Element) {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://zadanie.mpage.sk/")
+            .build()
+            .create(ApiInterface::class.java)
+        val checkInCompany = retrofitBuilder.checkInOutCompany(
+            PostLoginLogoutCompany(
+                apiKey,
+                uid.toString(),
+                company.id.toString(),
+                company.tags.name,
+                company.lat,
+                company.lon
+            )
+        )
+        checkInCompany.enqueue(object: Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+    fun checkOutCompany(uid: Int) {
+        val retrofitBuilder = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://zadanie.mpage.sk/")
+            .build()
+            .create(ApiInterface::class.java)
+        val leaveCompany = retrofitBuilder.checkInOutCompany(
+            PostLoginLogoutCompany(apiKey, uid.toString(), "", "", 0.0, 0.0)
+        )
+        leaveCompany.enqueue(object: Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
     fun loginUser(userName: String, password: String, fragment: Fragment, action: NavDirections) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://zadanie.mpage.sk/user/")
+            .baseUrl("https://zadanie.mpage.sk/")
             .build()
             .create(ApiInterface::class.java)
 
@@ -140,18 +210,27 @@ class ApiService {
     fun refreshToken(uid: Int) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://zadanie.mpage.sk/user/")
+            .baseUrl("https://zadanie.mpage.sk/")
             .build()
             .create(ApiInterface::class.java)
 
         val refreshToken = retrofitBuilder.refreshToken(PostRefreshToken(apiKey, uid.toString(), ""))
-        //TODO
+        refreshToken.enqueue(object: Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     fun registerUser(userName: String, password: String, fragment: RegistrationFragment) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://zadanie.mpage.sk/user/")
+            .baseUrl("https://zadanie.mpage.sk/")
             .build()
             .create(ApiInterface::class.java)
 

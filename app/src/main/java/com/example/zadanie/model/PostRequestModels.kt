@@ -17,3 +17,17 @@ data class PostRefreshToken(
     val uid: String,
     val refresh: String
 )
+
+data class PostPubsWithMembers(
+    val api_key: String,
+    val uid: String
+)
+
+data class PostLoginLogoutCompany(
+    val api_key: String,
+    val uid: String,
+    val id: String,
+    val name: String,
+    val lat: Double,
+    val lon: Double
+)
