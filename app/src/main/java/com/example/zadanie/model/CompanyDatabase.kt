@@ -32,3 +32,30 @@ abstract class CompanyDatabase: RoomDatabase() {
         }
     }
 }
+
+@Database(entities = [Element::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
+abstract class NearbyCompanyDatabase: RoomDatabase() {
+    abstract fun nearbyCompanyDao(): NearbyCompanyDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: NearbyCompanyDatabase? = null
+
+        fun getDatabase(context: Context): NearbyCompanyDatabase {
+            val tempInstance = INSTANCE
+            if(tempInstance != null) {
+                return tempInstance
+            }
+            synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    NearbyCompanyDatabase::class.java,
+                    "nearby_company_database"
+                ).build()
+                INSTANCE = instance
+                return instance
+            }
+        }
+    }
+}

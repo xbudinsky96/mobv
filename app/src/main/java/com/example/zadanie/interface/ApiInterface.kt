@@ -2,6 +2,7 @@ package com.example.zadanie.`interface`
 
 import com.example.zadanie.model.*
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 
 const val apiKey = "KHUu1Fo8042UwzczKz9nNeuVOsg2T4ClIfhndD2Su0G0LHHCBf0LnUF05L231J0M"

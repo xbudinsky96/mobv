@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.zadanie.R
-import com.example.zadanie.adapter.ElementAdapter
+import com.example.zadanie.adapter.CompanyAdapter
 import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.model.CompanyViewModel
@@ -36,7 +36,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         val recyclerView = binding.recyclerView
         val sortButton: Button = binding.sortCompanies
         val ownCompany: Button = binding.addCompany
-        val adapter = ElementAdapter(this, companyViewModel)
+        val adapter = CompanyAdapter(this, companyViewModel)
 
         companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
             adapter.setElements(elements)
@@ -62,7 +62,5 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
 
     private fun fetchDataFromAPI() {
         service.fetchCompanies(companyViewModel, requireContext())
-        //service.getCompanyByID(requireContext(), "10073969719")
-        service.fetchNearbyCompanies(48.143483, 17.108513, requireContext())
     }
 }

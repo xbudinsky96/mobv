@@ -13,3 +13,11 @@ class CompanyRepository(private val companyDao: CompanyDao) {
         companyDao.deleteCompany(element)
     }
 }
+
+class NearbyCompanyRepository(private val companyDao: NearbyCompanyDao) {
+    val readData: LiveData<MutableList<Element>> = companyDao.readCompanies()
+
+    suspend fun addCompany(element: Element) {
+        companyDao.addCompany(element)
+    }
+}

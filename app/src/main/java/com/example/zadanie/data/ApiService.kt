@@ -5,17 +5,23 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.example.zadanie.`interface`.ApiInterface
 import com.example.zadanie.`interface`.apiKey
+import com.example.zadanie.adapter.NearbyCompaniesAdapter
+import com.example.zadanie.databinding.FragmentCheckInBinding
 import com.example.zadanie.model.*
 import com.example.zadanie.ui.login.RegistrationFragment
 import com.example.zadanie.ui.login.RegistrationFragmentDirections
 import okhttp3.internal.and
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
+import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.BlockingDeque
 
 class ApiService {
 
@@ -49,7 +55,11 @@ class ApiService {
         elements.forEach { element -> companyViewModel.addCompany(element) }
     }
 
-    fun fetchNearbyCompanies(lat: Double, lon: Double, context: Context) {
+    private fun insertCompanyToDataBase(companyViewModel: NearbyCompanyViewModel, elements: MutableList<Element>) {
+        elements.forEach { element -> companyViewModel.addCompany(element) }
+    }
+
+    fun fetchNearbyCompanies(lat: Double, lon: Double, context: Context, companyViewModel: NearbyCompanyViewModel) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://overpass-api.de/api/")
@@ -65,7 +75,7 @@ class ApiService {
             override fun onResponse(call: Call<Company>, response: Response<Company>) {
                 val body = response.body()
                 if(body != null) {
-                    println(body.elements)
+                    insertCompanyToDataBase(companyViewModel, body.elements)
                 }
                 else {
                     Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()

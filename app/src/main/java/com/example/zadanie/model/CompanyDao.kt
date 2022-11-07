@@ -20,3 +20,13 @@ interface CompanyDao {
     @Delete
     suspend fun deleteCompany(element: Element)
 }
+
+@Dao
+interface NearbyCompanyDao {
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addCompany(element: Element)
+
+    @Query("SELECT * FROM company_table ORDER BY id ASC")
+    fun readCompanies(): LiveData<MutableList<Element>>
+}
