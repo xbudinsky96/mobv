@@ -48,4 +48,6 @@
     <string name="verify_password">Verify password</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="specify">Specify</string>
+    <string name="Confirm">Confirm</string>
 </resources>

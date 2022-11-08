@@ -1,15 +1,21 @@
 package com.example.zadanie.data
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.example.zadanie.CheckInDetailFragment
 import com.example.zadanie.`interface`.ApiInterface
 import com.example.zadanie.`interface`.apiKey
 import com.example.zadanie.adapter.NearbyCompaniesAdapter
 import com.example.zadanie.databinding.FragmentCheckInBinding
+import com.example.zadanie.databinding.FragmentCheckInDetailBinding
 import com.example.zadanie.model.*
 import com.example.zadanie.ui.login.RegistrationFragment
 import com.example.zadanie.ui.login.RegistrationFragmentDirections
@@ -89,7 +95,7 @@ class ApiService {
         })
     }
 
-    fun getCompanyByID(context: Context, id: Int) {
+    fun getCompanyByID(context: Context, id: Long, binding: FragmentCheckInDetailBinding) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://overpass-api.de/api/")
@@ -101,10 +107,15 @@ class ApiService {
 
         val companies = retrofitBuilder.getCompanyByID(query)
         companies.enqueue(object: Callback<Company> {
+            @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call<Company>, response: Response<Company>) {
                 val body = response.body()
                 if(body != null) {
-                    println(body.elements)
+                    val foundCompany = body.elements[0]
+                    binding.content.text = "  " + foundCompany.tags.name
+                    binding.confirm.setOnClickListener {
+                        checkInCompany(0, foundCompany)
+                    }
                 }
                 else {
                     Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
@@ -118,7 +129,7 @@ class ApiService {
         })
     }
 
-    fun getCompaniesWithMembers(uid: Int) {
+    fun getCompaniesWithMembers(uid: Long) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://zadanie.mpage.sk/")
@@ -143,7 +154,7 @@ class ApiService {
         })
     }
 
-    fun checkInCompany(uid: Int, company: Element) {
+    fun checkInCompany(uid: Long, company: Element) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://zadanie.mpage.sk/")
@@ -161,17 +172,22 @@ class ApiService {
         )
         checkInCompany.enqueue(object: Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
-                TODO("Not yet implemented")
+                if (response.isSuccessful) {
+                    println("CHECKED ID")
+                }
+                else {
+                    println("FAILED TO CHECK IN")
+                }
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
-                TODO("Not yet implemented")
+                println("FAILED TO CHECK IN")
             }
 
         })
     }
 
-    fun checkOutCompany(uid: Int) {
+    fun checkOutCompany(uid: Long) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://zadanie.mpage.sk/")
@@ -217,7 +233,7 @@ class ApiService {
         })
     }
 
-    fun refreshToken(uid: Int) {
+    fun refreshToken(uid: Long) {
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://zadanie.mpage.sk/")
