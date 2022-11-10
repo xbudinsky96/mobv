@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/checkInDetailFragment">
+    app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -107,6 +107,12 @@
         <action
             android:id="@+id/action_loginFragment_to_registrationFragment"
             app:destination="@id/registrationFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_checkInDetailFragment"
+            app:destination="@id/checkInDetailFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_addFriendFragment"
+            app:destination="@id/addFriendFragment" />
     </fragment>
     <fragment
         android:id="@+id/registrationFragment"
@@ -128,7 +134,7 @@
     </fragment>
     <fragment
         android:id="@+id/checkInDetailFragment"
-        android:name="com.example.zadanie.CheckInDetailFragment"
+        android:name="com.example.zadanie.fragment.CheckInDetailFragment"
         android:label="Check in to company"
         tools:layout="@layout/fragment_check_in_detail">
         <argument
@@ -138,5 +144,10 @@
             android:id="@+id/action_checkInDetailFragment_to_checkInFragment"
             app:destination="@id/checkInFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/addFriendFragment"
+        android:name="com.example.zadanie.fragment.AddFriendFragment"
+        android:label="fragment_add_friend"
+        tools:layout="@layout/fragment_add_friend" />
 
 </navigation>

@@ -13,11 +13,10 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.navArgs
-import com.example.zadanie.CheckInDetailFragmentArgs
 import com.example.zadanie.adapter.NearbyCompaniesAdapter
 import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentCheckInBinding
+import com.example.zadanie.model.Element
 import com.example.zadanie.model.NearbyCompanyViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -74,7 +73,10 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 else {
                     service.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
                     companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
-                        adapter.setElements(elements)
+                        if (elements.isNotEmpty()) {
+                            adapter.setElements(elements)
+                            adapter.sortDataNearestDescending(location.latitude, location.longitude)
+                        }
                         binding.nearbyCompanyList.adapter = adapter
                     }
                 }

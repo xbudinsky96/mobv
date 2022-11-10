@@ -7,13 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.R
 import com.example.zadanie.databinding.FragmentInputDataBinding
+import com.example.zadanie.model.CompanyViewModel
+import com.example.zadanie.model.Element
+import com.example.zadanie.model.NearbyCompanyViewModel
+import com.example.zadanie.model.Tags
 import com.google.android.material.textfield.TextInputEditText
 
 class InputDataFragment : Fragment(R.layout.fragment_input_data) {
     private lateinit var binding: FragmentInputDataBinding
+    private lateinit var companyViewModel: CompanyViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,6 +27,7 @@ class InputDataFragment : Fragment(R.layout.fragment_input_data) {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentInputDataBinding.inflate(inflater, container, false)
+        companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
         val button: Button = binding.submitData
         val nameInput: TextInputEditText = binding.inputName
         val companyInput: TextInputEditText = binding.companyInput
@@ -37,6 +44,15 @@ class InputDataFragment : Fragment(R.layout.fragment_input_data) {
                     companyInput.text.toString(),
                     longVal,
                     latVal
+                )
+                companyViewModel.addCompany(
+                    Element(
+                        1,
+                        latVal.toDouble(),
+                        longVal.toDouble(),
+                        Tags(nameInput.text.toString(), "null", "null", "null", "null", "null", "null", "null"),
+                        "type"
+                    )
                 )
                 findNavController().navigate(action)
             }

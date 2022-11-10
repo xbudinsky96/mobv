@@ -5,11 +5,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +16,8 @@ import com.example.zadanie.fragment.CheckInFragmentDirections
 import com.example.zadanie.model.Element
 import java.lang.Double.MAX_VALUE
 import java.util.*
-import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<NearbyCompaniesAdapter.ElementViewHolder>()  {
     private lateinit var companyList: MutableList<Element>
@@ -72,12 +71,12 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataNearestDescending(lat: Double, lon: Double) {
-        println(companyList.sortBy { getDistance(lat, it.lat, lon, it.lon) })
+        companyList = companyList.sortedBy { getDistance(lat, lon, it.lat, it.lon) } as MutableList<Element>
         notifyDataSetChanged()
     }
 
     private fun getDistance(lat: Double, lon: Double, currLat: Double, currLon: Double): Double {
-        return abs(lat - currLat) + abs(lon - currLon)
+        return sqrt((lat - currLat).pow(2) + (lon - currLon).pow(2))
     }
 
     fun getNearest(lat: Double, lon: Double): Element {

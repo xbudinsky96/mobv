@@ -17,6 +17,7 @@ import com.example.zadanie.adapter.CompanyAdapter
 import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.model.CompanyViewModel
+import com.example.zadanie.model.loggedInUser
 
 class CompanyFragment : Fragment(R.layout.fragment_company) {
     private lateinit var binding: FragmentCompanyBinding
@@ -61,6 +62,6 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
     }
 
     private fun fetchDataFromAPI() {
-        service.fetchCompanies(companyViewModel, requireContext())
+        service.getCompaniesWithMembers(requireContext(), companyViewModel)
     }
 }

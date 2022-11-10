@@ -7,27 +7,29 @@ data class PostPub(
 )
 
 data class PostCredentials(
-    val api_key: String,
     val name: String,
     val password: String
 )
 
 data class PostRefreshToken(
-    val api_key: String,
-    val uid: String,
     val refresh: String
 )
 
-data class PostPubsWithMembers(
-    val api_key: String,
-    val uid: String
+data class PostLoginCompany(
+    val id: String,
+    val name: String,
+    val type: String,
+    val lat: Double,
+    val lon: Double
 )
 
-data class PostLoginLogoutCompany(
-    val api_key: String,
-    val uid: String,
+data class PostLogoutCompany(
     val id: String,
     val name: String,
     val lat: Double,
     val lon: Double
+)
+
+data class PostAddDeleteUser(
+    val contact: String
 )

@@ -1,30 +1,28 @@
-package com.example.zadanie
+package com.example.zadanie.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.location.LocationRequest
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.graphics.vector.PathNode.Close.equals
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentCheckInDetailBinding
-import com.example.zadanie.fragment.CheckInFragment
-import com.example.zadanie.model.Company
 import com.example.zadanie.model.Element
 import com.example.zadanie.model.NearbyCompanyViewModel
-import com.example.zadanie.model.Tags
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
@@ -32,7 +30,8 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
-import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
@@ -41,8 +40,9 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private val service = ApiService()
     private lateinit var companyViewModel: NearbyCompanyViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    lateinit var nearestCompany: Element
+    private lateinit var nearestCompany: Element
     private val args: CheckInDetailFragmentArgs by navArgs()
+    private val SEARCHPREFIX = "https://www.google.com/maps/@"
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
@@ -51,8 +51,9 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     ): View {
         _binding = FragmentCheckInDetailBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
-        val confirmButton = binding.confirm
         val specifyButton = binding.specify
+        val showOnMap = binding.showonmap
+        showOnMap.isEnabled = false
 
         specifyButton.setOnClickListener {
             val action = CheckInDetailFragmentDirections.actionCheckInDetailFragmentToCheckInFragment()
@@ -62,19 +63,27 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
 
-        setCompanyDetails()
+        getCompany()
 
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun setCompanyDetails() {
+    private fun getCompany() {
         try {
-            service.getCompanyByID(requireContext(), args.id, binding)
-            val preferences = requireContext().getSharedPreferences("COMPANY", Context.MODE_PRIVATE)
-            println(preferences.getString("name", "not acquired"))
+            if (args.id.toInt() != 0) {
+                service.getCompanyByID(requireContext(), args.id, binding)
+                cancelAnimation()
+            }
+        } catch (_: Exception) {
+            Log.i("noargs", "No argument found")
         }
-        catch (e: Exception) {
+
+        requestLocationPermission()
+        val animation = binding.animationView
+        animation.setOnClickListener {
+            animation.playAnimation()
+            Toast.makeText(requireContext(), "Finding nearest company", Toast.LENGTH_SHORT).show()
             getLocation()
         }
     }
@@ -91,17 +100,28 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
                 }
                 else {
-                    service.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
+                    val lat = location.latitude
+                    val lon = location.longitude
+                    service.fetchNearbyCompanies(lat,lon, requireContext(), companyViewModel)
                     companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
                         if (elements.isEmpty()) {
                             Toast.makeText(requireContext(), "No data has been retrieved!", Toast.LENGTH_SHORT).show()
+                            pauseAnimation()
                         }
                         else {
-                            nearestCompany = getNearestCompany(elements, location.latitude, location.longitude)
-                            binding.confirm.setOnClickListener {
-                                service.checkInCompany(0, nearestCompany)
-                            }
-                            binding.content.text = "  " + nearestCompany.tags.name
+                            setCoordinates(lat.toString(), lon.toString())
+                            cancelAnimation()
+                            nearestCompany = getNearestCompany(elements, lat, lon)
+                            setConfirmButton()
+
+                            val openingHours = if(nearestCompany.tags.opening_hours != "") "\n\n   Opening hours: \n" + nearestCompany.tags.opening_hours + "\n" else ""
+                            val tel = if(nearestCompany.tags.phone != "") "    " +  nearestCompany.tags.phone + "\n" else ""
+                            val web = if(nearestCompany.tags.website != "") "    " + nearestCompany.tags.website + "\n" else ""
+                            val type = if(nearestCompany.tags.amenity != "") "    " + nearestCompany.tags.amenity + "\n\n" else ""
+                            val contact = if(tel != "" || web != "") "   Contact us: \n" else ""
+
+                            binding.content.text =
+                                "   ${nearestCompany.tags.name}\n" + type + contact + tel + web + openingHours
                         }
                     }
                 }
@@ -111,23 +131,43 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    private fun getNearestCompany(companyList: MutableList<Element>, lat: Double, lon: Double): Element {
-        var nearestCompany = companyList[0]
-        var distance = java.lang.Double.MAX_VALUE
-
-        for (company in companyList) {
-            if(company != nearestCompany) {
-                val currentDistance = abs(company.lat - lat) + abs(company.lon - lon)
-                if (distance == java.lang.Double.MAX_VALUE) {
-                    distance = currentDistance
-                }
-                else if (distance > currentDistance) {
-                    distance = currentDistance
-                    nearestCompany = company
-                }
-            }
+    private fun setCoordinates(latitude: String, longitude: String) {
+        val showOnMap = binding.showonmap
+        showOnMap.isEnabled = true
+        showOnMap.setOnClickListener {
+            val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${latitude},${longitude},16z")
+            val show = Intent(Intent.ACTION_VIEW, queryUrl)
+            startActivity(show)
         }
-        return nearestCompany
+    }
+
+    private fun setConfirmButton() {
+        val confirmButton = binding.confirm
+        confirmButton.setOnClickListener {
+            service.checkInCompany(nearestCompany, requireContext())
+        }
+        confirmButton.isEnabled = true
+    }
+
+    private fun cancelAnimation() {
+        val animation = binding.animationView
+        animation.cancelAnimation()
+        animation.isVisible = false
+    }
+
+    private fun pauseAnimation() {
+        val animation = binding.animationView
+        animation.pauseAnimation()
+        animation.isVisible = true
+    }
+
+    private fun getNearestCompany(companyList: MutableList<Element>, lat: Double, lon: Double): Element {
+        val nearestCompany = companyList.sortedBy { getDistance(lat, lon, it.lat, it.lon) } as MutableList<Element>
+        return nearestCompany[0]
+    }
+
+    private fun getDistance(lat: Double, lon: Double, currLat: Double, currLon: Double): Double {
+        return sqrt((lat - currLat).pow(2) + (lon - currLon).pow(2))
     }
 
     private fun hasLocationPermission() =
@@ -163,11 +203,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        Toast.makeText(
-            requireContext(),
-            "Permission Granted!",
-            Toast.LENGTH_SHORT
-        ).show()
+
     }
 
     override fun onDestroyView() {
