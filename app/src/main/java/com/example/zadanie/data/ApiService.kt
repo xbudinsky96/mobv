@@ -136,10 +136,10 @@ class ApiService {
     fun getCompaniesWithMembers(context: Context, companyViewModel: CompanyViewModel) {
         val auth = "Bearer " + loggedInUser.access
         val companies = mPageAPI.getCompaniesWithMembers(loggedInUser.uid, auth)
-        companies.enqueue(object: Callback<CompanyWithMembers> {
+        companies.enqueue(object: Callback<List<CompanyWithMembers>> {
             override fun onResponse(
-                call: Call<CompanyWithMembers>,
-                response: Response<CompanyWithMembers>
+                call: Call<List<CompanyWithMembers>>,
+                response: Response<List<CompanyWithMembers>>
             ) {
                 val body = response.body()
                 if (body != null) {
@@ -150,7 +150,7 @@ class ApiService {
                 }
             }
 
-            override fun onFailure(call: Call<CompanyWithMembers>, t: Throwable) {
+            override fun onFailure(call: Call<List<CompanyWithMembers>>, t: Throwable) {
                 Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show()
             }
 

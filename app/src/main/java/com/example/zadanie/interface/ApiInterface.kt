@@ -55,7 +55,7 @@ interface ApiInterface {
         "Content-Type: application/json",
         "x-apikey: $apiKey"
     )
-    fun getCompaniesWithMembers(@Header("x-user") uid: String, @Header("authorization") auth: String): Call<CompanyWithMembers>
+    fun getCompaniesWithMembers(@Header("x-user") uid: String, @Header("authorization") auth: String): Call<List<CompanyWithMembers>>
 
     @POST("bar/message.php")
     @Headers(
