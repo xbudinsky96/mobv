@@ -10,7 +10,6 @@ import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.zadanie.R
 import com.example.zadanie.adapter.CompanyAdapter
@@ -48,7 +47,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
             }
 
             sortDistance.setOnClickListener {
-                adapter.sortDataNearestDescending()
+                adapter.sortDataByDistance()
             }
 
             sortPeople.setOnClickListener {

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.widget.EdgeEffectCompat.getDistance
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -21,9 +20,9 @@ import kotlin.math.sqrt
 
 class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<CompanyAdapter.ElementViewHolder>() {
     private lateinit var companyList: MutableList<CompanyWithMembers>
-    private var dataIsSortedAlphabetically: Boolean = false
-    private var dataIsSortedDistance: Boolean = false
-    private var dataIsSortedByPeople: Boolean = false
+    private var isSortedByName: Boolean = false
+    private var isSortedByDistance: Boolean = false
+    private var isSortedByUsers: Boolean = false
     private lateinit var context: Context
 
     class ElementViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -68,7 +67,7 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortAlphabetically() {
-        companyList = if(isSortedAlphabetically()) {
+        companyList = if(isSortedByName()) {
             companyList.sortedBy { it.bar_name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<CompanyWithMembers>
         } else {
             companyList.sortedBy { it.bar_name.lowercase(Locale.ROOT) }.reversed() as MutableList<CompanyWithMembers>
@@ -77,8 +76,8 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun sortDataNearestDescending() {
-        companyList = if(isSortedDistance()) {
+    fun sortDataByDistance() {
+        companyList = if(isSortedByDistance()) {
             companyList.sortedBy {
                 getDistance(
                     loggedInUser.lat,
@@ -114,19 +113,19 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
         return sqrt((lat - currLat).pow(2) + (lon - currLon).pow(2))
     }
 
-    private fun isSortedAlphabetically(): Boolean {
-        dataIsSortedAlphabetically = dataIsSortedAlphabetically.not()
-        return dataIsSortedAlphabetically
+    private fun isSortedByName(): Boolean {
+        isSortedByName = isSortedByName.not()
+        return isSortedByName
     }
 
-    private fun isSortedDistance(): Boolean {
-        dataIsSortedDistance = dataIsSortedDistance.not()
-        return dataIsSortedDistance
+    private fun isSortedByDistance(): Boolean {
+        isSortedByDistance = isSortedByDistance.not()
+        return isSortedByDistance
     }
 
     private fun isSortedByPeople(): Boolean {
-        dataIsSortedByPeople = dataIsSortedByPeople.not()
-        return dataIsSortedByPeople
+        isSortedByUsers = isSortedByUsers.not()
+        return isSortedByUsers
     }
 
     @SuppressLint("NotifyDataSetChanged")

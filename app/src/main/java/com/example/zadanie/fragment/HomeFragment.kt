@@ -1,24 +1,21 @@
 package com.example.zadanie.fragment
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import androidx.navigation.fragment.navArgs
 import com.example.zadanie.R
+import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
-    private lateinit var binding: FragmentHomeBinding
+    private var _binding: FragmentHomeBinding? = null
+    val binding get() = _binding!!
     private val args: HomeFragmentArgs by navArgs()
-    private val SEARCHPREFIX = "https://www.google.com/maps/@"
+    private val service = ApiService()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -26,27 +23,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val nameTitle: TextView = binding.nameTitle
-        val companyName: TextView = binding.companyName
-        val showOnMapButton: Button = binding.showOnMap
-        val latitude = args.latitude
-        val longitude = args.longitude
-
-        nameTitle.text = args.name
-        companyName.text = args.companyName
-
-        showOnMapButton.setOnClickListener {
-            if(latitude != null && latitude.isNotEmpty() && longitude != null && longitude.isNotEmpty()) {
-                val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${latitude},${longitude},16z")
-                val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
-                startActivity(showOnMap)
-            }
-            else{
-                Toast.makeText(activity, "No location provided!", Toast.LENGTH_SHORT).show()
-            }
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        service.getCompanyByID(null, this, args.companyId)
+        binding.checkOut.setOnClickListener {
+            service.checkOutCompany(this)
         }
-
         return binding.root
     }
 }

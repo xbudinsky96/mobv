@@ -54,7 +54,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     override fun getItemCount() = companyList.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun sortDataAlphabetically() {
+    fun sortCompaniesByName() {
         companyList = if(isSorted()) {
             companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Element>
         } else {

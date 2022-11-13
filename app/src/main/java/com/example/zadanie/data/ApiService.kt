@@ -3,6 +3,8 @@ package com.example.zadanie.data
 import UserHandlerModel
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
@@ -10,7 +12,10 @@ import androidx.navigation.fragment.findNavController
 import com.example.zadanie.`interface`.ApiInterface
 import com.example.zadanie.adapter.FriendsAdapter
 import com.example.zadanie.databinding.FragmentCheckInDetailBinding
+import com.example.zadanie.fragment.CheckInDetailFragment
+import com.example.zadanie.fragment.CheckInDetailFragmentDirections
 import com.example.zadanie.fragment.FriendListFragment
+import com.example.zadanie.fragment.HomeFragment
 import com.example.zadanie.model.*
 import com.example.zadanie.ui.login.LoginFragment
 import com.example.zadanie.ui.login.LoginFragmentDirections
@@ -69,23 +74,42 @@ class ApiService {
         })
     }
 
-    fun getCompanyByID(context: Context, id: Long, binding: FragmentCheckInDetailBinding) {
+    fun getCompanyByID(fragmentCheckInDetail: CheckInDetailFragment?, fragmentHome: HomeFragment?, id: Long) {
         val query = "[out:json];node({companyId});out body;>;out skel;"
             .replace("{companyId}", id.toString())
 
+        val context = fragmentCheckInDetail?.requireContext() ?: fragmentHome?.requireContext()
         val companies = overPassAPI.getCompanyByID(query)
-        Toast.makeText(context, "Fetching data!", Toast.LENGTH_SHORT).show()
         companies.enqueue(object: Callback<Company> {
             @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call<Company>, response: Response<Company>) {
                 val body = response.body()
                 if(body != null) {
                     val foundCompany = body.elements[0]
-                    setDetails(foundCompany, binding)
-                    binding.confirm.setOnClickListener {
-                        checkInCompany(foundCompany, context)
+
+                    if (fragmentCheckInDetail != null) {
+                        val binding = fragmentCheckInDetail.binding
+                        setDetails(foundCompany, binding)
+                        binding.confirm.setOnClickListener {
+                            if (context != null) {
+                                checkInCompany(foundCompany, null, fragmentCheckInDetail)
+                            }
+                        }
+                        binding.confirm.isEnabled = true
                     }
-                    binding.confirm.isEnabled = true
+
+                    if (fragmentHome != null) {
+                        val binding = fragmentHome.binding
+                        binding.companyName.text = foundCompany.tags.name
+                        binding.nameTitle.text = loggedInUser.name
+                        binding.showOnMap.setOnClickListener {
+                            val latitude = foundCompany.lat
+                            val longitude = foundCompany.lon
+                            val queryUrl: Uri = Uri.parse("https://www.google.com/maps/@${latitude},${longitude},16z")
+                            val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
+                            context?.startActivity(showOnMap)
+                        }
+                    }
                 }
                 else {
                     Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
@@ -95,7 +119,6 @@ class ApiService {
             override fun onFailure(call: Call<Company>, t: Throwable) {
                 Toast.makeText(context, "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
             }
-
         })
     }
 
@@ -128,6 +151,7 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(context)
+                    getCompaniesWithMembers(context, companyViewModel)
                 }
                 else {
                     Toast.makeText(context, "Response not successful!", Toast.LENGTH_SHORT).show()
@@ -141,8 +165,10 @@ class ApiService {
         })
     }
 
-    fun checkInCompany(company: Element, context: Context) {
+    fun checkInCompany(company: Element, fragmentHome: HomeFragment?, fragmentCheckInDetail: CheckInDetailFragment?) {
         val auth = "Bearer " + loggedInUser.access
+        val fragment = fragmentCheckInDetail ?: fragmentHome
+        val context = fragment?.requireContext()
         val checkInCompany = mPageAPI.checkInCompany(
             PostLoginCompany(
                 company.id.toString(),
@@ -161,9 +187,14 @@ class ApiService {
             ) {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Checked in to " + company.tags.name + "!", Toast.LENGTH_SHORT).show()
+                    loggedInUser.companyId = company.id.toString()
+                    val action = CheckInDetailFragmentDirections.actionCheckInDetailFragmentToHomeFragment(company.id)
+                    fragment?.findNavController()?.navigate(action)
                 }
                 else if(response.code() == 401) {
-                    refreshToken(context)
+                    if (context != null) {
+                        refreshToken(context)
+                    }
                 }
                 else {
                     Toast.makeText(context, "Failure!", Toast.LENGTH_SHORT).show()
@@ -176,28 +207,30 @@ class ApiService {
         })
     }
 
-    fun checkOutCompany() {
+    fun checkOutCompany(fragment: Fragment) {
         val auth = "Bearer " + loggedInUser.access
         val leaveCompany = mPageAPI.checkOutCompany(
-            PostLogoutCompany("", "", 0.0, 0.0),
+            PostLogoutCompany("", "Big Table", 37.4227271, -122.08751),
             loggedInUser.uid,
             auth
         )
         leaveCompany.enqueue(object: Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
-                    println("CHECKED OUT")
+                    loggedInUser.companyId = "-1"
+                    Toast.makeText(fragment.requireContext(), "Checked out!", Toast.LENGTH_SHORT).show()
                 }
                 else if(response.code() == 401) {
-                    //refreshToken(fragment.requireContext())
+                    refreshToken(fragment.requireContext())
+                    checkOutCompany(fragment)
                 }
                 else {
-                    println("FAILED TO CHECK OUT")
+                    Toast.makeText(fragment.requireContext(), "Failed to check out!", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
-                println("FAILED TO CHECK OUT")
+                Toast.makeText(fragment.requireContext(), "Failure!", Toast.LENGTH_SHORT).show()
             }
 
         })
@@ -299,6 +332,7 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment.requireContext())
+                    addFriend(name, fragment)
                 }
                 else {
                     Toast.makeText(fragment.requireContext(), "Could not add friend!", Toast.LENGTH_SHORT).show()
@@ -321,6 +355,7 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment.requireContext())
+                    deleteFriend(name, fragment)
                 }
                 else {
                     Toast.makeText(fragment.requireContext(), "Could not remove friend!", Toast.LENGTH_SHORT).show()
@@ -353,6 +388,7 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment.requireContext())
+                    showFriends(fragment, adapter)
                 }
             }
 

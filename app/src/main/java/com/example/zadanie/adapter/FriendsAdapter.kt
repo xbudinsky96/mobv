@@ -54,7 +54,7 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
     override fun getItemCount() = friendList.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun sortData(){
+    fun sortFriendsByName(){
         friendList = if(isSorted()) {
             friendList.sortedBy { it.user_name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Friend>
         } else {

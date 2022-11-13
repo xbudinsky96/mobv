@@ -36,7 +36,7 @@ import kotlin.math.sqrt
 class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var _binding: FragmentCheckInDetailBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
     private val service = ApiService()
     private lateinit var companyViewModel: NearbyCompanyViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -72,7 +72,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun getCompany() {
         try {
             if (args.id.toInt() != 0) {
-                service.getCompanyByID(requireContext(), args.id, binding)
+                service.getCompanyByID(this, null, args.id)
                 cancelAnimation()
             }
         } catch (_: Exception) {
@@ -144,7 +144,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun setConfirmButton() {
         val confirmButton = binding.confirm
         confirmButton.setOnClickListener {
-            service.checkInCompany(nearestCompany, requireContext())
+            service.checkInCompany(nearestCompany, null, this)
         }
         confirmButton.isEnabled = true
     }
