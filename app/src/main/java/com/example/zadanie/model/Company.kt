@@ -34,11 +34,11 @@ data class Tags(
     val opening_hours: String
 )
 
-data class CompaniesWithMembers(
-    val companies: List<CompanyWithMembers>
-)
-
 data class CompanyWithMembers(
     val bar_id: String,
-    val bar_name: String
+    val bar_name: String,
+    val lat: String,
+    val lon: String,
+    val bar_type: String,
+    val users: String
 )
