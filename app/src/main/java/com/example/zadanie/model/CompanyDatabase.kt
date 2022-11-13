@@ -7,14 +7,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(entities = [CompanyWithMembers::class], version = 1, exportSchema = false)
-abstract class CompanyDatabase: RoomDatabase() {
+abstract class CompaniesWithMembersDB: RoomDatabase() {
     abstract fun companyDao(): CompanyDao
 
     companion object {
         @Volatile
-        private var INSTANCE: CompanyDatabase? = null
+        private var INSTANCE: CompaniesWithMembersDB? = null
 
-        fun getDatabase(context: Context): CompanyDatabase {
+        fun getDatabase(context: Context): CompaniesWithMembersDB {
             val tempInstance = INSTANCE
             if(tempInstance != null) {
                 return tempInstance
@@ -22,8 +22,8 @@ abstract class CompanyDatabase: RoomDatabase() {
             synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    CompanyDatabase::class.java,
-                    "company_database"
+                    CompaniesWithMembersDB::class.java,
+                    "companies_with_members_database"
                 ).build()
                 INSTANCE = instance
                 return instance

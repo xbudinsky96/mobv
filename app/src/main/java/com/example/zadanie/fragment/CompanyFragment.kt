@@ -34,7 +34,9 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
         val pullToRefresh: SwipeRefreshLayout = binding.refreshLayout
         val recyclerView = binding.recyclerView
-        val sortButton: Button = binding.sortCompanies
+        val sortButtonAlphabetic: Button = binding.sortAbc
+        val sortDistance = binding.sortDistance
+        val sortPeople = binding.sortPeople
         val ownCompany: Button = binding.addCompany
         val adapter = CompanyAdapter(this)
 
@@ -42,8 +44,17 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
             adapter.setElements(elements)
             recyclerView.adapter = adapter
 
-            sortButton.setOnClickListener {
-                adapter.sortData()
+            sortButtonAlphabetic.setOnClickListener {
+                adapter.sortAlphabetically()
+            }
+
+            //TODO
+            //sortDistance.setOnClickListener {
+            //    adapter.sortDataNearestDescending()
+            //}
+
+            sortPeople.setOnClickListener {
+                adapter.sortPeople()
             }
         }
 

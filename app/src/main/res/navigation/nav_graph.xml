@@ -83,6 +83,12 @@
         <argument
             android:name="users"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_companyDetailFragment_to_checkInDetailFragment"
+            app:destination="@id/checkInDetailFragment" />
+        <argument
+            android:name="id"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"

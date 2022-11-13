@@ -24,9 +24,15 @@ class AddFriendFragment : Fragment() {
         _binding = FragmentAddFriendBinding.inflate(inflater, container, false)
         val addButton = binding.addButton
         val friendsButton = binding.showFriends
+        val removeButton = binding.removeButton
+        val friendName = binding.friendName
 
         addButton.setOnClickListener {
-            addFriend()
+            addFriend(friendName.text.toString())
+        }
+
+        removeButton.setOnClickListener {
+            removeFriend(friendName.text.toString())
         }
 
         friendsButton.setOnClickListener {
@@ -37,14 +43,28 @@ class AddFriendFragment : Fragment() {
         return binding.root
     }
 
-    private fun addFriend() {
-        val friendName = binding.friendName.text.toString()
-
-        if (friendName.isNotEmpty()) {
-            apiService.addFriend(friendName, this)
+    private fun addFriend(name: String) {
+        if (validate(name)) {
+            apiService.addFriend(name, this)
         }
         else {
             Toast.makeText(requireContext(), "Enter a name!", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun removeFriend(name: String) {
+        if (validate(name)) {
+            apiService.deleteFriend(name, this)
+        }
+        else {
+            Toast.makeText(requireContext(), "Enter a name!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun validate(field: String): Boolean {
+        if (field.isNotEmpty()) {
+            return true
+        }
+        return false
     }
 }

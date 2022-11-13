@@ -55,4 +55,7 @@
     <string name="friend_s_name">Friend\'s name</string>
     <string name="addFriend">Add</string>
     <string name="my_friends">My friends</string>
+    <string name="abc">ABC</string>
+    <string name="distance">Distance</string>
+    <string name="people">People</string>
 </resources>

@@ -7,18 +7,45 @@
     tools:context=".fragment.CompanyFragment">
 
     <Button
-        android:id="@+id/sortCompanies"
+        android:id="@+id/sortAbc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
-        android:layout_marginStart="162dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="2dp"
-        android:layout_marginEnd="162dp"
-        android:text="@string/sort_list"
+        android:text="@string/abc"
         app:layout_constraintBottom_toTopOf="@+id/recycler_view"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="NotSibling,RtlHardcoded" />
+
+    <Button
+        android:id="@+id/sortDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:layout_marginStart="148dp"
+        android:layout_marginTop="2dp"
+        android:text="@string/distance"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="NotSibling,RtlHardcoded" />
+
+    <Button
+        android:id="@+id/sortPeople"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:layout_marginStart="284dp"
+        android:layout_marginTop="2dp"
+        android:text="@string/people"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         tools:ignore="NotSibling,RtlHardcoded" />
 
     <Button

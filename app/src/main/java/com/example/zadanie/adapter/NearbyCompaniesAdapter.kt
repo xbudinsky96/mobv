@@ -54,7 +54,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     override fun getItemCount() = companyList.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun sortDataAlphabetically(){
+    fun sortDataAlphabetically() {
         companyList = if(isSorted()) {
             companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Element>
         } else {
@@ -71,25 +71,6 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
     private fun getDistance(lat: Double, lon: Double, currLat: Double, currLon: Double): Double {
         return sqrt((lat - currLat).pow(2) + (lon - currLon).pow(2))
-    }
-
-    fun getNearest(lat: Double, lon: Double): Element {
-        var nearestCompany = companyList[0]
-        var distance = MAX_VALUE
-
-        for (company in companyList) {
-            if(company != nearestCompany) {
-                val currentDistance = getDistance(nearestCompany.lat, nearestCompany.lon, company.lat, company.lon)
-                if (distance == MAX_VALUE) {
-                    distance = currentDistance
-                }
-                else if (distance > currentDistance) {
-                    distance = currentDistance
-                    nearestCompany = company
-                }
-            }
-        }
-        return nearestCompany
     }
 
     private fun isSorted(): Boolean {

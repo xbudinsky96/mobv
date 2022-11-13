@@ -118,7 +118,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             val tel = if(nearestCompany.tags.phone != "") "    " +  nearestCompany.tags.phone + "\n" else ""
                             val web = if(nearestCompany.tags.website != "") "    " + nearestCompany.tags.website + "\n" else ""
                             val type = if(nearestCompany.tags.amenity != "") "    " + nearestCompany.tags.amenity + "\n\n" else ""
-                            val contact = if(tel != "" || web != "") "   Contact us: \n" else ""
+                            val contact = if(tel == "" && web == "") "" else "   Contact us: \n"
 
                             binding.content.text =
                                 "   ${nearestCompany.tags.name}\n" + type + contact + tel + web + openingHours

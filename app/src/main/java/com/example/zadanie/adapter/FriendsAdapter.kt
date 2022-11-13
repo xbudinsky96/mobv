@@ -44,7 +44,8 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
                 "",
                 item.bar_lat,
                 item.bar_lon,
-                -1
+                -1,
+                item.user_id
             )
             fragment.findNavController().navigate(action)
         }

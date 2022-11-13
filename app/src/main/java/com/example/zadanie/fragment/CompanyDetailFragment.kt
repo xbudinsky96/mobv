@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.zadanie.databinding.FragmentCompanyDetailBinding
 
@@ -27,6 +28,7 @@ class CompanyDetailFragment : Fragment() {
         binding = FragmentCompanyDetailBinding.inflate(inflater, container, false)
         val companyTextDetail: TextView = binding.companyDetailText
         val mapButton: Button = binding.map
+        val checkInButton = binding.checkIn
 
         val type = if(args.type != "") (args.type?.replace("_", " ") ?: args.type) + "\n\n" else ""
         val users = if(args.users != -1) "Users: " + args.users else ""
@@ -34,6 +36,11 @@ class CompanyDetailFragment : Fragment() {
         companyTextDetail.text =
                 "               ${args.companyName}\n\n" +
                 type + users
+
+        checkInButton.setOnClickListener {
+            val action = CompanyDetailFragmentDirections.actionCompanyDetailFragmentToCheckInDetailFragment(args.id.toLong())
+            findNavController().navigate(action)
+        }
 
         mapButton.setOnClickListener {
             val latitude = args.lat

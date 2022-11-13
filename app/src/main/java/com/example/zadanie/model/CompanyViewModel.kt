@@ -12,7 +12,7 @@ class CompanyViewModel(application: Application): AndroidViewModel(application) 
     private val repository: CompanyRepository
 
     init {
-        val companyDao = CompanyDatabase.getDatabase(application).companyDao()
+        val companyDao = CompaniesWithMembersDB.getDatabase(application).companyDao()
         repository = CompanyRepository(companyDao)
         readData = repository.readData
     }
