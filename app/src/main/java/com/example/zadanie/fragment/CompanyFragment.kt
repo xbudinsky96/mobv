@@ -37,7 +37,6 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         val sortButtonAlphabetic: Button = binding.sortAbc
         val sortDistance = binding.sortDistance
         val sortPeople = binding.sortPeople
-        val ownCompany: Button = binding.addCompany
         val adapter = CompanyAdapter(this)
 
         companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
@@ -60,11 +59,6 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         pullToRefresh.setOnRefreshListener {
             fetchDataFromAPI()
             pullToRefresh.isRefreshing = false
-        }
-
-        ownCompany.setOnClickListener {
-            val action = CompanyFragmentDirections.actionCompanyFragmentToInputDataFragment()
-            findNavController().navigate(action)
         }
 
         return binding.root

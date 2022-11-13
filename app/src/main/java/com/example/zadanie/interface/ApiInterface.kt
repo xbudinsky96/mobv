@@ -4,7 +4,7 @@ import com.example.zadanie.model.*
 import retrofit2.Call
 import retrofit2.http.*
 
-const val apiKey = "c95332ee022df8c953ce470261efc695ecf3e784"
+private const val apiKey = "c95332ee022df8c953ce470261efc695ecf3e784"
 interface ApiInterface {
 
     @POST("user/create.php")

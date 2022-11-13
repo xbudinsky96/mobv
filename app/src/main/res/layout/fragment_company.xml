@@ -48,27 +48,11 @@
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="NotSibling,RtlHardcoded" />
 
-    <Button
-        android:id="@+id/addCompany"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginStart="135dp"
-        android:layout_marginEnd="136dp"
-        android:layout_marginBottom="1dp"
-        android:text="@string/add_company"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recycler_view"
-        tools:ignore="NotSibling" />
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp"
         android:orientation="vertical"
         tools:context=".fragment.CompanyFragment">
 

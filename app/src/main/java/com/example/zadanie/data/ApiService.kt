@@ -3,10 +3,8 @@ package com.example.zadanie.data
 import UserHandlerModel
 import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Location
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.`interface`.ApiInterface
@@ -15,6 +13,7 @@ import com.example.zadanie.databinding.FragmentCheckInDetailBinding
 import com.example.zadanie.fragment.FriendListFragment
 import com.example.zadanie.model.*
 import com.example.zadanie.ui.login.LoginFragment
+import com.example.zadanie.ui.login.LoginFragmentDirections
 import com.example.zadanie.ui.login.RegistrationFragment
 import com.example.zadanie.ui.login.RegistrationFragmentDirections
 import okhttp3.internal.and
@@ -119,12 +118,19 @@ class ApiService {
                 call: Call<MutableList<CompanyWithMembers>>,
                 response: Response<MutableList<CompanyWithMembers>>
             ) {
-                val body = response.body()
-                if (body != null) {
-                    insertCompanyToDataBase(companyViewModel, body)
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        insertCompanyToDataBase(companyViewModel, body)
+                    } else {
+                        Toast.makeText(context, "No companies found!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else if(response.code() == 401) {
+                    refreshToken(context)
                 }
                 else {
-                    Toast.makeText(context, "No companies found!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Response not successful!", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -153,9 +159,11 @@ class ApiService {
                 call: Call<CheckInResponse>,
                 response: Response<CheckInResponse>
             ) {
-                println(response.message())
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Checked in to " + company.tags.name + "!", Toast.LENGTH_SHORT).show()
+                }
+                else if(response.code() == 401) {
+                    refreshToken(context)
                 }
                 else {
                     Toast.makeText(context, "Failure!", Toast.LENGTH_SHORT).show()
@@ -180,6 +188,9 @@ class ApiService {
                 if (response.isSuccessful) {
                     println("CHECKED OUT")
                 }
+                else if(response.code() == 401) {
+                    //refreshToken(fragment.requireContext())
+                }
                 else {
                     println("FAILED TO CHECK OUT")
                 }
@@ -192,18 +203,22 @@ class ApiService {
         })
     }
 
-    fun loginUser(userName: String, password: String, fragment: LoginFragment, action: NavDirections) {
+    fun loginUser(userName: String, password: String, fragment: LoginFragment, userViewModel: UserHandlerModel) {
         val login = mPageAPI.login(PostCredentials(userName, password))
         login.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if(response.isSuccessful) {
                     val user = response.body()
                     if (user != null && user.uid != "-1") {
+                        val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0)
+                        //val action = LoginFragmentDirections.actionLoginFragmentToCompanyFragment()
+                        //val action = LoginFragmentDirections.actionLoginFragmentToAddFriendFragment()
                         Toast.makeText(fragment.requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
                         findNavController(fragment).navigate(action)
                         loggedInUser = user
                         loggedInUser.lat = fragment.location.latitude
                         loggedInUser.lon = fragment.location.longitude
+                        userViewModel.addUser(loggedInUser)
                     }
                     else {
                         Toast.makeText(fragment.requireContext(), "Wrong username or password!", Toast.LENGTH_SHORT).show()
@@ -220,7 +235,7 @@ class ApiService {
         })
     }
 
-    fun registerUser(userName: String, password: String, fragment: RegistrationFragment, userHandlerModel: UserHandlerModel, location: Location) {
+    fun registerUser(userName: String, password: String, fragment: RegistrationFragment, userHandlerModel: UserHandlerModel) {
         val register = mPageAPI.register(PostCredentials(userName, password))
         register.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -230,8 +245,8 @@ class ApiService {
                         if (newUser.uid != "-1") {
                             userHandlerModel.addUser(newUser)
                             loggedInUser = newUser
-                            loggedInUser.lat = location.latitude
-                            loggedInUser.lon = location.longitude
+                            loggedInUser.lat = fragment.location.latitude
+                            loggedInUser.lon = fragment.location.longitude
                             val action = RegistrationFragmentDirections.actionRegistrationFragmentToCompanyFragment()
                             fragment.findNavController().navigate(action)
                             Toast.makeText(fragment.requireContext(), "Successful registration!", Toast.LENGTH_SHORT).show()
@@ -252,7 +267,7 @@ class ApiService {
         })
     }
 
-    fun refreshToken() {
+    fun refreshToken(context: Context) {
         val refreshToken = mPageAPI.refreshToken(PostRefreshToken(loggedInUser.refresh), loggedInUser.uid)
         refreshToken.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -263,12 +278,12 @@ class ApiService {
                     }
                 }
                 else {
-
+                    Toast.makeText(context, "Couldn't refresh token!", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<User>, t: Throwable) {
-                TODO("Not yet implemented")
+                Toast.makeText(context, "Error while refreshing token!", Toast.LENGTH_SHORT).show()
             }
 
         })
@@ -281,6 +296,9 @@ class ApiService {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(fragment.requireContext(), "Friend added successfully!", Toast.LENGTH_SHORT).show()
+                }
+                else if(response.code() == 401) {
+                    refreshToken(fragment.requireContext())
                 }
                 else {
                     Toast.makeText(fragment.requireContext(), "Could not add friend!", Toast.LENGTH_SHORT).show()
@@ -300,6 +318,9 @@ class ApiService {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(fragment.requireContext(), "Friend deleted successfully!", Toast.LENGTH_SHORT).show()
+                }
+                else if(response.code() == 401) {
+                    refreshToken(fragment.requireContext())
                 }
                 else {
                     Toast.makeText(fragment.requireContext(), "Could not remove friend!", Toast.LENGTH_SHORT).show()
@@ -329,6 +350,9 @@ class ApiService {
                         adapter.setUsers(body)
                         fragment.binding.list.adapter = adapter
                     }
+                }
+                else if(response.code() == 401) {
+                    refreshToken(fragment.requireContext())
                 }
             }
 

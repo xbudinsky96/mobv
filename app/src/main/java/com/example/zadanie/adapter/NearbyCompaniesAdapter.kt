@@ -80,8 +80,12 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
     @SuppressLint("NotifyDataSetChanged")
     fun setElements(elements: MutableList<Element>) {
-        companyList = elements
+        companyList = filterNoNameCompanies(elements)
         notifyDataSetChanged()
+    }
+
+    private fun filterNoNameCompanies(companies: MutableList<Element>): MutableList<Element> {
+        return companies.filter { it.tags.name != "" } as MutableList<Element>
     }
 
     fun getCompanyList(): MutableList<Element> {

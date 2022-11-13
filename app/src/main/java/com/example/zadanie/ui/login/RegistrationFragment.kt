@@ -56,7 +56,7 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
             if(userNameString.isNotEmpty() && passString.isNotEmpty() && passCheckString.isNotEmpty()) {
                 if(passString == passCheckString) {
-                    apiService.registerUser(userNameString, passString, this, userHandlerModel, location)
+                    apiService.registerUser(userNameString, passString, this, userHandlerModel)
                     userHandlerModel.readUsers.observe(viewLifecycleOwner) {
                         user -> println(user)
                     }

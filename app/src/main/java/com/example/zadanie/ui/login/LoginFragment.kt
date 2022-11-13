@@ -49,9 +49,7 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val registerButton = binding.registerButton
         val apiService = ApiService()
         userViewModel = ViewModelProvider(this)[UserHandlerModel::class.java]
-
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        userViewModel.readUsers.observe(viewLifecycleOwner) { println(it) }
 
         getLocation()
 
@@ -62,10 +60,7 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         loginButton.setOnClickListener {
             if(userName.isNotEmpty() && password.isNotEmpty()) {
-                //val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0)
-                val action = LoginFragmentDirections.actionLoginFragmentToCompanyFragment()
-                //val action = LoginFragmentDirections.actionLoginFragmentToAddFriendFragment()
-                apiService.loginUser(userName.toString(), password.toString(), this, action)
+                apiService.loginUser(userName.toString(), password.toString(), this, userViewModel)
             }
             else {
                 Toast.makeText(context, "Enter a username and a password!", Toast.LENGTH_SHORT).show()

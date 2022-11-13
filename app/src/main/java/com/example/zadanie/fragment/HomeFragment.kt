@@ -36,7 +36,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         nameTitle.text = args.name
         companyName.text = args.companyName
 
-        //47.97530277530897, 18.15310231159761
         showOnMapButton.setOnClickListener {
             if(latitude != null && latitude.isNotEmpty() && longitude != null && longitude.isNotEmpty()) {
                 val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${latitude},${longitude},16z")
