@@ -12,7 +12,7 @@ data class Companies(
     val documents: MutableList<Element>
 )
 
-@Entity(tableName = "company_table")
+@Entity(tableName = "nearby_company_table")
 data class Element(
     @PrimaryKey(autoGenerate = false)
     val id: Long,
@@ -34,7 +34,9 @@ data class Tags(
     val opening_hours: String
 )
 
+@Entity(tableName = "company_table")
 data class CompanyWithMembers(
+    @PrimaryKey(autoGenerate = false)
     val bar_id: String,
     val bar_name: String,
     val lat: String,

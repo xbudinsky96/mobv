@@ -45,15 +45,6 @@ class InputDataFragment : Fragment(R.layout.fragment_input_data) {
                     longVal,
                     latVal
                 )
-                companyViewModel.addCompany(
-                    Element(
-                        1,
-                        latVal.toDouble(),
-                        longVal.toDouble(),
-                        Tags(nameInput.text.toString(), "null", "null", "null", "null", "null", "null", "null"),
-                        "type"
-                    )
-                )
                 findNavController().navigate(action)
             }
             else{

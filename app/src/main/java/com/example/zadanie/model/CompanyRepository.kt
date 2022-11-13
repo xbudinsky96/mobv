@@ -3,14 +3,18 @@ package com.example.zadanie.model
 import androidx.lifecycle.LiveData
 
 class CompanyRepository(private val companyDao: CompanyDao) {
-    val readData: LiveData<MutableList<Element>> = companyDao.readCompanies()
+    val readData: LiveData<MutableList<CompanyWithMembers>> = companyDao.readCompanies()
 
-    suspend fun addCompany(element: Element) {
-        companyDao.addCompany(element)
+    suspend fun addCompany(companyWithMembers: CompanyWithMembers) {
+        companyDao.addCompany(companyWithMembers)
     }
 
-    suspend fun deleteCompany(element: Element) {
-        companyDao.deleteCompany(element)
+    suspend fun deleteCompany(companyWithMembers: CompanyWithMembers) {
+        companyDao.deleteCompany(companyWithMembers)
+    }
+
+    fun deleteTable() {
+        companyDao.deleteTable()
     }
 }
 

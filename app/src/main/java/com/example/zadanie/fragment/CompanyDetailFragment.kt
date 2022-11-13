@@ -26,42 +26,13 @@ class CompanyDetailFragment : Fragment() {
     ): View {
         binding = FragmentCompanyDetailBinding.inflate(inflater, container, false)
         val companyTextDetail: TextView = binding.companyDetailText
-        val webButton: Button = binding.web
-        val telButton: Button = binding.telefon
         val mapButton: Button = binding.map
 
-        val openingHours = if(args.openingHours != "") "\n\nOpening hours: \n" + args.openingHours + "\n" else ""
-        val tel = if(args.tel != "") args.tel + "\n" else ""
-        val web = if(args.web != "") args.web + "\n" else ""
-        val type = if(args.type != "") args.type + "\n\n" else ""
-        val contact = if(tel != "" || web != "") "Contact us: \n" else ""
+        val type = if(args.type != "") (args.type?.replace("_", " ") ?: args.type) + "\n\n" else ""
 
         companyTextDetail.text =
-                "${args.companyName}\n" +
-                type + contact + tel + web + openingHours
-
-        webButton.setOnClickListener {
-            if(web != "") {
-                val pageUrl = Uri.parse(args.web)
-                val goToWeb = Intent(Intent.ACTION_VIEW, pageUrl)
-                startActivity(goToWeb)
-            }
-            else {
-                Toast.makeText(activity, "No webpage provided!", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        telButton.setOnClickListener {
-            if(tel != "") {
-                val phoneNumber = Uri.parse("tel:$args.tel")
-                println(args.tel)
-                val makeCall = Intent(Intent.ACTION_DIAL, phoneNumber)
-                startActivity(makeCall)
-            }
-            else {
-                Toast.makeText(activity, "No phone number provided!", Toast.LENGTH_SHORT).show()
-            }
-        }
+                "               ${args.companyName}\n\n" +
+                type
 
         mapButton.setOnClickListener {
             val latitude = args.lat

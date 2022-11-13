@@ -34,34 +34,34 @@ class ApiService {
         .build()
         .create(ApiInterface::class.java)
 
-    fun fetchCompanies(companyViewModel: CompanyViewModel, context: Context) {
-        val retrofitBuilder = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://data.mongodb-api.com/app/data-fswjp/endpoint/data/v1/action/")
-            .build()
-            .create(ApiInterface::class.java)
+    //fun fetchCompanies(companyViewModel: CompanyViewModel, context: Context) {
+    //    val retrofitBuilder = Retrofit.Builder()
+    //        .addConverterFactory(GsonConverterFactory.create())
+    //        .baseUrl("https://data.mongodb-api.com/app/data-fswjp/endpoint/data/v1/action/")
+    //        .build()
+    //        .create(ApiInterface::class.java)
+//
+    //    val companies = retrofitBuilder.getPubs(PostPub("bars", "mobvapp", "Cluster0"))
+//
+    //    companies.enqueue(object: Callback<Companies> {
+    //        override fun onResponse(call: Call<Companies>, response: Response<Companies>) {
+    //            val body = response.body()
+    //            if (body != null) {
+    //                insertCompanyToDataBase(companyViewModel, body.documents)
+    //            }
+    //            else {
+    //                Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
+    //            }
+    //        }
+//
+    //        override fun onFailure(call: Call<Companies>, t: Throwable) {
+    //            Toast.makeText(context, "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
+    //        }
+    //    })
+    //}
 
-        val companies = retrofitBuilder.getPubs(PostPub("bars", "mobvapp", "Cluster0"))
-
-        companies.enqueue(object: Callback<Companies> {
-            override fun onResponse(call: Call<Companies>, response: Response<Companies>) {
-                val body = response.body()
-                if (body != null) {
-                    insertCompanyToDataBase(companyViewModel, body.documents)
-                }
-                else {
-                    Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<Companies>, t: Throwable) {
-                Toast.makeText(context, "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun insertCompanyToDataBase(companyViewModel: CompanyViewModel, elements: MutableList<Element>) {
-        elements.forEach { element -> companyViewModel.addCompany(element) }
+    private fun insertCompanyToDataBase(companyViewModel: CompanyViewModel, companies: MutableList<CompanyWithMembers>) {
+        companies.forEach { company -> companyViewModel.addCompany(company) }
     }
 
     private fun insertCompanyToDataBase(companyViewModel: NearbyCompanyViewModel, elements: MutableList<Element>) {
@@ -136,13 +136,14 @@ class ApiService {
     fun getCompaniesWithMembers(context: Context, companyViewModel: CompanyViewModel) {
         val auth = "Bearer " + loggedInUser.access
         val companies = mPageAPI.getCompaniesWithMembers(loggedInUser.uid, auth)
-        companies.enqueue(object: Callback<List<CompanyWithMembers>> {
+        companies.enqueue(object: Callback<MutableList<CompanyWithMembers>> {
             override fun onResponse(
-                call: Call<List<CompanyWithMembers>>,
-                response: Response<List<CompanyWithMembers>>
+                call: Call<MutableList<CompanyWithMembers>>,
+                response: Response<MutableList<CompanyWithMembers>>
             ) {
                 val body = response.body()
                 if (body != null) {
+                    insertCompanyToDataBase(companyViewModel, body)
                     println(body)
                 }
                 else {
@@ -150,7 +151,7 @@ class ApiService {
                 }
             }
 
-            override fun onFailure(call: Call<List<CompanyWithMembers>>, t: Throwable) {
+            override fun onFailure(call: Call<MutableList<CompanyWithMembers>>, t: Throwable) {
                 Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show()
             }
 

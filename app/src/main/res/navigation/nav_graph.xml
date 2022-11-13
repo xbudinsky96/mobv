@@ -75,26 +75,14 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="openingHours"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="web"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="tel"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
             android:name="lat"
             app:argType="string" />
         <argument
             android:name="lon"
             app:argType="string" />
         <argument
-            android:name="id"
-            app:argType="long" />
+            android:name="users"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"

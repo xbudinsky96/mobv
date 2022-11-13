@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CompanyViewModel(application: Application): AndroidViewModel(application) {
-    val readData: LiveData<MutableList<Element>>
+    val readData: LiveData<MutableList<CompanyWithMembers>>
     private val repository: CompanyRepository
 
     init {
@@ -17,15 +17,21 @@ class CompanyViewModel(application: Application): AndroidViewModel(application) 
         readData = repository.readData
     }
 
-    fun addCompany(element: Element) {
+    fun addCompany(company: CompanyWithMembers) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.addCompany(element)
+            repository.addCompany(company)
         }
     }
 
-    fun deleteCompany(element: Element) {
+    fun deleteCompany(company: CompanyWithMembers) {
         viewModelScope.launch {
-            repository.deleteCompany(element)
+            repository.deleteCompany(company)
+        }
+    }
+
+    fun deleteTable() {
+        viewModelScope.launch {
+            repository.deleteTable()
         }
     }
 }

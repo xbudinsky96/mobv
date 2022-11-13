@@ -15,11 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zadanie.R
 import com.example.zadanie.fragment.CompanyFragmentDirections
 import com.example.zadanie.model.CompanyViewModel
+import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.Element
 import java.util.*
 
 class CompanyAdapter(private val fragment: Fragment, private val companyViewModel: CompanyViewModel): RecyclerView.Adapter<CompanyAdapter.ElementViewHolder>() {
-    private lateinit var companyList: MutableList<Element>
+    private lateinit var companyList: MutableList<CompanyWithMembers>
     private var dataIsSorted: Boolean = false
     private lateinit var context: Context
 
@@ -41,17 +42,14 @@ class CompanyAdapter(private val fragment: Fragment, private val companyViewMode
     override fun onBindViewHolder(holder: ElementViewHolder, position: Int) {
         val item = companyList[position]
 
-        holder.companyText.text = item.tags.name
+        holder.companyText.text = item.bar_name
         holder.companyFrame.setOnClickListener {
             val action = CompanyFragmentDirections.actionCompanyFragmentToCompanyDetailFragment(
-                item.tags.name,
-                item.tags.amenity,
-                item.tags.opening_hours,
-                item.tags.website,
-                item.tags.phone,
-                item.lat.toString(),
-                item.lon.toString(),
-                item.id
+                item.bar_name,
+                item.bar_type,
+                item.lat,
+                item.lon,
+                item.users.toInt()
             )
             fragment.findNavController().navigate(action)
         }
@@ -69,9 +67,9 @@ class CompanyAdapter(private val fragment: Fragment, private val companyViewMode
     @SuppressLint("NotifyDataSetChanged")
     fun sortData(){
         companyList = if(isSorted()) {
-            companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Element>
+            companyList.sortedBy { it.bar_name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<CompanyWithMembers>
         } else {
-            companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed() as MutableList<Element>
+            companyList.sortedBy { it.bar_name.lowercase(Locale.ROOT) }.reversed() as MutableList<CompanyWithMembers>
         }
         notifyDataSetChanged()
     }
@@ -82,8 +80,8 @@ class CompanyAdapter(private val fragment: Fragment, private val companyViewMode
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setElements(elements: MutableList<Element>) {
-        companyList = elements
+    fun setElements(companies: MutableList<CompanyWithMembers>) {
+        companyList = companies
         notifyDataSetChanged()
     }
 }
