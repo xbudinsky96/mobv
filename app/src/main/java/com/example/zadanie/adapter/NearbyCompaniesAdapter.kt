@@ -25,9 +25,8 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     private var dataIsSorted: Boolean = false
 
     class ElementViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val companyFrame: LinearLayout = view.findViewById(R.id.companyFrame)
-        val companyText: TextView = view.findViewById(R.id.company_title)
-        val deleteButton: ImageView = view.findViewById(R.id.deleteCompany)
+        val companyFrame: LinearLayout = view.findViewById(R.id.frame)
+        val companyText: TextView = view.findViewById(R.id.name)
     }
 
     override fun onCreateViewHolder(
@@ -36,7 +35,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     ): ElementViewHolder {
         context = parent.context
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_company, parent, false)
+            .inflate(R.layout.list, parent, false)
 
         return ElementViewHolder(adapterLayout)
     }
@@ -44,7 +43,6 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     override fun onBindViewHolder(holder: ElementViewHolder, position: Int) {
         val item = companyList[position]
         holder.companyText.text = item.tags.name
-        disableButton(holder.deleteButton)
         holder.companyFrame.setOnClickListener {
             val action = CheckInFragmentDirections.actionCheckInFragmentToCheckInDetailFragment(
                 item.id
@@ -54,10 +52,6 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     }
 
     override fun getItemCount() = companyList.size
-
-    private fun disableButton(button: ImageView) {
-        button.isEnabled = false
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataAlphabetically(){

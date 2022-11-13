@@ -9,7 +9,10 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.`interface`.ApiInterface
+import com.example.zadanie.adapter.FriendsAdapter
 import com.example.zadanie.databinding.FragmentCheckInDetailBinding
+import com.example.zadanie.databinding.FragmentFriendListBinding
+import com.example.zadanie.fragment.FriendListFragment
 import com.example.zadanie.model.*
 import com.example.zadanie.ui.login.RegistrationFragment
 import com.example.zadanie.ui.login.RegistrationFragmentDirections
@@ -33,32 +36,6 @@ class ApiService {
         .baseUrl("https://overpass-api.de/api/")
         .build()
         .create(ApiInterface::class.java)
-
-    //fun fetchCompanies(companyViewModel: CompanyViewModel, context: Context) {
-    //    val retrofitBuilder = Retrofit.Builder()
-    //        .addConverterFactory(GsonConverterFactory.create())
-    //        .baseUrl("https://data.mongodb-api.com/app/data-fswjp/endpoint/data/v1/action/")
-    //        .build()
-    //        .create(ApiInterface::class.java)
-//
-    //    val companies = retrofitBuilder.getPubs(PostPub("bars", "mobvapp", "Cluster0"))
-//
-    //    companies.enqueue(object: Callback<Companies> {
-    //        override fun onResponse(call: Call<Companies>, response: Response<Companies>) {
-    //            val body = response.body()
-    //            if (body != null) {
-    //                insertCompanyToDataBase(companyViewModel, body.documents)
-    //            }
-    //            else {
-    //                Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
-    //            }
-    //        }
-//
-    //        override fun onFailure(call: Call<Companies>, t: Throwable) {
-    //            Toast.makeText(context, "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
-    //        }
-    //    })
-    //}
 
     private fun insertCompanyToDataBase(companyViewModel: CompanyViewModel, companies: MutableList<CompanyWithMembers>) {
         companies.forEach { company -> companyViewModel.addCompany(company) }
@@ -144,7 +121,6 @@ class ApiService {
                 val body = response.body()
                 if (body != null) {
                     insertCompanyToDataBase(companyViewModel, body)
-                    println(body)
                 }
                 else {
                     Toast.makeText(context, "No companies found!", Toast.LENGTH_SHORT).show()
@@ -293,45 +269,65 @@ class ApiService {
         })
     }
 
-    fun addFriend(name: String, viewModel: UserHandlerModel, fragment: Fragment) {
+    fun addFriend(name: String, fragment: Fragment) {
         val auth = "Bearer " + loggedInUser.access
-        //TODO database
-        val friendToAdd = viewModel.getUserByName(name)
-        val addFriend = mPageAPI.addFriend(PostAddDeleteUser(friendToAdd.uid), loggedInUser.uid, auth)
-        addFriend.enqueue(object: Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
+        val addFriend = mPageAPI.addFriend(PostAddDeleteUser(name), loggedInUser.uid, auth)
+        addFriend.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(fragment.requireContext(), "Friend added successfully!", Toast.LENGTH_SHORT).show()
                 }
+                else {
+                    Toast.makeText(fragment.requireContext(), "Could not add friend!", Toast.LENGTH_SHORT).show()
+                }
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
                 Toast.makeText(fragment.requireContext(), "Error! Friend has not been added!", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    fun deleteFriend(name: String, viewModel: UserHandlerModel, fragment: Fragment) {
+    fun deleteFriend(name: String, fragment: Fragment) {
         val auth = "Bearer " + loggedInUser.access
-        //TODO database
-        val friendToDelete = viewModel.getUserByName(name)
-        val deleteFriend = mPageAPI.deleteFriend(PostAddDeleteUser(friendToDelete.uid), loggedInUser.uid, auth)
-        deleteFriend.enqueue(object: Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
+        val deleteFriend = mPageAPI.deleteFriend(PostAddDeleteUser(name), loggedInUser.uid, auth)
+        deleteFriend.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(fragment.requireContext(), "Friend deleted successfully!", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
                 Toast.makeText(fragment.requireContext(), "Error! Friend has not been deleted!", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    fun showFriends() {
+    fun showFriends(fragment: FriendListFragment, adapter: FriendsAdapter) {
         val auth = "Bearer " + loggedInUser.access
         val showFriends = mPageAPI.showFriends(loggedInUser.uid, auth)
+        showFriends.enqueue(object: Callback<MutableList<Friend>> {
+            override fun onResponse(
+                call: Call<MutableList<Friend>>,
+                response: Response<MutableList<Friend>>
+            ) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        if (body.isEmpty()) {
+                            Toast.makeText(fragment.requireContext(), "You don't have friends yet!", Toast.LENGTH_SHORT).show()
+                        }
+                        adapter.setUsers(body)
+                        fragment.binding.list.adapter = adapter
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<MutableList<Friend>>, t: Throwable) {
+                Toast.makeText(fragment.requireContext(), "Error! Couldn't load friends!", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun hashPassword(password: String): String {

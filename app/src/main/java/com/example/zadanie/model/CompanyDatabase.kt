@@ -7,7 +7,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(entities = [CompanyWithMembers::class], version = 1, exportSchema = false)
-//@TypeConverters(Converters::class)
 abstract class CompanyDatabase: RoomDatabase() {
     abstract fun companyDao(): CompanyDao
 

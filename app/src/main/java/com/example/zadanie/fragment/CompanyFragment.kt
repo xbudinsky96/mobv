@@ -17,7 +17,6 @@ import com.example.zadanie.adapter.CompanyAdapter
 import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.model.CompanyViewModel
-import com.example.zadanie.model.loggedInUser
 
 class CompanyFragment : Fragment(R.layout.fragment_company) {
     private lateinit var binding: FragmentCompanyBinding
@@ -37,7 +36,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
         val recyclerView = binding.recyclerView
         val sortButton: Button = binding.sortCompanies
         val ownCompany: Button = binding.addCompany
-        val adapter = CompanyAdapter(this, companyViewModel)
+        val adapter = CompanyAdapter(this)
 
         companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
             adapter.setElements(elements)

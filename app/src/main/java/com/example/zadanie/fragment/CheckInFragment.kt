@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.zadanie.adapter.NearbyCompaniesAdapter
 import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentCheckInBinding
-import com.example.zadanie.model.Element
 import com.example.zadanie.model.NearbyCompanyViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -77,7 +76,7 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             adapter.setElements(elements)
                             adapter.sortDataNearestDescending(location.latitude, location.longitude)
                         }
-                        binding.nearbyCompanyList.adapter = adapter
+                        binding.list.adapter = adapter
                     }
                 }
             }

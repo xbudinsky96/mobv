@@ -42,9 +42,9 @@ class LoginFragment : Fragment() {
 
         loginButton.setOnClickListener {
             if(userName.isNotEmpty() && password.isNotEmpty()) {
-                //val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0)
+                val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0)
                 //val action = LoginFragmentDirections.actionLoginFragmentToCompanyFragment()
-                val action = LoginFragmentDirections.actionLoginFragmentToAddFriendFragment()
+                //val action = LoginFragmentDirections.actionLoginFragmentToAddFriendFragment()
                 apiService.loginUser(userName.toString(), password.toString(), this, action)
             }
             else {

@@ -29,10 +29,11 @@ class CompanyDetailFragment : Fragment() {
         val mapButton: Button = binding.map
 
         val type = if(args.type != "") (args.type?.replace("_", " ") ?: args.type) + "\n\n" else ""
+        val users = if(args.users != -1) "Users: " + args.users else ""
 
         companyTextDetail.text =
                 "               ${args.companyName}\n\n" +
-                type
+                type + users
 
         mapButton.setOnClickListener {
             val latitude = args.lat

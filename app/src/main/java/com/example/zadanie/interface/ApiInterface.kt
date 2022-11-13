@@ -7,14 +7,6 @@ import retrofit2.http.*
 const val apiKey = "c95332ee022df8c953ce470261efc695ecf3e784"
 interface ApiInterface {
 
-    @POST("find")
-    @Headers(
-        "Access-Control-Request-Headers: *",
-        "api-key: $apiKey",
-        "Content-Type: application/json"
-    )
-    fun getPubs(@Body postPub : PostPub): Call<Companies>
-
     @POST("user/create.php")
     @Headers(
         "Accept: application/json",
@@ -82,7 +74,7 @@ interface ApiInterface {
         "Content-Type: application/json",
         "x-apikey: $apiKey"
     )
-    fun addFriend(@Body contact: PostAddDeleteUser, @Header("x-user") uid: String, @Header("authorization") auth: String): Call<String>
+    fun addFriend(@Body contact: PostAddDeleteUser, @Header("x-user") uid: String, @Header("authorization") auth: String): Call<Void>
 
     @POST("contact/delete.php")
     @Headers(
@@ -91,7 +83,7 @@ interface ApiInterface {
         "Content-Type: application/json",
         "x-apikey: $apiKey"
     )
-    fun deleteFriend(@Body contact: PostAddDeleteUser, @Header("x-user") uid: String, @Header("authorization") auth: String): Call<String>
+    fun deleteFriend(@Body contact: PostAddDeleteUser, @Header("x-user") uid: String, @Header("authorization") auth: String): Call<Void>
 
     @GET("contact/list.php")
     @Headers(
@@ -100,5 +92,5 @@ interface ApiInterface {
         "Content-Type: application/json",
         "x-apikey: $apiKey"
     )
-    fun showFriends(@Header("x-user") uid: String, @Header("authorization") auth: String)
+    fun showFriends(@Header("x-user") uid: String, @Header("authorization") auth: String): Call<MutableList<Friend>>
 }

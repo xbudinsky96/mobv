@@ -16,24 +16,22 @@ import com.example.zadanie.R
 import com.example.zadanie.fragment.CompanyFragmentDirections
 import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.CompanyWithMembers
-import com.example.zadanie.model.Element
 import java.util.*
 
-class CompanyAdapter(private val fragment: Fragment, private val companyViewModel: CompanyViewModel): RecyclerView.Adapter<CompanyAdapter.ElementViewHolder>() {
+class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<CompanyAdapter.ElementViewHolder>() {
     private lateinit var companyList: MutableList<CompanyWithMembers>
     private var dataIsSorted: Boolean = false
     private lateinit var context: Context
 
     class ElementViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val companyFrame: LinearLayout = view.findViewById(R.id.companyFrame)
-        val companyText: TextView = view.findViewById(R.id.company_title)
-        val deleteButton: ImageView = view.findViewById(R.id.deleteCompany)
+        val companyFrame: LinearLayout = view.findViewById(R.id.frame)
+        val companyText: TextView = view.findViewById(R.id.name)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ElementViewHolder {
         context = parent.context
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_company, parent, false)
+            .inflate(R.layout.list, parent, false)
 
         return ElementViewHolder(adapterLayout)
     }
@@ -52,13 +50,6 @@ class CompanyAdapter(private val fragment: Fragment, private val companyViewMode
                 item.users.toInt()
             )
             fragment.findNavController().navigate(action)
-        }
-
-        holder.deleteButton.setOnClickListener{
-            companyList.remove(item)
-            companyViewModel.deleteCompany(item)
-            Toast.makeText(context, "Company deleted!", Toast.LENGTH_SHORT).show()
-            notifyDataSetChanged()
         }
     }
 
