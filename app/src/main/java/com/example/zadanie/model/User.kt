@@ -1,5 +1,6 @@
 package com.example.zadanie.model
 
+import android.location.Location
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,7 +12,9 @@ data class User(
     val uid: String,
     val name: String,
     val access: String,
-    val refresh: String
+    val refresh: String,
+    var lat: Double,
+    var lon: Double
 )
 
 data class Friend(

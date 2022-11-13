@@ -3,6 +3,7 @@ package com.example.zadanie.data
 import UserHandlerModel
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Location
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
@@ -11,9 +12,9 @@ import androidx.navigation.fragment.findNavController
 import com.example.zadanie.`interface`.ApiInterface
 import com.example.zadanie.adapter.FriendsAdapter
 import com.example.zadanie.databinding.FragmentCheckInDetailBinding
-import com.example.zadanie.databinding.FragmentFriendListBinding
 import com.example.zadanie.fragment.FriendListFragment
 import com.example.zadanie.model.*
+import com.example.zadanie.ui.login.LoginFragment
 import com.example.zadanie.ui.login.RegistrationFragment
 import com.example.zadanie.ui.login.RegistrationFragmentDirections
 import okhttp3.internal.and
@@ -191,7 +192,7 @@ class ApiService {
         })
     }
 
-    fun loginUser(userName: String, password: String, fragment: Fragment, action: NavDirections) {
+    fun loginUser(userName: String, password: String, fragment: LoginFragment, action: NavDirections) {
         val login = mPageAPI.login(PostCredentials(userName, password))
         login.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -201,6 +202,8 @@ class ApiService {
                         Toast.makeText(fragment.requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
                         findNavController(fragment).navigate(action)
                         loggedInUser = user
+                        loggedInUser.lat = fragment.location.latitude
+                        loggedInUser.lon = fragment.location.longitude
                     }
                     else {
                         Toast.makeText(fragment.requireContext(), "Wrong username or password!", Toast.LENGTH_SHORT).show()
@@ -213,6 +216,38 @@ class ApiService {
 
             override fun onFailure(call: Call<User>, t: Throwable) {
                 Toast.makeText(fragment.requireContext(), "Error occurred while logging in user!", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    fun registerUser(userName: String, password: String, fragment: RegistrationFragment, userHandlerModel: UserHandlerModel, location: Location) {
+        val register = mPageAPI.register(PostCredentials(userName, password))
+        register.enqueue(object: Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if (response.isSuccessful) {
+                    val newUser = response.body()
+                    if(newUser != null) {
+                        if (newUser.uid != "-1") {
+                            userHandlerModel.addUser(newUser)
+                            loggedInUser = newUser
+                            loggedInUser.lat = location.latitude
+                            loggedInUser.lon = location.longitude
+                            val action = RegistrationFragmentDirections.actionRegistrationFragmentToCompanyFragment()
+                            fragment.findNavController().navigate(action)
+                            Toast.makeText(fragment.requireContext(), "Successful registration!", Toast.LENGTH_SHORT).show()
+                        }
+                        else {
+                            Toast.makeText(fragment.requireContext(), "Username is already taken!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                else {
+                    Toast.makeText(fragment.requireContext(), "Something went wrong!", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                Toast.makeText(fragment.requireContext(), "Error occurred while registering user!", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -236,36 +271,6 @@ class ApiService {
                 TODO("Not yet implemented")
             }
 
-        })
-    }
-
-    fun registerUser(userName: String, password: String, fragment: RegistrationFragment, userHandlerModel: UserHandlerModel) {
-        val register = mPageAPI.register(PostCredentials(userName, password))
-        register.enqueue(object: Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful) {
-                    val newUser = response.body()
-                    if(newUser != null) {
-                        if (newUser.uid != "-1") {
-                            userHandlerModel.addUser(newUser)
-                            loggedInUser = newUser
-                            val action = RegistrationFragmentDirections.actionRegistrationFragmentToCompanyFragment()
-                            fragment.findNavController().navigate(action)
-                            Toast.makeText(fragment.requireContext(), "Successful registration!", Toast.LENGTH_SHORT).show()
-                        }
-                        else {
-                            Toast.makeText(fragment.requireContext(), "Username is already taken!", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-                else {
-                    Toast.makeText(fragment.requireContext(), "Something went wrong!", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                Toast.makeText(fragment.requireContext(), "Error occurred while registering user!", Toast.LENGTH_SHORT).show()
-            }
         })
     }
 
@@ -295,6 +300,9 @@ class ApiService {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(fragment.requireContext(), "Friend deleted successfully!", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    Toast.makeText(fragment.requireContext(), "Could not remove friend!", Toast.LENGTH_SHORT).show()
                 }
             }
 

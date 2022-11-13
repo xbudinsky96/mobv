@@ -1,25 +1,42 @@
 package com.example.zadanie.ui.login
 
 import UserHandlerModel
+import android.Manifest
+import android.annotation.SuppressLint
+import android.location.Location
+import android.location.LocationRequest
+import android.os.Build
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.LifecycleOwner
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.databinding.FragmentLoginBinding
-
 import com.example.zadanie.data.ApiService
-import com.example.zadanie.model.loggedInUser
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.dialogs.SettingsDialog
 
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
     private lateinit var userViewModel: UserHandlerModel
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    lateinit var location: Location
 
+    companion object {
+        const val PERMISSION_LOCATION_REQUEST_CODE = 1
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,15 +47,18 @@ class LoginFragment : Fragment() {
         val password = binding.passwordLogin.text
         val loginButton = binding.register2Button
         val registerButton = binding.registerButton
-        userViewModel = ViewModelProvider(this)[UserHandlerModel::class.java]
         val apiService = ApiService()
+        userViewModel = ViewModelProvider(this)[UserHandlerModel::class.java]
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        userViewModel.readUsers.observe(viewLifecycleOwner) { println(it) }
+
+        getLocation()
 
         registerButton.setOnClickListener {
             val action = LoginFragmentDirections.actionLoginFragmentToRegistrationFragment()
             findNavController().navigate(action)
         }
-
-        userViewModel.readUsers.observe(viewLifecycleOwner) { println(it) }
 
         loginButton.setOnClickListener {
             if(userName.isNotEmpty() && password.isNotEmpty()) {
@@ -53,5 +73,65 @@ class LoginFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        if (hasLocationPermission()) {
+            fusedLocationProviderClient.getCurrentLocation(LocationRequest.QUALITY_HIGH_ACCURACY, object: CancellationToken()  {
+                override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
+                override fun isCancellationRequested() = false
+            }).addOnSuccessListener { location: Location? ->
+                if (location == null) {
+                    Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    this.location = location
+                }
+            }
+        } else {
+            requestLocationPermission()
+        }
+    }
+
+    private fun hasLocationPermission() =
+        EasyPermissions.hasPermissions(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+    private fun requestLocationPermission() {
+        EasyPermissions.requestPermissions(
+            this,
+            "This application cannot work without Location Permission.",
+            PERMISSION_LOCATION_REQUEST_CODE,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        if (EasyPermissions.somePermissionDenied(this, perms.first())) {
+            SettingsDialog.Builder(requireActivity()).build().show()
+        } else {
+            requestLocationPermission()
+        }
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
+        Toast.makeText(
+            requireContext(),
+            "Permission Granted!",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }

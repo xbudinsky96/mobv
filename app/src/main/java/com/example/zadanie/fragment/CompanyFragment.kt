@@ -48,10 +48,9 @@ class CompanyFragment : Fragment(R.layout.fragment_company) {
                 adapter.sortAlphabetically()
             }
 
-            //TODO
-            //sortDistance.setOnClickListener {
-            //    adapter.sortDataNearestDescending()
-            //}
+            sortDistance.setOnClickListener {
+                adapter.sortDataNearestDescending()
+            }
 
             sortPeople.setOnClickListener {
                 adapter.sortPeople()

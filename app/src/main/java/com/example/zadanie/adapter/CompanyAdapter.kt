@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zadanie.R
 import com.example.zadanie.fragment.CompanyFragmentDirections
 import com.example.zadanie.model.CompanyWithMembers
+import com.example.zadanie.model.loggedInUser
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -42,8 +43,14 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     override fun onBindViewHolder(holder: ElementViewHolder, position: Int) {
         val item = companyList[position]
         val users = if (item.users.toInt() > 1) " users" else " user"
+        val currentDistance = "Distance: " +  getDistance(
+            loggedInUser.lat,
+            item.lat.toDouble(),
+            loggedInUser.lon,
+            item.lon.toDouble()
+        ).toInt() + " m"
 
-        holder.companyText.text = item.bar_name + " - " + item.users + users
+        holder.companyText.text = item.bar_name + " - " + item.users + users + "\n" + currentDistance
         holder.companyFrame.setOnClickListener {
             val action = CompanyFragmentDirections.actionCompanyFragmentToCompanyDetailFragment(
                 item.bar_name,
@@ -70,12 +77,12 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun sortDataNearestDescending(lat: Double, lon: Double) {
+    fun sortDataNearestDescending() {
         companyList = if(isSortedDistance()) {
             companyList.sortedBy {
                 getDistance(
-                    lat,
-                    lon,
+                    loggedInUser.lat,
+                    loggedInUser.lon,
                     it.lat.toDouble(),
                     it.lon.toDouble()
                 )
@@ -83,8 +90,8 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
         } else {
             companyList.sortedBy {
                 getDistance(
-                    lat,
-                    lon,
+                    loggedInUser.lat,
+                    loggedInUser.lon,
                     it.lat.toDouble(),
                     it.lon.toDouble()
                 )
