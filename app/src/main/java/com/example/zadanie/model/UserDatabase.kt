@@ -6,14 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = [User::class], version = 1, exportSchema = false)
-abstract class UserDatabase: RoomDatabase() {
+abstract class UserDB: RoomDatabase() {
     abstract fun userDao(): UserDao
 
     companion object {
         @Volatile
-        private var INSTANCE: UserDatabase? = null
+        private var INSTANCE: UserDB? = null
 
-        fun getDatabase(context: Context): UserDatabase {
+        fun getDatabase(context: Context): UserDB {
             val tempInstance = INSTANCE
             if(tempInstance != null) {
                 return tempInstance
@@ -21,8 +21,8 @@ abstract class UserDatabase: RoomDatabase() {
             synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    UserDatabase::class.java,
-                    "users"
+                    UserDB::class.java,
+                    "userdb"
                 ).build()
                 INSTANCE = instance
                 return instance
