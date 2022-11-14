@@ -1,11 +1,5 @@
 package com.example.zadanie.model
 
-data class PostPub(
-    val collection: String,
-    val database: String,
-    val dataSource: String
-)
-
 data class PostCredentials(
     val name: String,
     val password: String

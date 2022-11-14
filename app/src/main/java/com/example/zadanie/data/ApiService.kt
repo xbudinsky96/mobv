@@ -1,6 +1,5 @@
 package com.example.zadanie.data
 
-import UserHandlerModel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -123,14 +122,18 @@ class ApiService {
     }
 
     fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
-        val openingHours = if(foundCompany.tags.opening_hours != null) "\n\n   Opening hours: \n" + foundCompany.tags.opening_hours + "\n" else ""
-        val tel = if(foundCompany.tags.phone != null) "    " +  foundCompany.tags.phone + "\n" else ""
-        val web = if(foundCompany.tags.website != null) "    " + foundCompany.tags.website + "\n" else ""
-        val type = if(foundCompany.tags.amenity != null) "    " + foundCompany.tags.amenity + "\n\n" else ""
-        val contact = if(tel != null || web != null) "   Contact us: \n" else ""
+        val openingHours = if(foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else ""
+        val tel = if(foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else ""
+        val web = if(foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB: " + foundCompany.tags.website else ""
+        val contact = if(tel != null && tel != "" || web != null && web != "") "Contact us: \n" else ""
 
-        binding.content.text =
-            "   ${foundCompany.tags.name}\n" + type + contact + tel + web + openingHours
+        binding.compName.text = foundCompany.tags.name
+        binding.compType.text = foundCompany.tags.amenity.replace("_", " ")
+        binding.openingHours.text = openingHours
+        binding.tel.text = tel
+        binding.web.text = web
+        binding.tel.text = tel
+        binding.contactUs.text = contact
     }
 
     fun getCompaniesWithMembers(context: Context, companyViewModel: CompanyViewModel) {
@@ -207,6 +210,7 @@ class ApiService {
         })
     }
 
+    //TODO
     fun checkOutCompany(fragment: Fragment) {
         val auth = "Bearer " + loggedInUser.access
         val leaveCompany = mPageAPI.checkOutCompany(
@@ -236,7 +240,7 @@ class ApiService {
         })
     }
 
-    fun loginUser(userName: String, password: String, fragment: LoginFragment, userViewModel: UserHandlerModel) {
+    fun loginUser(userName: String, password: String, fragment: LoginFragment) {
         val login = mPageAPI.login(PostCredentials(userName, password))
         login.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -249,9 +253,10 @@ class ApiService {
                         Toast.makeText(fragment.requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
                         findNavController(fragment).navigate(action)
                         loggedInUser = user
-                        loggedInUser.lat = fragment.location.latitude
-                        loggedInUser.lon = fragment.location.longitude
-                        userViewModel.addUser(loggedInUser)
+                        loggedInUser.name = userName
+                        loggedInUser.lat = fragment.location?.latitude
+                        loggedInUser.lon = fragment.location?.longitude
+                        //userViewModel.addUser(loggedInUser)
                     }
                     else {
                         Toast.makeText(fragment.requireContext(), "Wrong username or password!", Toast.LENGTH_SHORT).show()
@@ -268,7 +273,7 @@ class ApiService {
         })
     }
 
-    fun registerUser(userName: String, password: String, fragment: RegistrationFragment, userHandlerModel: UserHandlerModel) {
+    fun registerUser(userName: String, password: String, fragment: RegistrationFragment) {
         val register = mPageAPI.register(PostCredentials(userName, password))
         register.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -276,10 +281,11 @@ class ApiService {
                     val newUser = response.body()
                     if(newUser != null) {
                         if (newUser.uid != "-1") {
-                            userHandlerModel.addUser(newUser)
+                            //userHandlerModel.addUser(newUser)
                             loggedInUser = newUser
-                            loggedInUser.lat = fragment.location.latitude
-                            loggedInUser.lon = fragment.location.longitude
+                            loggedInUser.name = userName
+                            loggedInUser.lat = fragment.location?.latitude
+                            loggedInUser.lon = fragment.location?.longitude
                             val action = RegistrationFragmentDirections.actionRegistrationFragmentToCompanyFragment()
                             fragment.findNavController().navigate(action)
                             Toast.makeText(fragment.requireContext(), "Successful registration!", Toast.LENGTH_SHORT).show()

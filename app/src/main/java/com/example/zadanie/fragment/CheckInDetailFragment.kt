@@ -114,14 +114,18 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             nearestCompany = getNearestCompany(elements, lat, lon)
                             setConfirmButton()
 
-                            val openingHours = if(nearestCompany.tags.opening_hours != "") "\n\n   Opening hours: \n" + nearestCompany.tags.opening_hours + "\n" else ""
-                            val tel = if(nearestCompany.tags.phone != "") "    " +  nearestCompany.tags.phone + "\n" else ""
-                            val web = if(nearestCompany.tags.website != "") "    " + nearestCompany.tags.website + "\n" else ""
-                            val type = if(nearestCompany.tags.amenity != "") "    " + nearestCompany.tags.amenity + "\n\n" else ""
-                            val contact = if(tel == "" && web == "") "" else "   Contact us: \n"
+                            val openingHours = if(nearestCompany.tags.opening_hours != null) "Opening hours:" + "\n\n" + nearestCompany.tags.opening_hours.replace(", ", "\n") else ""
+                            val tel = if(nearestCompany.tags.phone != null && nearestCompany.tags.phone != "") "TEL: " + nearestCompany.tags.phone else ""
+                            val web = if(nearestCompany.tags.website != null && nearestCompany.tags.website != "") "WEB: " + nearestCompany.tags.website else ""
+                            val contact = if(tel != null || web != null) "Contact us: \n" else ""
 
-                            binding.content.text =
-                                "   ${nearestCompany.tags.name}\n" + type + contact + tel + web + openingHours
+                            binding.compName.text = nearestCompany.tags.name
+                            binding.compType.text = nearestCompany.tags.amenity.replace("_", " ")
+                            binding.openingHours.text = openingHours
+                            binding.tel.text = tel
+                            binding.web.text = web
+                            binding.tel.text = tel
+                            binding.contactUs.text = contact
                         }
                     }
                 }

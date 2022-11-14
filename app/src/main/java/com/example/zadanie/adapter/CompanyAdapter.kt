@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.widget.EdgeEffectCompat.getDistance
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -42,12 +44,16 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     override fun onBindViewHolder(holder: ElementViewHolder, position: Int) {
         val item = companyList[position]
         val users = if (item.users.toInt() > 1) " users" else " user"
-        val currentDistance = "Distance: " +  getDistance(
-            loggedInUser.lat,
-            item.lat.toDouble(),
-            loggedInUser.lon,
-            item.lon.toDouble()
-        ).toInt() + " m"
+        val currentDistance = if (loggedInUser.lat != null && loggedInUser.lon != null) {
+            "Distance: " + getDistance(
+                loggedInUser.lat!!,
+                item.lat.toDouble(),
+                loggedInUser.lon!!,
+                item.lon.toDouble()
+            ).toInt() + " m"
+        } else {
+            ""
+        }
 
         holder.companyText.text = item.bar_name + " - " + item.users + users + "\n" + currentDistance
         holder.companyFrame.setOnClickListener {
@@ -77,11 +83,16 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataByDistance() {
+        if (loggedInUser.lat == null || loggedInUser.lon == null) {
+            Toast.makeText(context, "Location service not permitted!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         companyList = if(isSortedByDistance()) {
             companyList.sortedBy {
                 getDistance(
-                    loggedInUser.lat,
-                    loggedInUser.lon,
+                    loggedInUser.lat!!,
+                    loggedInUser.lon!!,
                     it.lat.toDouble(),
                     it.lon.toDouble()
                 )
@@ -89,8 +100,8 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
         } else {
             companyList.sortedBy {
                 getDistance(
-                    loggedInUser.lat,
-                    loggedInUser.lon,
+                    loggedInUser.lat!!,
+                    loggedInUser.lon!!,
                     it.lat.toDouble(),
                     it.lon.toDouble()
                 )

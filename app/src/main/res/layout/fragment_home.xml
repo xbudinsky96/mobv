@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         android:text="@string/yourcompany"
         android:textAlignment="center"
+        android:textColor="@color/black"
         android:textSize="50sp"
         app:layout_constraintBottom_toTopOf="@+id/animationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/nameTitle"
-        app:layout_constraintVertical_bias="0.717" />
+        app:layout_constraintVertical_bias="0.375" />
 
     <TextView
         android:id="@+id/nameTitle"
@@ -35,7 +36,7 @@
         android:id="@+id/animationView"
         android:layout_width="3000dp"
         android:layout_height="300dp"
-        android:layout_marginBottom="228dp"
+        android:layout_marginBottom="204dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

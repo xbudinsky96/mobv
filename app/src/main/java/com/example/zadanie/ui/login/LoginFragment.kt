@@ -1,6 +1,5 @@
 package com.example.zadanie.ui.login
 
-import UserHandlerModel
 import android.Manifest
 import android.annotation.SuppressLint
 import android.location.Location
@@ -28,9 +27,9 @@ import com.vmadalin.easypermissions.dialogs.SettingsDialog
 class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    private lateinit var userViewModel: UserHandlerModel
+    //private lateinit var userViewModel: UserHandlerModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    lateinit var location: Location
+    var location: Location? = null
 
     companion object {
         const val PERMISSION_LOCATION_REQUEST_CODE = 1
@@ -48,7 +47,7 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val loginButton = binding.register2Button
         val registerButton = binding.registerButton
         val apiService = ApiService()
-        userViewModel = ViewModelProvider(this)[UserHandlerModel::class.java]
+        //userViewModel = ViewModelProvider(this)[UserHandlerModel::class.java]
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         getLocation()
@@ -60,7 +59,7 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         loginButton.setOnClickListener {
             if(userName.isNotEmpty() && password.isNotEmpty()) {
-                apiService.loginUser(userName.toString(), password.toString(), this, userViewModel)
+                apiService.loginUser(userName.toString(), password.toString(), this)
             }
             else {
                 Toast.makeText(context, "Enter a username and a password!", Toast.LENGTH_SHORT).show()
@@ -122,11 +121,13 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
         Toast.makeText(
             requireContext(),
             "Permission Granted!",
             Toast.LENGTH_SHORT
         ).show()
+        getLocation()
     }
 }

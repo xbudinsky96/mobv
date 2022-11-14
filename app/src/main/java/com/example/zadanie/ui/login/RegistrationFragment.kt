@@ -1,6 +1,5 @@
 package com.example.zadanie.ui.login
 
-import UserHandlerModel
 import android.Manifest
 import android.annotation.SuppressLint
 import android.location.Location
@@ -28,9 +27,9 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var _binding: FragmentRegistrationBinding? = null
     private val binding get() = _binding!!
-    private lateinit var userHandlerModel: UserHandlerModel
+    //private lateinit var userHandlerModel: UserHandlerModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    lateinit var location: Location
+    var location: Location? = null
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
@@ -44,7 +43,7 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val passwordVerify = binding.passwordCheck.text
         val registerButton = binding.register2Button
         val apiService = ApiService()
-        userHandlerModel = ViewModelProvider(this)[UserHandlerModel::class.java]
+        //userHandlerModel = ViewModelProvider(this)[UserHandlerModel::class.java]
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         getLocation()
@@ -56,10 +55,7 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
             if(userNameString.isNotEmpty() && passString.isNotEmpty() && passCheckString.isNotEmpty()) {
                 if(passString == passCheckString) {
-                    apiService.registerUser(userNameString, passString, this, userHandlerModel)
-                    userHandlerModel.readUsers.observe(viewLifecycleOwner) {
-                        user -> println(user)
-                    }
+                    apiService.registerUser(userNameString, passString, this)
                 }
                 else {
                     Toast.makeText(context, "Passwords don't match!", Toast.LENGTH_SHORT).show()
@@ -125,11 +121,13 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
         Toast.makeText(
             requireContext(),
             "Permission Granted!",
             Toast.LENGTH_SHORT
         ).show()
+        getLocation()
     }
 }

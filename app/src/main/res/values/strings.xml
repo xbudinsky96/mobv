@@ -58,4 +58,7 @@
     <string name="abc">ABC</string>
     <string name="distance">Distance</string>
     <string name="people">People</string>
+    <string name="click_to_find_nearest_company">Click to find nearest company</string>
+    <string name="companyname">CompanyName</string>
+    <string name="type">Type</string>
 </resources>
