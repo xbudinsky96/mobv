@@ -28,10 +28,4 @@ class CompanyViewModel(application: Application): AndroidViewModel(application) 
             repository.deleteCompany(company)
         }
     }
-
-    fun deleteTable() {
-        viewModelScope.launch {
-            repository.deleteTable()
-        }
-    }
 }

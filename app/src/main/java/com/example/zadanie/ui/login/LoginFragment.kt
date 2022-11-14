@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.databinding.FragmentLoginBinding
 import com.example.zadanie.data.ApiService
+import com.example.zadanie.model.UsersViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
@@ -27,7 +28,7 @@ import com.vmadalin.easypermissions.dialogs.SettingsDialog
 class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    //private lateinit var userViewModel: UserHandlerModel
+    private lateinit var usersViewModel: UsersViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     var location: Location? = null
 
@@ -47,7 +48,7 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val loginButton = binding.register2Button
         val registerButton = binding.registerButton
         val apiService = ApiService()
-        //userViewModel = ViewModelProvider(this)[UserHandlerModel::class.java]
+        usersViewModel = ViewModelProvider(this)[UsersViewModel::class.java]
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         getLocation()
@@ -59,7 +60,7 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         loginButton.setOnClickListener {
             if(userName.isNotEmpty() && password.isNotEmpty()) {
-                apiService.loginUser(userName.toString(), password.toString(), this)
+                apiService.loginUser(userName.toString(), password.toString(), this, usersViewModel)
             }
             else {
                 Toast.makeText(context, "Enter a username and a password!", Toast.LENGTH_SHORT).show()

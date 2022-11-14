@@ -5,16 +5,18 @@ import androidx.room.PrimaryKey
 
 lateinit var loggedInUser: User
 
-@Entity(tableName = "user_table")
+@Entity(tableName = "usersTable")
 data class User(
     @PrimaryKey(autoGenerate = false)
     val uid: String,
-    val name: String,
+    var name: String,
     val access: String,
     val refresh: String,
-    var lat: Double,
-    var lon: Double,
-    var companyId: String
+    var lat: Double?,
+    var lon: Double?,
+    var companyId: String?,
+    var isLogged: Boolean,
+    var salt: ByteArray?
 )
 
 data class Friend(

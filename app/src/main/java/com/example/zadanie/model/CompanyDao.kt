@@ -14,9 +14,6 @@ interface CompanyDao {
 
     @Delete
     suspend fun deleteCompany(company: CompanyWithMembers)
-
-    @Query("DELETE FROM company_table")
-    fun deleteTable()
 }
 
 @Dao

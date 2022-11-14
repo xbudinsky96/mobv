@@ -240,8 +240,10 @@ class ApiService {
         })
     }
 
-    fun loginUser(userName: String, password: String, fragment: LoginFragment) {
-        val login = mPageAPI.login(PostCredentials(userName, password))
+    fun loginUser(userName: String, password: String, fragment: LoginFragment, usersViewModel: UsersViewModel) {
+        val userFromDB = usersViewModel.getUserByName(userName)
+        val pass = getPassword(userFromDB, password)
+        val login = mPageAPI.login(PostCredentials(userName, pass))
         login.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if(response.isSuccessful) {
@@ -253,10 +255,14 @@ class ApiService {
                         Toast.makeText(fragment.requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
                         findNavController(fragment).navigate(action)
                         loggedInUser = user
-                        loggedInUser.name = userName
-                        loggedInUser.lat = fragment.location?.latitude
-                        loggedInUser.lon = fragment.location?.longitude
-                        //userViewModel.addUser(loggedInUser)
+                        loggedInUser.isLogged = true
+                        if (userFromDB == null) {
+                            loggedInUser.name = userName
+                            usersViewModel.addUser(loggedInUser)
+                        }
+                        else {
+                            usersViewModel.updateUser(true, loggedInUser.uid)
+                        }
                     }
                     else {
                         Toast.makeText(fragment.requireContext(), "Wrong username or password!", Toast.LENGTH_SHORT).show()
@@ -273,19 +279,33 @@ class ApiService {
         })
     }
 
-    fun registerUser(userName: String, password: String, fragment: RegistrationFragment) {
-        val register = mPageAPI.register(PostCredentials(userName, password))
+    private fun getPassword(userFromDB: User, password: String): String {
+        if (userFromDB != null) {
+            if (userFromDB.salt != null) {
+                return hashPassword(password, userFromDB.salt!!)
+            }
+            return password
+        }
+        return password
+    }
+
+    fun registerUser(userName: String, password: String, fragment: RegistrationFragment, usersViewModel: UsersViewModel) {
+        val salt = getSalt()
+        val hashedPassword = hashPassword(password, salt)
+        val register = mPageAPI.register(PostCredentials(userName, hashedPassword))
         register.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
                 if (response.isSuccessful) {
                     val newUser = response.body()
                     if(newUser != null) {
                         if (newUser.uid != "-1") {
-                            //userHandlerModel.addUser(newUser)
                             loggedInUser = newUser
                             loggedInUser.name = userName
                             loggedInUser.lat = fragment.location?.latitude
                             loggedInUser.lon = fragment.location?.longitude
+                            loggedInUser.isLogged = true
+                            loggedInUser.salt = salt
+                            usersViewModel.addUser(loggedInUser)
                             val action = RegistrationFragmentDirections.actionRegistrationFragmentToCompanyFragment()
                             fragment.findNavController().navigate(action)
                             Toast.makeText(fragment.requireContext(), "Successful registration!", Toast.LENGTH_SHORT).show()
@@ -404,8 +424,7 @@ class ApiService {
         })
     }
 
-    private fun hashPassword(password: String): String {
-        val salt: ByteArray = getSalt()
+    private fun hashPassword(password: String, salt: ByteArray): String {
         try {
             val md = MessageDigest.getInstance("SHA-512")
             md.update(salt)

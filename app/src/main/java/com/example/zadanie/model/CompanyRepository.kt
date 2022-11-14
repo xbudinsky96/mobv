@@ -12,10 +12,6 @@ class CompanyRepository(private val companyDao: CompanyDao) {
     suspend fun deleteCompany(companyWithMembers: CompanyWithMembers) {
         companyDao.deleteCompany(companyWithMembers)
     }
-
-    fun deleteTable() {
-        companyDao.deleteTable()
-    }
 }
 
 class NearbyCompanyRepository(private val companyDao: NearbyCompanyDao) {
