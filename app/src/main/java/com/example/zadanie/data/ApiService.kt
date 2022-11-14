@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.`interface`.ApiInterface
@@ -85,6 +86,8 @@ class ApiService {
                 val body = response.body()
                 if(body != null) {
                     val foundCompany = body.elements[0]
+                    val latitude = foundCompany.lat
+                    val longitude = foundCompany.lon
 
                     if (fragmentCheckInDetail != null) {
                         val binding = fragmentCheckInDetail.binding
@@ -95,15 +98,15 @@ class ApiService {
                             }
                         }
                         binding.confirm.isEnabled = true
+                        setCoordinates(fragmentCheckInDetail, binding, latitude, longitude)
                     }
 
                     if (fragmentHome != null) {
                         val binding = fragmentHome.binding
                         binding.companyName.text = foundCompany.tags.name
                         binding.nameTitle.text = loggedInUser.name
+                        binding.showOnMap.isEnabled = true
                         binding.showOnMap.setOnClickListener {
-                            val latitude = foundCompany.lat
-                            val longitude = foundCompany.lon
                             val queryUrl: Uri = Uri.parse("https://www.google.com/maps/@${latitude},${longitude},16z")
                             val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
                             context?.startActivity(showOnMap)
@@ -121,7 +124,7 @@ class ApiService {
         })
     }
 
-    fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
+    private fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
         val openingHours = if(foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else ""
         val tel = if(foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else ""
         val web = if(foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB: " + foundCompany.tags.website else ""
@@ -136,7 +139,20 @@ class ApiService {
         binding.contactUs.text = contact
     }
 
-    fun getCompaniesWithMembers(context: Context, companyViewModel: CompanyViewModel) {
+    private fun setCoordinates(fragment: Fragment, binding: FragmentCheckInDetailBinding, latitude: Double, longitude: Double) {
+        val showOnMap = binding.showonmap
+        val searchPrefix = "https://www.google.com/maps/@"
+        showOnMap.isEnabled = true
+        showOnMap.setOnClickListener {
+            val queryUrl: Uri = Uri.parse("${searchPrefix}${latitude},${longitude},16z")
+            val show = Intent(Intent.ACTION_VIEW, queryUrl)
+            fragment.startActivity(show)
+        }
+    }
+
+    fun getCompaniesWithMembers(fragment: Fragment) {
+        val companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
+        val context = fragment.requireContext()
         val auth = "Bearer " + loggedInUser.access
         val companies = mPageAPI.getCompaniesWithMembers(loggedInUser.uid, auth)
         companies.enqueue(object: Callback<MutableList<CompanyWithMembers>> {
@@ -153,8 +169,8 @@ class ApiService {
                     }
                 }
                 else if(response.code() == 401) {
-                    refreshToken(context)
-                    getCompaniesWithMembers(context, companyViewModel)
+                    refreshToken(fragment)
+                    getCompaniesWithMembers(fragment)
                 }
                 else {
                     Toast.makeText(context, "Response not successful!", Toast.LENGTH_SHORT).show()
@@ -195,8 +211,8 @@ class ApiService {
                     fragment?.findNavController()?.navigate(action)
                 }
                 else if(response.code() == 401) {
-                    if (context != null) {
-                        refreshToken(context)
+                    if (fragment != null) {
+                        refreshToken(fragment)
                     }
                 }
                 else {
@@ -225,7 +241,7 @@ class ApiService {
                     Toast.makeText(fragment.requireContext(), "Checked out!", Toast.LENGTH_SHORT).show()
                 }
                 else if(response.code() == 401) {
-                    refreshToken(fragment.requireContext())
+                    refreshToken(fragment)
                     checkOutCompany(fragment)
                 }
                 else {
@@ -240,7 +256,8 @@ class ApiService {
         })
     }
 
-    fun loginUser(userName: String, password: String, fragment: LoginFragment, usersViewModel: UsersViewModel) {
+    fun loginUser(userName: String, password: String, fragment: LoginFragment) {
+        val usersViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
         val userFromDB = usersViewModel.getUserByName(userName)
         val pass = getPassword(userFromDB, password)
         val login = mPageAPI.login(PostCredentials(userName, pass))
@@ -256,12 +273,14 @@ class ApiService {
                         findNavController(fragment).navigate(action)
                         loggedInUser = user
                         loggedInUser.isLogged = true
+                        loggedInUser.lat = fragment.location?.latitude
+                        loggedInUser.lon = fragment.location?.longitude
                         if (userFromDB == null) {
                             loggedInUser.name = userName
                             usersViewModel.addUser(loggedInUser)
                         }
                         else {
-                            usersViewModel.updateUser(true, loggedInUser.uid)
+                            usersViewModel.updateUser(true, loggedInUser)
                         }
                     }
                     else {
@@ -289,7 +308,22 @@ class ApiService {
         return password
     }
 
-    fun registerUser(userName: String, password: String, fragment: RegistrationFragment, usersViewModel: UsersViewModel) {
+    fun logoutUser(fragment: Fragment) {
+        val usersViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
+        usersViewModel.updateUser(false, loggedInUser)
+    }
+
+    fun getLoggedUser(fragment: Fragment) {
+        val usersViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
+        val user = usersViewModel.getLoggedUser()
+        if (user != null) {
+            loggedInUser = user
+            fragment.findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToCompanyFragment())
+        }
+    }
+
+    fun registerUser(userName: String, password: String, fragment: RegistrationFragment) {
+        val usersViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
         val salt = getSalt()
         val hashedPassword = hashPassword(password, salt)
         val register = mPageAPI.register(PostCredentials(userName, hashedPassword))
@@ -326,7 +360,9 @@ class ApiService {
         })
     }
 
-    fun refreshToken(context: Context) {
+    fun refreshToken(fragment: Fragment) {
+        val context = fragment.requireContext()
+        val usersViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
         val refreshToken = mPageAPI.refreshToken(PostRefreshToken(loggedInUser.refresh), loggedInUser.uid)
         refreshToken.enqueue(object: Callback<User> {
             override fun onResponse(call: Call<User>, response: Response<User>) {
@@ -334,6 +370,7 @@ class ApiService {
                     val newCredentials = response.body()
                     if (newCredentials != null) {
                         loggedInUser = newCredentials
+                        usersViewModel.updateUser(true, loggedInUser)
                     }
                 }
                 else {
@@ -357,7 +394,7 @@ class ApiService {
                     Toast.makeText(fragment.requireContext(), "Friend added successfully!", Toast.LENGTH_SHORT).show()
                 }
                 else if(response.code() == 401) {
-                    refreshToken(fragment.requireContext())
+                    refreshToken(fragment)
                     addFriend(name, fragment)
                 }
                 else {
@@ -380,7 +417,7 @@ class ApiService {
                     Toast.makeText(fragment.requireContext(), "Friend deleted successfully!", Toast.LENGTH_SHORT).show()
                 }
                 else if(response.code() == 401) {
-                    refreshToken(fragment.requireContext())
+                    refreshToken(fragment)
                     deleteFriend(name, fragment)
                 }
                 else {
@@ -413,7 +450,7 @@ class ApiService {
                     }
                 }
                 else if(response.code() == 401) {
-                    refreshToken(fragment.requireContext())
+                    refreshToken(fragment)
                     showFriends(fragment, adapter)
                 }
             }

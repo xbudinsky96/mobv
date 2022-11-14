@@ -7,16 +7,12 @@ import android.location.LocationRequest
 import android.os.Build
 import androidx.fragment.app.Fragment
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.databinding.FragmentLoginBinding
 import com.example.zadanie.data.ApiService
-import com.example.zadanie.model.UsersViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
@@ -28,7 +24,6 @@ import com.vmadalin.easypermissions.dialogs.SettingsDialog
 class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    private lateinit var usersViewModel: UsersViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     var location: Location? = null
 
@@ -48,9 +43,9 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val loginButton = binding.register2Button
         val registerButton = binding.registerButton
         val apiService = ApiService()
-        usersViewModel = ViewModelProvider(this)[UsersViewModel::class.java]
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
+        apiService.getLoggedUser(this)
         getLocation()
 
         registerButton.setOnClickListener {
@@ -60,7 +55,7 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         loginButton.setOnClickListener {
             if(userName.isNotEmpty() && password.isNotEmpty()) {
-                apiService.loginUser(userName.toString(), password.toString(), this, usersViewModel)
+                apiService.loginUser(userName.toString(), password.toString(), this)
             }
             else {
                 Toast.makeText(context, "Enter a username and a password!", Toast.LENGTH_SHORT).show()
@@ -69,6 +64,7 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         return binding.root
     }
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingPermission")

@@ -59,4 +59,6 @@
     <string name="click_to_find_nearest_company">Click to find nearest company</string>
     <string name="companyname">CompanyName</string>
     <string name="type">Type</string>
+    <string name="logout">Logout</string>
+    <string name="manage_friends">Manage friends</string>
 </resources>

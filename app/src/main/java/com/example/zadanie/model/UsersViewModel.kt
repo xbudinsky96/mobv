@@ -25,9 +25,9 @@ class UsersViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun updateUser(log: Boolean, id: String) {
+    fun updateUser(log: Boolean, user: User) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.updateUser(log, id)
+            repository.updateUser(log, user)
         }
     }
 
@@ -35,6 +35,14 @@ class UsersViewModel(application: Application): AndroidViewModel(application) {
         return runBlocking {
             withContext(Dispatchers.IO) {
                 repository.getUserByName(name)
+            }
+        }
+    }
+
+    fun getLoggedUser(): User {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                repository.getLoggedUser()
             }
         }
     }

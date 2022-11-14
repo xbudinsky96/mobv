@@ -39,13 +39,8 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
 
         holder.friendName.text = item.user_name
         holder.frame.setOnClickListener {
-            val action = FriendListFragmentDirections.actionFriendListFragmentToCompanyDetailFragment(
-                item.bar_name,
-                "",
-                item.bar_lat,
-                item.bar_lon,
-                -1,
-                item.user_id
+            val action = FriendListFragmentDirections.actionFriendListFragmentToCheckInDetailFragment(
+                item.bar_id.toLong()
             )
             fragment.findNavController().navigate(action)
         }

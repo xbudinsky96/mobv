@@ -1,0 +1,17 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/logout_app"
+        android:title="@string/logout"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom" />
+
+    <item
+    android:id="@+id/manage_friends"
+    android:title="@string/manage_friends"
+    android:orderInCategory="1"
+    app:showAsAction="collapseActionView" />
+
+</menu>

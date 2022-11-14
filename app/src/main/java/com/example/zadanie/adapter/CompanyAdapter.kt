@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.widget.EdgeEffectCompat.getDistance
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -57,13 +56,8 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
 
         holder.companyText.text = item.bar_name + " - " + item.users + users + "\n" + currentDistance
         holder.companyFrame.setOnClickListener {
-            val action = CompanyFragmentDirections.actionCompanyFragmentToCompanyDetailFragment(
-                item.bar_name,
-                item.bar_type,
-                item.lat,
-                item.lon,
-                item.users.toInt(),
-                item.bar_id
+            val action = CompanyFragmentDirections.actionCompanyFragmentToCheckInDetailFragment(
+                item.bar_id.toLong()
             )
             fragment.findNavController().navigate(action)
         }

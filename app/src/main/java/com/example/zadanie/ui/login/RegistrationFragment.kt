@@ -12,10 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModelProvider
 import com.example.zadanie.data.ApiService
 import com.example.zadanie.databinding.FragmentRegistrationBinding
-import com.example.zadanie.model.UsersViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
@@ -28,7 +26,6 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var _binding: FragmentRegistrationBinding? = null
     private val binding get() = _binding!!
-    private lateinit var userViewModel: UsersViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     var location: Location? = null
 
@@ -44,7 +41,6 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val passwordVerify = binding.passwordCheck.text
         val registerButton = binding.register2Button
         val apiService = ApiService()
-        userViewModel = ViewModelProvider(this)[UsersViewModel::class.java]
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         getLocation()
@@ -56,7 +52,7 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
             if(userNameString.isNotEmpty() && passString.isNotEmpty() && passCheckString.isNotEmpty()) {
                 if(passString == passCheckString) {
-                    apiService.registerUser(userNameString, passString, this, userViewModel)
+                    apiService.registerUser(userNameString, passString, this)
                 }
                 else {
                     Toast.makeText(context, "Passwords don't match!", Toast.LENGTH_SHORT).show()

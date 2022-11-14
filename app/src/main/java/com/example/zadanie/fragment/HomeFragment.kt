@@ -2,10 +2,9 @@ package com.example.zadanie.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.zadanie.R
 import com.example.zadanie.data.ApiService
@@ -29,5 +28,31 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             service.checkOutCompany(this)
         }
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    @Deprecated("Deprecated in Java",
+        ReplaceWith("inflater.inflate(R.menu.menuicons, menu)", "com.example.zadanie.R")
+    )
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menuicons, menu)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.logout_app -> {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
+            service.logoutUser(this)
+            true
+        }
+        R.id.manage_friends -> {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddFriendFragment())
+            true
+        }
+        else -> { super.onOptionsItemSelected(item) }
     }
 }
