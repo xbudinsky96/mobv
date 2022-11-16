@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.zadanie.R
-import com.example.zadanie.data.apiService
+import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentHomeBinding
 import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.loggedInUser
@@ -29,7 +29,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
+        companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
 
         if (args.companyId == 0L) {
             Toast.makeText(requireContext(), "You are not checked in yet.", Toast.LENGTH_SHORT).show()

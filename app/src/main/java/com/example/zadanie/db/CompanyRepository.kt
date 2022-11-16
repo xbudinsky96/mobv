@@ -1,6 +1,8 @@
-package com.example.zadanie.model
+package com.example.zadanie.db
 
 import androidx.lifecycle.LiveData
+import com.example.zadanie.model.CompanyWithMembers
+import com.example.zadanie.model.Element
 
 class CompanyRepository(private val companyDao: CompanyDao) {
     val readData: LiveData<MutableList<CompanyWithMembers>> = companyDao.readCompanies()

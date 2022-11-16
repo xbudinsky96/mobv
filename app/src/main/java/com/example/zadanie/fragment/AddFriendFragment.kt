@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.R
-import com.example.zadanie.data.apiService
+import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentAddFriendBinding
 import com.example.zadanie.model.loggedInUser
 

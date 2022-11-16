@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.zadanie.adapter.FriendsAdapter
-import com.example.zadanie.data.apiService
+import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentFriendListBinding
 
 class FriendListFragment : Fragment() {

@@ -1,6 +1,7 @@
-package com.example.zadanie.model
+package com.example.zadanie.db
 
 import androidx.lifecycle.LiveData
+import com.example.zadanie.model.User
 
 class UserRepository(private val userDao: UserDao) {
     val readData: LiveData<MutableList<User>> = userDao.readUsers()

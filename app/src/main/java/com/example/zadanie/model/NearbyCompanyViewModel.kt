@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.zadanie.db.NearbyCompanyDatabase
+import com.example.zadanie.db.NearbyCompanyRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

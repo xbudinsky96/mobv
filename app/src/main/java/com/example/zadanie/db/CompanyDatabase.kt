@@ -1,10 +1,13 @@
-package com.example.zadanie.model
+package com.example.zadanie.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.zadanie.model.CompanyWithMembers
+import com.example.zadanie.model.Converters
+import com.example.zadanie.model.Element
 
 @Database(entities = [CompanyWithMembers::class], version = 1, exportSchema = false)
 abstract class CompaniesWithMembersDB: RoomDatabase() {

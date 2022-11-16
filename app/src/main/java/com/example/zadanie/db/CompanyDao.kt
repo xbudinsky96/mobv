@@ -1,7 +1,9 @@
-package com.example.zadanie.model
+package com.example.zadanie.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.zadanie.model.CompanyWithMembers
+import com.example.zadanie.model.Element
 
 @Dao
 interface CompanyDao {

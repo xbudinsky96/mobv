@@ -1,4 +1,4 @@
-package com.example.zadanie.`interface`
+package com.example.zadanie.api
 
 import com.example.zadanie.model.*
 import retrofit2.Call

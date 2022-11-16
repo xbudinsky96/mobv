@@ -14,7 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.zadanie.adapter.NearbyCompaniesAdapter
-import com.example.zadanie.data.apiService
+import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentCheckInBinding
 import com.example.zadanie.model.NearbyCompanyViewModel
 import com.google.android.gms.location.FusedLocationProviderClient

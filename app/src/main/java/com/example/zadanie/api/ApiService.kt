@@ -1,4 +1,4 @@
-package com.example.zadanie.data
+package com.example.zadanie.api
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
-import com.example.zadanie.`interface`.ApiInterface
 import com.example.zadanie.adapter.FriendsAdapter
 import com.example.zadanie.fragment.CheckInDetailFragment
 import com.example.zadanie.fragment.CheckInDetailFragmentDirections
