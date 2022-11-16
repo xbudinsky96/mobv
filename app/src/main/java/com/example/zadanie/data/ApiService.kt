@@ -11,7 +11,6 @@ import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.`interface`.ApiInterface
 import com.example.zadanie.adapter.FriendsAdapter
-import com.example.zadanie.databinding.FragmentCheckInDetailBinding
 import com.example.zadanie.fragment.CheckInDetailFragment
 import com.example.zadanie.fragment.CheckInDetailFragmentDirections
 import com.example.zadanie.fragment.FriendListFragment
@@ -99,7 +98,7 @@ class ApiService {
                             }
                         }
                         binding.confirm.isEnabled = true
-                        setCoordinates(fragmentCheckInDetail, binding, latitude, longitude)
+                        fragmentCheckInDetail.setCoordinates(latitude, longitude)
                     }
 
                     if (fragmentHome != null) {
@@ -123,33 +122,6 @@ class ApiService {
                 Toast.makeText(context, "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-    //private fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
-    //    val openingHours = if(foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else ""
-    //    val tel = if(foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else ""
-    //    val web = if(foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB: " + foundCompany.tags.website else ""
-    //    val contact = if(tel != null && tel != "" || web != null && web != "") "Contact us: \n" else ""
-//
-    //    binding.compName.text = foundCompany.tags.name
-    //    binding.compType.text = foundCompany.tags.amenity.replace("_", " ")
-    //    binding.openingHours.text = openingHours
-    //    binding.tel.text = tel
-    //    binding.web.text = web
-    //    binding.tel.text = tel
-    //    binding.contactUs.text = contact
-    //    binding.users.text = "SHIT"
-    //}
-
-    private fun setCoordinates(fragment: Fragment, binding: FragmentCheckInDetailBinding, latitude: Double, longitude: Double) {
-        val showOnMap = binding.showonmap
-        val searchPrefix = "https://www.google.com/maps/@"
-        showOnMap.isEnabled = true
-        showOnMap.setOnClickListener {
-            val queryUrl: Uri = Uri.parse("${searchPrefix}${latitude},${longitude},16z")
-            val show = Intent(Intent.ACTION_VIEW, queryUrl)
-            fragment.startActivity(show)
-        }
     }
 
     fun getCompaniesWithMembers(fragment: Fragment) {

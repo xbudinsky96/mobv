@@ -7,10 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.zadanie.R
-import com.example.zadanie.data.ApiService
 import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentHomeBinding
-import com.example.zadanie.model.loggedInUser
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null

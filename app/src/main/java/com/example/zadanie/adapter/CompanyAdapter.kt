@@ -15,7 +15,7 @@ import com.example.zadanie.R
 import com.example.zadanie.fragment.CompanyFragmentDirections
 import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.loggedInUser
-import com.example.zadanie.utilities.getDistanceFromLatLonInKm
+import com.example.zadanie.utilities.getDistanceFromLatLon
 import java.util.*
 import kotlin.math.*
 
@@ -43,16 +43,16 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     override fun onBindViewHolder(holder: ElementViewHolder, position: Int) {
         val item = companyList[position]
         val users = if (item.users.toInt() > 1) " users" else " user"
+
         val currentDistance = if (loggedInUser.lat != null && loggedInUser.lon != null) {
-            "Distance: " + getDistanceFromLatLonInKm(
+            val distance = getDistanceFromLatLon(
                 loggedInUser.lat!!,
                 loggedInUser.lon!!,
                 item.lat.toDouble(),
                 item.lon.toDouble()
-            ).toInt() + " km"
-        } else {
-            ""
-        }
+            )
+            "${distance.second} ${distance.first}"
+        } else ""
 
         holder.companyText.text = item.bar_name + " - " + item.users + users + "\n" + currentDistance
         holder.companyFrame.setOnClickListener {
@@ -84,21 +84,21 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
 
         companyList = if(isSortedByDistance()) {
             companyList.sortedBy {
-                getDistanceFromLatLonInKm(
+                getDistanceFromLatLon(
                     loggedInUser.lat!!,
                     loggedInUser.lon!!,
                     it.lat.toDouble(),
                     it.lon.toDouble()
-                )
+                ).second
             }.reversed().reversed() as MutableList<CompanyWithMembers>
         } else {
             companyList.sortedBy {
-                getDistanceFromLatLonInKm(
+                getDistanceFromLatLon(
                     loggedInUser.lat!!,
                     loggedInUser.lon!!,
                     it.lat.toDouble(),
                     it.lon.toDouble()
-                )
+                ).second
             }.reversed() as MutableList<CompanyWithMembers>
         }
         notifyDataSetChanged()

@@ -5,14 +5,13 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.location.LocationRequest
 import android.os.Build
-import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import com.example.zadanie.data.ApiService
+import androidx.fragment.app.Fragment
 import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentRegistrationBinding
 import com.google.android.gms.location.FusedLocationProviderClient

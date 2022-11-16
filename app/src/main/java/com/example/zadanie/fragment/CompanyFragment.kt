@@ -16,7 +16,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.zadanie.R
 import com.example.zadanie.adapter.CompanyAdapter
-import com.example.zadanie.data.ApiService
 import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.model.CompanyViewModel

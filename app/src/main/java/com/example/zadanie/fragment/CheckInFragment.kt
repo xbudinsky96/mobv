@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.zadanie.adapter.NearbyCompaniesAdapter
-import com.example.zadanie.data.ApiService
 import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentCheckInBinding
 import com.example.zadanie.model.NearbyCompanyViewModel

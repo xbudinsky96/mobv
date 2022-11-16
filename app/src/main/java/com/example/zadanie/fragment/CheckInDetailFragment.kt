@@ -10,10 +10,10 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -112,27 +112,11 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             pauseAnimation()
                         }
                         else {
-                            setCoordinates(lat.toString(), lon.toString())
+                            setCoordinates(lat, lon)
                             cancelAnimation()
                             nearestCompany = getNearestCompany(elements, lat, lon)
                             setConfirmButton()
                             setDetails(nearestCompany, binding)
-
-                            //val companyWithMembers = companyViewModel.getCompanyById(nearestCompany.id.toString())
-                            //val users = if (companyWithMembers != null) "Users checked in: " + companyWithMembers.users else ""
-                            //val openingHours = if(nearestCompany.tags.opening_hours != null) "Opening hours:" + "\n\n" + nearestCompany.tags.opening_hours.replace(", ", "\n") else ""
-                            //val tel = if(nearestCompany.tags.phone != null && nearestCompany.tags.phone != "") "TEL: " + nearestCompany.tags.phone else ""
-                            //val web = if(nearestCompany.tags.website != null && nearestCompany.tags.website != "") "WEB: " + nearestCompany.tags.website else ""
-                            //val contact = if(tel != null || web != null) "Contact us: \n" else ""
-//
-                            //binding.compName.text = nearestCompany.tags.name
-                            //binding.compType.text = nearestCompany.tags.amenity.replace("_", " ")
-                            //binding.openingHours.text = openingHours
-                            //binding.tel.text = tel
-                            //binding.web.text = web
-                            //binding.tel.text = tel
-                            //binding.contactUs.text = contact
-                            //binding.users.text = users
                         }
                     }
                 }
@@ -160,7 +144,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.users.text = users
     }
 
-    private fun setCoordinates(latitude: String, longitude: String) {
+    fun setCoordinates(latitude: Double, longitude: Double) {
         val showOnMap = binding.showonmap
         showOnMap.isEnabled = true
         showOnMap.setOnClickListener {

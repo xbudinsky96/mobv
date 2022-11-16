@@ -2,11 +2,10 @@ package com.example.zadanie.fragment
 
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.R
-import com.example.zadanie.data.ApiService
 import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentAddFriendBinding
 import com.example.zadanie.model.loggedInUser

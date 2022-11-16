@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -14,15 +13,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zadanie.R
 import com.example.zadanie.fragment.CheckInFragmentDirections
-import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.Element
 import com.example.zadanie.model.loggedInUser
-import com.example.zadanie.utilities.getDistanceFromLatLonInKm
-import com.example.zadanie.utilities.getDistanceFromLatLonInM
-import java.lang.Double.MAX_VALUE
+import com.example.zadanie.utilities.getDistanceFromLatLon
 import java.util.*
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<NearbyCompaniesAdapter.ElementViewHolder>()  {
     private lateinit var companyList: MutableList<Element>
@@ -51,15 +45,14 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     override fun onBindViewHolder(holder: ElementViewHolder, position: Int) {
         val item = companyList[position]
         val currentDistance = if (loggedInUser.lat != null && loggedInUser.lon != null) {
-            "Distance: " + getDistanceFromLatLonInM(
+            val distance = getDistanceFromLatLon(
                 loggedInUser.lat!!,
                 loggedInUser.lon!!,
                 item.lat,
                 item.lon
-            ).toInt() + " m"
-        } else {
-            ""
-        }
+            )
+            "${distance.second} ${distance.first}"
+        } else ""
         holder.companyText.text = item.tags.name + "\n" + currentDistance
         holder.companyFrame.setOnClickListener {
             val action = CheckInFragmentDirections.actionCheckInFragmentToCheckInDetailFragment(
@@ -90,21 +83,21 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
         companyList = if(isSortedByDistance()) {
             companyList.sortedBy {
-                getDistanceFromLatLonInKm(
+                getDistanceFromLatLon(
                     loggedInUser.lat!!,
                     loggedInUser.lon!!,
                     it.lat,
                     it.lon
-                )
+                ).second
             }.reversed().reversed() as MutableList<Element>
         } else {
             companyList.sortedBy {
-                getDistanceFromLatLonInKm(
+                getDistanceFromLatLon(
                     loggedInUser.lat!!,
                     loggedInUser.lon!!,
                     it.lat,
                     it.lon
-                )
+                ).second
             }.reversed() as MutableList<Element>
         }
         notifyDataSetChanged()
@@ -122,7 +115,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataNearestDescending(lat: Double, lon: Double) {
-        companyList = companyList.sortedBy { getDistanceFromLatLonInKm(lat, lon, it.lat, it.lon) } as MutableList<Element>
+        companyList = companyList.sortedBy { getDistanceFromLatLon(lat, lon, it.lat, it.lon).second } as MutableList<Element>
         notifyDataSetChanged()
     }
 
