@@ -53,6 +53,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         _binding = FragmentCheckInDetailBinding.inflate(inflater, container, false)
         nearbyCompanyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
+        apiService.getCompaniesWithMembers(this)
 
         val specifyButton = binding.specify
         val showOnMap = binding.showonmap
@@ -67,7 +68,6 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             LocationServices.getFusedLocationProviderClient(requireContext())
 
         getCompany()
-
         return binding.root
     }
 
@@ -116,19 +116,23 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             cancelAnimation()
                             nearestCompany = getNearestCompany(elements, lat, lon)
                             setConfirmButton()
+                            setDetails(nearestCompany, binding)
 
-                            val openingHours = if(nearestCompany.tags.opening_hours != null) "Opening hours:" + "\n\n" + nearestCompany.tags.opening_hours.replace(", ", "\n") else ""
-                            val tel = if(nearestCompany.tags.phone != null && nearestCompany.tags.phone != "") "TEL: " + nearestCompany.tags.phone else ""
-                            val web = if(nearestCompany.tags.website != null && nearestCompany.tags.website != "") "WEB: " + nearestCompany.tags.website else ""
-                            val contact = if(tel != null || web != null) "Contact us: \n" else ""
-
-                            binding.compName.text = nearestCompany.tags.name
-                            binding.compType.text = nearestCompany.tags.amenity.replace("_", " ")
-                            binding.openingHours.text = openingHours
-                            binding.tel.text = tel
-                            binding.web.text = web
-                            binding.tel.text = tel
-                            binding.contactUs.text = contact
+                            //val companyWithMembers = companyViewModel.getCompanyById(nearestCompany.id.toString())
+                            //val users = if (companyWithMembers != null) "Users checked in: " + companyWithMembers.users else ""
+                            //val openingHours = if(nearestCompany.tags.opening_hours != null) "Opening hours:" + "\n\n" + nearestCompany.tags.opening_hours.replace(", ", "\n") else ""
+                            //val tel = if(nearestCompany.tags.phone != null && nearestCompany.tags.phone != "") "TEL: " + nearestCompany.tags.phone else ""
+                            //val web = if(nearestCompany.tags.website != null && nearestCompany.tags.website != "") "WEB: " + nearestCompany.tags.website else ""
+                            //val contact = if(tel != null || web != null) "Contact us: \n" else ""
+//
+                            //binding.compName.text = nearestCompany.tags.name
+                            //binding.compType.text = nearestCompany.tags.amenity.replace("_", " ")
+                            //binding.openingHours.text = openingHours
+                            //binding.tel.text = tel
+                            //binding.web.text = web
+                            //binding.tel.text = tel
+                            //binding.contactUs.text = contact
+                            //binding.users.text = users
                         }
                     }
                 }
@@ -136,6 +140,24 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         } else {
             requestLocationPermission()
         }
+    }
+
+    fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
+        val companyWithMembers = companyViewModel.getCompanyById(foundCompany.id.toString())
+        val users = if (companyWithMembers != null) "Users checked in: " + companyWithMembers.users else "Users checked in: 0"
+        val openingHours = if(foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else "Opening hours not provided"
+        val tel = if(foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else "TEL: Not provided"
+        val web = if(foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB: " + foundCompany.tags.website else "WEB: Not provided"
+        val contact = if(tel != null && tel != "" || web != null && web != "") "Contact us: \n" else "Contact not provided"
+
+        binding.compName.text = foundCompany.tags.name
+        binding.compType.text = foundCompany.tags.amenity.replace("_", " ")
+        binding.openingHours.text = openingHours
+        binding.tel.text = tel
+        binding.web.text = web
+        binding.tel.text = tel
+        binding.contactUs.text = contact
+        binding.users.text = users
     }
 
     private fun setCoordinates(latitude: String, longitude: String) {

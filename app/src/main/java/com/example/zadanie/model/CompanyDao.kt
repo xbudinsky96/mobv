@@ -12,6 +12,9 @@ interface CompanyDao {
     @Query("SELECT * FROM company_table ORDER BY bar_id ASC")
     fun readCompanies(): LiveData<MutableList<CompanyWithMembers>>
 
+    @Query("SELECT * FROM company_table WHERE bar_id = :id")
+    fun getCompanyById(id: String): CompanyWithMembers
+
     @Delete
     suspend fun deleteCompany(company: CompanyWithMembers)
 }

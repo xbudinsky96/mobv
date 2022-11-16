@@ -52,7 +52,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
         val sortPeople = binding.sortPeople
         val adapter = CompanyAdapter(this)
 
-        fetchDataFromAPI()
+        fetchDataFromAPI(pullToRefresh)
         getLocation()
 
         companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
@@ -73,15 +73,16 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
         }
 
         pullToRefresh.setOnRefreshListener {
-            fetchDataFromAPI()
-            pullToRefresh.isRefreshing = false
+            fetchDataFromAPI(pullToRefresh)
         }
 
         return binding.root
     }
 
-    private fun fetchDataFromAPI() {
+    private fun fetchDataFromAPI(pullToRefresh: SwipeRefreshLayout) {
+        pullToRefresh.isRefreshing = true
         apiService.getCompaniesWithMembers(this)
+        pullToRefresh.isRefreshing = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

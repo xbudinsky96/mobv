@@ -92,7 +92,7 @@ class ApiService {
 
                     if (fragmentCheckInDetail != null) {
                         val binding = fragmentCheckInDetail.binding
-                        setDetails(foundCompany, binding)
+                        fragmentCheckInDetail.setDetails(foundCompany, binding)
                         binding.confirm.setOnClickListener {
                             if (context != null) {
                                 checkInCompany(foundCompany, null, fragmentCheckInDetail)
@@ -125,20 +125,21 @@ class ApiService {
         })
     }
 
-    private fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
-        val openingHours = if(foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else ""
-        val tel = if(foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else ""
-        val web = if(foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB: " + foundCompany.tags.website else ""
-        val contact = if(tel != null && tel != "" || web != null && web != "") "Contact us: \n" else ""
-
-        binding.compName.text = foundCompany.tags.name
-        binding.compType.text = foundCompany.tags.amenity.replace("_", " ")
-        binding.openingHours.text = openingHours
-        binding.tel.text = tel
-        binding.web.text = web
-        binding.tel.text = tel
-        binding.contactUs.text = contact
-    }
+    //private fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
+    //    val openingHours = if(foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else ""
+    //    val tel = if(foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else ""
+    //    val web = if(foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB: " + foundCompany.tags.website else ""
+    //    val contact = if(tel != null && tel != "" || web != null && web != "") "Contact us: \n" else ""
+//
+    //    binding.compName.text = foundCompany.tags.name
+    //    binding.compType.text = foundCompany.tags.amenity.replace("_", " ")
+    //    binding.openingHours.text = openingHours
+    //    binding.tel.text = tel
+    //    binding.web.text = web
+    //    binding.tel.text = tel
+    //    binding.contactUs.text = contact
+    //    binding.users.text = "SHIT"
+    //}
 
     private fun setCoordinates(fragment: Fragment, binding: FragmentCheckInDetailBinding, latitude: Double, longitude: Double) {
         val showOnMap = binding.showonmap

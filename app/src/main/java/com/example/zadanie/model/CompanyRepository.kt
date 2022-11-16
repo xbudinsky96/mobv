@@ -12,6 +12,10 @@ class CompanyRepository(private val companyDao: CompanyDao) {
     suspend fun deleteCompany(companyWithMembers: CompanyWithMembers) {
         companyDao.deleteCompany(companyWithMembers)
     }
+
+    fun getCompanyById(id: String): CompanyWithMembers {
+        return companyDao.getCompanyById(id)
+    }
 }
 
 class NearbyCompanyRepository(private val companyDao: NearbyCompanyDao) {

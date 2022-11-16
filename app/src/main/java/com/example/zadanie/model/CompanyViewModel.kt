@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class CompanyViewModel(application: Application): AndroidViewModel(application) {
     val readData: LiveData<MutableList<CompanyWithMembers>>
@@ -20,6 +22,14 @@ class CompanyViewModel(application: Application): AndroidViewModel(application) 
     fun addCompany(company: CompanyWithMembers) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.addCompany(company)
+        }
+    }
+
+    fun getCompanyById(id: String): CompanyWithMembers {
+        return runBlocking {
+            withContext(Dispatchers.IO) {
+                repository.getCompanyById(id)
+            }
         }
     }
 
