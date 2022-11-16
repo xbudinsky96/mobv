@@ -26,6 +26,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.checkOut.setOnClickListener {
             apiService.checkOutCompany(this)
         }
+        binding.showDetails.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCheckInDetailFragment(args.companyId))
+        }
         return binding.root
     }
 

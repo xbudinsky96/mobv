@@ -34,11 +34,12 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
         return FriendViewHolder(adapterLayout)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onBindViewHolder(holder: FriendViewHolder, position: Int) {
         val item = friendList[position]
+        val company = if (item.bar_name != null) "\n\nChecked in: " + item.bar_name else "\n\nNot checked in"
 
-        holder.friendName.text = item.user_name
+        holder.friendName.text = item.user_name + company
         holder.frame.setOnClickListener {
             try {
                 val action = FriendListFragmentDirections.actionFriendListFragmentToCheckInDetailFragment(
