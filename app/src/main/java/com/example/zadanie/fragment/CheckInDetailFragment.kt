@@ -9,20 +9,21 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.zadanie.data.ApiService
+import com.example.zadanie.R
+import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentCheckInDetailBinding
+import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.Element
 import com.example.zadanie.model.NearbyCompanyViewModel
+import com.example.zadanie.model.loggedInUser
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
@@ -37,8 +38,8 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var _binding: FragmentCheckInDetailBinding? = null
     val binding get() = _binding!!
-    private val service = ApiService()
-    private lateinit var companyViewModel: NearbyCompanyViewModel
+    private lateinit var nearbyCompanyViewModel: NearbyCompanyViewModel
+    private lateinit var companyViewModel: CompanyViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var nearestCompany: Element
     private val args: CheckInDetailFragmentArgs by navArgs()
@@ -50,7 +51,9 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCheckInDetailBinding.inflate(inflater, container, false)
-        companyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
+        nearbyCompanyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
+        companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
+
         val specifyButton = binding.specify
         val showOnMap = binding.showonmap
         showOnMap.isEnabled = false
@@ -72,7 +75,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun getCompany() {
         try {
             if (args.id.toInt() != 0) {
-                service.getCompanyByID(this, null, args.id)
+                apiService.getCompanyByID(this, null, args.id)
                 cancelAnimation()
             }
         } catch (_: Exception) {
@@ -102,8 +105,8 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 else {
                     val lat = location.latitude
                     val lon = location.longitude
-                    service.fetchNearbyCompanies(lat,lon, requireContext(), companyViewModel)
-                    companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
+                    apiService.fetchNearbyCompanies(lat,lon, requireContext(), nearbyCompanyViewModel)
+                    nearbyCompanyViewModel.readData.observe(viewLifecycleOwner) { elements ->
                         if (elements.isEmpty()) {
                             Toast.makeText(requireContext(), "No data has been retrieved!", Toast.LENGTH_SHORT).show()
                             pauseAnimation()
@@ -148,7 +151,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun setConfirmButton() {
         val confirmButton = binding.confirm
         confirmButton.setOnClickListener {
-            service.checkInCompany(nearestCompany, null, this)
+            apiService.checkInCompany(nearestCompany, null, this)
         }
         confirmButton.isEnabled = true
     }
@@ -213,6 +216,47 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    @Deprecated("Deprecated in Java",
+        ReplaceWith("inflater.inflate(R.menu.menuicons, menu)", "com.example.zadanie.R")
+    )
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menuicons, menu)
+        menu.findItem(R.id.check_in).isVisible = false
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.logout_app -> {
+            findNavController().navigate(CheckInDetailFragmentDirections.actionCheckInDetailFragmentToLoginFragment())
+            apiService.logoutUser(this)
+            true
+        }
+        R.id.manage_friends -> {
+            findNavController().navigate(CheckInDetailFragmentDirections.actionCheckInDetailFragmentToAddFriendFragment())
+            true
+        }
+        R.id.my_company -> {
+            try {
+                findNavController().navigate(CheckInDetailFragmentDirections.actionCheckInDetailFragmentToHomeFragment(
+                    loggedInUser.companyId?.toLong()!!))
+            }
+            catch (e: Exception) {
+                Toast.makeText(requireContext(), "You are not checked in!", Toast.LENGTH_SHORT).show()
+            }
+            true
+        }
+        R.id.companies_with_members -> {
+            findNavController().navigate(CheckInDetailFragmentDirections.actionCheckInDetailFragmentToCompanyFragment())
+            true
+        }
+        else -> { super.onOptionsItemSelected(item) }
     }
 
 }

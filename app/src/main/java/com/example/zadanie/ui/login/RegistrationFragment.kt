@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.zadanie.data.ApiService
+import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentRegistrationBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -40,7 +41,6 @@ class RegistrationFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val password = binding.passwordLogin.text
         val passwordVerify = binding.passwordCheck.text
         val registerButton = binding.register2Button
-        val apiService = ApiService()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         getLocation()

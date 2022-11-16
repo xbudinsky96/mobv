@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -39,10 +41,15 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
 
         holder.friendName.text = item.user_name
         holder.frame.setOnClickListener {
-            val action = FriendListFragmentDirections.actionFriendListFragmentToCheckInDetailFragment(
-                item.bar_id.toLong()
-            )
-            fragment.findNavController().navigate(action)
+            try {
+                val action = FriendListFragmentDirections.actionFriendListFragmentToCheckInDetailFragment(
+                    item.bar_id.toLong(),
+                )
+                fragment.findNavController().navigate(action)
+            }
+            catch (e: Exception) {
+                Toast.makeText(fragment.requireContext(), "Friend is not checked in to a company!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

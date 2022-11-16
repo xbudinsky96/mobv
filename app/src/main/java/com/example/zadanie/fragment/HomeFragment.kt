@@ -8,13 +8,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.zadanie.R
 import com.example.zadanie.data.ApiService
+import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentHomeBinding
+import com.example.zadanie.model.loggedInUser
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     val binding get() = _binding!!
     private val args: HomeFragmentArgs by navArgs()
-    private val service = ApiService()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -23,9 +24,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        service.getCompanyByID(null, this, args.companyId)
+        apiService.getCompanyByID(null, this, args.companyId)
         binding.checkOut.setOnClickListener {
-            service.checkOutCompany(this)
+            apiService.checkOutCompany(this)
         }
         return binding.root
     }
@@ -40,17 +41,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     )
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menuicons, menu)
+        menu.findItem(R.id.my_company).isVisible = false
     }
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.logout_app -> {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
-            service.logoutUser(this)
+            apiService.logoutUser(this)
             true
         }
         R.id.manage_friends -> {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddFriendFragment())
+            true
+        }
+        R.id.check_in -> {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCheckInDetailFragment(0))
+            true
+        }
+        R.id.companies_with_members -> {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCompanyFragment())
             true
         }
         else -> { super.onOptionsItemSelected(item) }

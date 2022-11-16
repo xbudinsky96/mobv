@@ -1,19 +1,19 @@
 package com.example.zadanie.fragment
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.example.zadanie.R
 import com.example.zadanie.data.ApiService
+import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentAddFriendBinding
+import com.example.zadanie.model.loggedInUser
 
 class AddFriendFragment : Fragment() {
     private var _binding: FragmentAddFriendBinding? = null
     private val binding get() = _binding!!
-    private val apiService = ApiService()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,5 +64,45 @@ class AddFriendFragment : Fragment() {
             return true
         }
         return false
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    @Deprecated("Deprecated in Java",
+        ReplaceWith("inflater.inflate(R.menu.menuicons, menu)", "com.example.zadanie.R")
+    )
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menuicons, menu)
+        menu.findItem(R.id.manage_friends).isVisible = false
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.logout_app -> {
+            findNavController().navigate(AddFriendFragmentDirections.actionAddFriendFragmentToLoginFragment())
+            apiService.logoutUser(this)
+            true
+        }
+        R.id.my_company -> {
+            try {
+                findNavController().navigate(AddFriendFragmentDirections.actionAddFriendFragmentToHomeFragment(loggedInUser.companyId?.toLong()!!))
+            }
+            catch (e: Exception) {
+                Toast.makeText(requireContext(), "You are not checked in!", Toast.LENGTH_SHORT).show()
+            }
+            true
+        }
+        R.id.check_in -> {
+            findNavController().navigate(AddFriendFragmentDirections.actionAddFriendFragmentToCheckInDetailFragment(0))
+            true
+        }
+        R.id.companies_with_members -> {
+            findNavController().navigate(AddFriendFragmentDirections.actionAddFriendFragmentToCompanyFragment())
+            true
+        }
+        else -> { super.onOptionsItemSelected(item) }
     }
 }

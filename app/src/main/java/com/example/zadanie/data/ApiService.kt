@@ -28,6 +28,7 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 
+val apiService = ApiService()
 class ApiService {
 
     private val mPageAPI = Retrofit.Builder()
@@ -180,14 +181,14 @@ class ApiService {
             override fun onFailure(call: Call<MutableList<CompanyWithMembers>>, t: Throwable) {
                 Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show()
             }
-
         })
     }
 
     fun checkInCompany(company: Element, fragmentHome: HomeFragment?, fragmentCheckInDetail: CheckInDetailFragment?) {
         val auth = "Bearer " + loggedInUser.access
         val fragment = fragmentCheckInDetail ?: fragmentHome
-        val context = fragment?.requireContext()
+        val usersViewModel = ViewModelProvider(fragment!!)[UsersViewModel::class.java]
+        val context = fragment.requireContext()
         val checkInCompany = mPageAPI.checkInCompany(
             PostLoginCompany(
                 company.id.toString(),
@@ -207,8 +208,10 @@ class ApiService {
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Checked in to " + company.tags.name + "!", Toast.LENGTH_SHORT).show()
                     loggedInUser.companyId = company.id.toString()
+                    usersViewModel.updateUser(true, loggedInUser)
                     val action = CheckInDetailFragmentDirections.actionCheckInDetailFragmentToHomeFragment(company.id)
-                    fragment?.findNavController()?.navigate(action)
+                    fragment.findNavController().navigate(action)
+                    getCompaniesWithMembers(fragment)
                 }
                 else if(response.code() == 401) {
                     if (fragment != null) {
@@ -266,11 +269,7 @@ class ApiService {
                 if(response.isSuccessful) {
                     val user = response.body()
                     if (user != null && user.uid != "-1") {
-                        val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0)
-                        //val action = LoginFragmentDirections.actionLoginFragmentToCompanyFragment()
-                        //val action = LoginFragmentDirections.actionLoginFragmentToAddFriendFragment()
                         Toast.makeText(fragment.requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
-                        findNavController(fragment).navigate(action)
                         loggedInUser = user
                         loggedInUser.isLogged = true
                         loggedInUser.lat = fragment.location?.latitude
@@ -278,9 +277,19 @@ class ApiService {
                         if (userFromDB == null) {
                             loggedInUser.name = userName
                             usersViewModel.addUser(loggedInUser)
-                        }
-                        else {
+                        } else {
+                            loggedInUser.companyId = userFromDB.companyId
                             usersViewModel.updateUser(true, loggedInUser)
+                            try {
+                                val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(
+                                    loggedInUser.companyId?.toLong()!!)
+                                findNavController(fragment).navigate(action)
+                            }
+                            catch (e: Exception) {
+                                val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0)
+                                findNavController(fragment).navigate(action)
+                            }
+
                         }
                     }
                     else {

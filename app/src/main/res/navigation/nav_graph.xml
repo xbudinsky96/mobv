@@ -19,6 +19,12 @@
         <action
             android:id="@+id/action_homeFragment_to_addFriendFragment"
             app:destination="@id/addFriendFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_checkInDetailFragment"
+            app:destination="@id/checkInDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
     </fragment>
 
     <activity
@@ -45,6 +51,9 @@
         <action
             android:id="@+id/action_companyFragment_to_addFriendFragment"
             app:destination="@id/addFriendFragment" />
+        <action
+            android:id="@+id/action_companyFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -81,6 +90,9 @@
         <action
             android:id="@+id/action_checkInFragment_to_checkInDetailFragment"
             app:destination="@id/checkInDetailFragment" />
+        <action
+            android:id="@+id/action_checkInFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
     </fragment>
     <fragment
         android:id="@+id/checkInDetailFragment"
@@ -96,6 +108,15 @@
         <action
             android:id="@+id/action_checkInDetailFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_checkInDetailFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_checkInDetailFragment_to_addFriendFragment"
+            app:destination="@id/addFriendFragment" />
+        <action
+            android:id="@+id/action_checkInDetailFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
     </fragment>
     <fragment
         android:id="@+id/addFriendFragment"
@@ -105,6 +126,18 @@
         <action
             android:id="@+id/action_addFriendFragment_to_friendListFragment"
             app:destination="@id/friendListFragment" />
+        <action
+            android:id="@+id/action_addFriendFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_addFriendFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_addFriendFragment_to_checkInDetailFragment"
+            app:destination="@id/checkInDetailFragment" />
+        <action
+            android:id="@+id/action_addFriendFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
     </fragment>
     <fragment
         android:id="@+id/friendListFragment"
@@ -114,6 +147,9 @@
         <action
             android:id="@+id/action_friendListFragment_to_checkInDetailFragment"
             app:destination="@id/checkInDetailFragment" />
+        <action
+            android:id="@+id/action_friendListFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
     </fragment>
 
 </navigation>

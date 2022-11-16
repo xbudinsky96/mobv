@@ -15,9 +15,9 @@ import com.example.zadanie.R
 import com.example.zadanie.fragment.CompanyFragmentDirections
 import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.loggedInUser
+import com.example.zadanie.utilities.getDistanceFromLatLonInKm
 import java.util.*
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<CompanyAdapter.ElementViewHolder>() {
     private lateinit var companyList: MutableList<CompanyWithMembers>
@@ -44,12 +44,12 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
         val item = companyList[position]
         val users = if (item.users.toInt() > 1) " users" else " user"
         val currentDistance = if (loggedInUser.lat != null && loggedInUser.lon != null) {
-            "Distance: " + getDistance(
+            "Distance: " + getDistanceFromLatLonInKm(
                 loggedInUser.lat!!,
-                item.lat.toDouble(),
                 loggedInUser.lon!!,
+                item.lat.toDouble(),
                 item.lon.toDouble()
-            ).toInt() + " m"
+            ).toInt() + " km"
         } else {
             ""
         }
@@ -84,16 +84,16 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
 
         companyList = if(isSortedByDistance()) {
             companyList.sortedBy {
-                getDistance(
+                getDistanceFromLatLonInKm(
                     loggedInUser.lat!!,
                     loggedInUser.lon!!,
                     it.lat.toDouble(),
                     it.lon.toDouble()
                 )
-            } as MutableList<CompanyWithMembers>
+            }.reversed().reversed() as MutableList<CompanyWithMembers>
         } else {
             companyList.sortedBy {
-                getDistance(
+                getDistanceFromLatLonInKm(
                     loggedInUser.lat!!,
                     loggedInUser.lon!!,
                     it.lat.toDouble(),
@@ -112,10 +112,6 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
             companyList.sortedBy { it.users }.reversed() as MutableList<CompanyWithMembers>
         }
         notifyDataSetChanged()
-    }
-
-    private fun getDistance(lat: Double, lon: Double, currLat: Double, currLon: Double): Double {
-        return sqrt((lat - currLat).pow(2) + (lon - currLon).pow(2))
     }
 
     private fun isSortedByName(): Boolean {

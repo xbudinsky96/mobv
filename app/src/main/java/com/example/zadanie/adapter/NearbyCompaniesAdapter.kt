@@ -8,12 +8,17 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zadanie.R
 import com.example.zadanie.fragment.CheckInFragmentDirections
+import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.Element
+import com.example.zadanie.model.loggedInUser
+import com.example.zadanie.utilities.getDistanceFromLatLonInKm
+import com.example.zadanie.utilities.getDistanceFromLatLonInM
 import java.lang.Double.MAX_VALUE
 import java.util.*
 import kotlin.math.pow
@@ -22,7 +27,9 @@ import kotlin.math.sqrt
 class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<NearbyCompaniesAdapter.ElementViewHolder>()  {
     private lateinit var companyList: MutableList<Element>
     private lateinit var context: Context
-    private var dataIsSorted: Boolean = false
+    private var isSortedByName: Boolean = false
+    private var isSortedByDistance: Boolean = false
+    private var isSortedByUsers: Boolean = false
 
     class ElementViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val companyFrame: LinearLayout = view.findViewById(R.id.frame)
@@ -40,9 +47,20 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
         return ElementViewHolder(adapterLayout)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ElementViewHolder, position: Int) {
         val item = companyList[position]
-        holder.companyText.text = item.tags.name
+        val currentDistance = if (loggedInUser.lat != null && loggedInUser.lon != null) {
+            "Distance: " + getDistanceFromLatLonInM(
+                loggedInUser.lat!!,
+                loggedInUser.lon!!,
+                item.lat,
+                item.lon
+            ).toInt() + " m"
+        } else {
+            ""
+        }
+        holder.companyText.text = item.tags.name + "\n" + currentDistance
         holder.companyFrame.setOnClickListener {
             val action = CheckInFragmentDirections.actionCheckInFragmentToCheckInDetailFragment(
                 item.id
@@ -54,8 +72,8 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     override fun getItemCount() = companyList.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun sortCompaniesByName() {
-        companyList = if(isSorted()) {
+    fun sortAlphabetically() {
+        companyList = if(isSortedByName()) {
             companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Element>
         } else {
             companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed() as MutableList<Element>
@@ -64,18 +82,63 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun sortDataNearestDescending(lat: Double, lon: Double) {
-        companyList = companyList.sortedBy { getDistance(lat, lon, it.lat, it.lon) } as MutableList<Element>
+    fun sortDataByDistance() {
+        if (loggedInUser.lat == null || loggedInUser.lon == null) {
+            Toast.makeText(context, "Location service not permitted!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        companyList = if(isSortedByDistance()) {
+            companyList.sortedBy {
+                getDistanceFromLatLonInKm(
+                    loggedInUser.lat!!,
+                    loggedInUser.lon!!,
+                    it.lat,
+                    it.lon
+                )
+            }.reversed().reversed() as MutableList<Element>
+        } else {
+            companyList.sortedBy {
+                getDistanceFromLatLonInKm(
+                    loggedInUser.lat!!,
+                    loggedInUser.lon!!,
+                    it.lat,
+                    it.lon
+                )
+            }.reversed() as MutableList<Element>
+        }
         notifyDataSetChanged()
     }
 
-    private fun getDistance(lat: Double, lon: Double, currLat: Double, currLon: Double): Double {
-        return sqrt((lat - currLat).pow(2) + (lon - currLon).pow(2))
+    //@SuppressLint("NotifyDataSetChanged")
+    //fun sortPeople() {
+    //    companyList = if(isSortedByPeople()) {
+    //        companyList.sortedBy { }.reversed().reversed() as MutableList<Element>
+    //    } else {
+    //        companyList.sortedBy { }.reversed() as MutableList<Element>
+    //    }
+    //    notifyDataSetChanged()
+    //}
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun sortDataNearestDescending(lat: Double, lon: Double) {
+        companyList = companyList.sortedBy { getDistanceFromLatLonInKm(lat, lon, it.lat, it.lon) } as MutableList<Element>
+        notifyDataSetChanged()
     }
 
-    private fun isSorted(): Boolean {
-        dataIsSorted = dataIsSorted.not()
-        return dataIsSorted
+    private fun isSortedByName(): Boolean {
+        isSortedByName = isSortedByName.not()
+        return isSortedByName
+    }
+
+    private fun isSortedByDistance(): Boolean {
+        isSortedByDistance = isSortedByDistance.not()
+        return isSortedByDistance
+    }
+
+    private fun isSortedByPeople(): Boolean {
+        isSortedByUsers = isSortedByUsers.not()
+        return isSortedByUsers
     }
 
     @SuppressLint("NotifyDataSetChanged")

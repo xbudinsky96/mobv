@@ -61,4 +61,8 @@
     <string name="type">Type</string>
     <string name="logout">Logout</string>
     <string name="manage_friends">Manage friends</string>
+    <string name="my_company">My company</string>
+    <string name="friends">Friends</string>
+    <string name="check_in_to_company">Check in to company</string>
+    <string name="companies_with_members">Companies with members</string>
 </resources>

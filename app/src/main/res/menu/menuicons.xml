@@ -10,8 +10,26 @@
 
     <item
     android:id="@+id/manage_friends"
-    android:title="@string/manage_friends"
+    android:title="@string/friends"
     android:orderInCategory="1"
     app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/my_company"
+        android:title="@string/my_company"
+        android:orderInCategory="2"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/check_in"
+        android:title="@string/check_in_to_company"
+        android:orderInCategory="3"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/companies_with_members"
+        android:title="@string/companies_with_members"
+        android:orderInCategory="4"
+        app:showAsAction="collapseActionView" />
 
 </menu>

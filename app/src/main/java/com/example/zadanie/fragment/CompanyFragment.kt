@@ -17,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.zadanie.R
 import com.example.zadanie.adapter.CompanyAdapter
 import com.example.zadanie.data.ApiService
+import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.loggedInUser
@@ -33,7 +34,6 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
     private lateinit var binding: FragmentCompanyBinding
     private lateinit var companyViewModel: CompanyViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val service = ApiService()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingInflatedId")
@@ -52,6 +52,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
         val sortPeople = binding.sortPeople
         val adapter = CompanyAdapter(this)
 
+        fetchDataFromAPI()
         getLocation()
 
         companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
@@ -80,7 +81,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
     }
 
     private fun fetchDataFromAPI() {
-        service.getCompaniesWithMembers(this)
+        apiService.getCompaniesWithMembers(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,17 +94,31 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
     )
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menuicons, menu)
+        menu.findItem(R.id.companies_with_members).isVisible = false
     }
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.logout_app -> {
             findNavController().navigate(CompanyFragmentDirections.actionCompanyFragmentToLoginFragment())
-            service.logoutUser(this)
+            apiService.logoutUser(this)
             true
         }
         R.id.manage_friends -> {
             findNavController().navigate(CompanyFragmentDirections.actionCompanyFragmentToAddFriendFragment())
+            true
+        }
+        R.id.my_company -> {
+            try {
+                findNavController().navigate(CompanyFragmentDirections.actionCompanyFragmentToHomeFragment(loggedInUser.companyId?.toLong()!!))
+            }
+            catch (e: Exception) {
+                findNavController().navigate(CompanyFragmentDirections.actionCompanyFragmentToCheckInDetailFragment(0))
+            }
+            true
+        }
+        R.id.check_in -> {
+            findNavController().navigate(CompanyFragmentDirections.actionCompanyFragmentToCheckInDetailFragment(0))
             true
         }
         else -> { super.onOptionsItemSelected(item) }

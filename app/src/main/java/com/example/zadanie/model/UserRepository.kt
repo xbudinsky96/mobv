@@ -10,7 +10,7 @@ class UserRepository(private val userDao: UserDao) {
     }
 
     suspend fun updateUser(log: Boolean, user: User) {
-        userDao.updateUser(log, user.uid, user.lat, user.lon, user.refresh, user.access)
+        userDao.updateUser(log, user.uid, user.lat, user.lon, user.refresh, user.access, user.companyId)
     }
 
     fun getUserByName(name: String): User {

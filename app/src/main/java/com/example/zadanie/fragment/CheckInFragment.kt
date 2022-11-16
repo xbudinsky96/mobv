@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.zadanie.adapter.NearbyCompaniesAdapter
 import com.example.zadanie.data.ApiService
+import com.example.zadanie.data.apiService
 import com.example.zadanie.databinding.FragmentCheckInBinding
 import com.example.zadanie.model.NearbyCompanyViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,7 +37,6 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private var _binding: FragmentCheckInBinding? = null
     private val binding get() = _binding!!
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val service = ApiService()
     private lateinit var companyViewModel: NearbyCompanyViewModel
     private val adapter = NearbyCompaniesAdapter(this)
 
@@ -70,7 +70,7 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
                 }
                 else {
-                    service.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
+                    apiService.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
                     companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
                         if (elements.isNotEmpty()) {
                             adapter.setElements(elements)

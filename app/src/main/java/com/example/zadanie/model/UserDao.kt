@@ -9,8 +9,8 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addUser(user: User)
 
-    @Query("UPDATE usersTable SET isLogged = :log, lat = :lat, lon = :lon, refresh = :refresh, access = :access WHERE uid = :id")
-    suspend fun updateUser(log: Boolean, id: String, lat: Double?, lon: Double?, refresh: String, access: String)
+    @Query("UPDATE usersTable SET isLogged = :log, lat = :lat, lon = :lon, refresh = :refresh, access = :access, companyId = :companyId WHERE uid = :id")
+    suspend fun updateUser(log: Boolean, id: String, lat: Double?, lon: Double?, refresh: String, access: String, companyId: String?)
 
     @Query("SELECT * FROM usersTable ORDER BY uid ASC")
     fun readUsers(): LiveData<MutableList<User>>

@@ -6,7 +6,7 @@ import androidx.room.*
 @Dao
 interface CompanyDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCompany(company: CompanyWithMembers)
 
     @Query("SELECT * FROM company_table ORDER BY bar_id ASC")

@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.databinding.FragmentLoginBinding
 import com.example.zadanie.data.ApiService
+import com.example.zadanie.data.apiService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
@@ -42,7 +43,6 @@ class LoginFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val password = binding.passwordLogin.text
         val loginButton = binding.register2Button
         val registerButton = binding.registerButton
-        val apiService = ApiService()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         apiService.getLoggedUser(this)
