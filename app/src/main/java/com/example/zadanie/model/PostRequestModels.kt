@@ -20,6 +20,7 @@ data class PostLoginCompany(
 data class PostLogoutCompany(
     val id: String,
     val name: String,
+    val type: String,
     val lat: Double,
     val lon: Double
 )

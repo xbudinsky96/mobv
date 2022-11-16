@@ -182,14 +182,13 @@ class ApiService {
                     Toast.makeText(context, "Checked in to " + company.tags.name + "!", Toast.LENGTH_SHORT).show()
                     loggedInUser.companyId = company.id.toString()
                     usersViewModel.updateUser(true, loggedInUser)
-                    val action = CheckInDetailFragmentDirections.actionCheckInDetailFragmentToHomeFragment(company.id)
-                    fragment.findNavController().navigate(action)
+                    fragment.findNavController().navigate(
+                        CheckInDetailFragmentDirections.actionCheckInDetailFragmentToHomeFragment(company.id)
+                    )
                     getCompaniesWithMembers(fragment)
                 }
                 else if(response.code() == 401) {
-                    if (fragment != null) {
-                        refreshToken(fragment)
-                    }
+                    refreshToken(fragment)
                 }
                 else {
                     Toast.makeText(context, "Failure!", Toast.LENGTH_SHORT).show()
@@ -202,18 +201,24 @@ class ApiService {
         })
     }
 
-    //TODO
     fun checkOutCompany(fragment: Fragment) {
         val auth = "Bearer " + loggedInUser.access
+        val companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
+        val userViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
+        val company = companyViewModel.getCompanyById(loggedInUser.companyId.toString())
         val leaveCompany = mPageAPI.checkOutCompany(
-            PostLogoutCompany("", "Big Table", 37.4227271, -122.08751),
+            PostLogoutCompany("", company.bar_name, company.bar_type, company.lat.toDouble(), company.lon.toDouble()),
             loggedInUser.uid,
             auth
         )
-        leaveCompany.enqueue(object: Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
+        leaveCompany.enqueue(object: Callback<CheckInResponse> {
+            override fun onResponse(
+                call: Call<CheckInResponse>,
+                response: Response<CheckInResponse>
+            ) {
                 if (response.isSuccessful) {
-                    loggedInUser.companyId = "-1"
+                    loggedInUser.companyId = null
+                    userViewModel.updateUser(true, loggedInUser)
                     Toast.makeText(fragment.requireContext(), "Checked out!", Toast.LENGTH_SHORT).show()
                 }
                 else if(response.code() == 401) {
@@ -225,7 +230,7 @@ class ApiService {
                 }
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<CheckInResponse>, t: Throwable) {
                 Toast.makeText(fragment.requireContext(), "Failure!", Toast.LENGTH_SHORT).show()
             }
 

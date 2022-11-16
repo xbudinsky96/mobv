@@ -65,7 +65,7 @@ interface ApiInterface {
         "Content-Type: application/json",
         "x-apikey: $apiKey"
     )
-    fun checkOutCompany(@Body credentials: PostLogoutCompany, @Header("x-user") uid: String, @Header("authorization") auth: String): Call<String>
+    fun checkOutCompany(@Body credentials: PostLogoutCompany, @Header("x-user") uid: String, @Header("authorization") auth: String): Call<CheckInResponse>
 
     @POST("contact/message.php")
     @Headers(
