@@ -42,11 +42,11 @@ class ApiService {
         .build()
         .create(ApiInterface::class.java)
 
-    private fun insertCompanyToDataBase(companyViewModel: CompanyViewModel, companies: MutableList<CompanyWithMembers>) {
+    private fun insertCompaniesToDataBase(companyViewModel: CompanyViewModel, companies: MutableList<CompanyWithMembers>) {
         companies.forEach { company -> companyViewModel.addCompany(company) }
     }
 
-    private fun insertCompanyToDataBase(companyViewModel: NearbyCompanyViewModel, elements: MutableList<Element>) {
+    private fun insertCompaniesToDataBase(companyViewModel: NearbyCompanyViewModel, elements: MutableList<Element>) {
         elements.forEach { element -> companyViewModel.addCompany(element) }
     }
 
@@ -60,7 +60,7 @@ class ApiService {
             override fun onResponse(call: Call<Company>, response: Response<Company>) {
                 val body = response.body()
                 if(body != null) {
-                    insertCompanyToDataBase(companyViewModel, body.elements)
+                    insertCompaniesToDataBase(companyViewModel, body.elements)
                 }
                 else {
                     Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
@@ -137,7 +137,7 @@ class ApiService {
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
-                        insertCompanyToDataBase(companyViewModel, body)
+                        insertCompaniesToDataBase(companyViewModel, body)
                     } else {
                         Toast.makeText(context, "No companies found!", Toast.LENGTH_SHORT).show()
                     }

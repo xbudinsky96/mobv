@@ -84,21 +84,25 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
 
         companyList = if(isSortedByDistance()) {
             companyList.sortedBy {
+                val distance =
                 getDistanceFromLatLon(
                     loggedInUser.lat!!,
                     loggedInUser.lon!!,
                     it.lat.toDouble(),
                     it.lon.toDouble()
-                ).second
+                )
+                if (distance.first == "km") (distance.second * 1000) else distance.second
             }.reversed().reversed() as MutableList<CompanyWithMembers>
         } else {
             companyList.sortedBy {
-                getDistanceFromLatLon(
+                val distance =
+                    getDistanceFromLatLon(
                     loggedInUser.lat!!,
                     loggedInUser.lon!!,
                     it.lat.toDouble(),
                     it.lon.toDouble()
-                ).second
+                )
+                if (distance.first == "km") (distance.second * 1000) else distance.second
             }.reversed() as MutableList<CompanyWithMembers>
         }
         notifyDataSetChanged()

@@ -9,10 +9,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zadanie.R
 import com.example.zadanie.fragment.CheckInFragmentDirections
+import com.example.zadanie.model.CompanyViewModel
+import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.Element
 import com.example.zadanie.model.loggedInUser
 import com.example.zadanie.utilities.getDistanceFromLatLon
@@ -24,6 +27,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     private var isSortedByName: Boolean = false
     private var isSortedByDistance: Boolean = false
     private var isSortedByUsers: Boolean = false
+    private lateinit var companyViewModel: CompanyViewModel
 
     class ElementViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val companyFrame: LinearLayout = view.findViewById(R.id.frame)
@@ -35,6 +39,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
         viewType: Int
     ): ElementViewHolder {
         context = parent.context
+        companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.list, parent, false)
 
@@ -53,7 +58,8 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
             )
             "${distance.second} ${distance.first}"
         } else ""
-        holder.companyText.text = item.tags.name + "\n" + currentDistance
+        val users = if (getUsers(item) > 1) "users" else "user"
+        holder.companyText.text = item.tags.name + " - ${getUsers(item)} $users \n$currentDistance"
         holder.companyFrame.setOnClickListener {
             val action = CheckInFragmentDirections.actionCheckInFragmentToCheckInDetailFragment(
                 item.id
@@ -83,35 +89,44 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
         companyList = if(isSortedByDistance()) {
             companyList.sortedBy {
-                getDistanceFromLatLon(
-                    loggedInUser.lat!!,
-                    loggedInUser.lon!!,
-                    it.lat,
-                    it.lon
-                ).second
+                val distance =
+                    getDistanceFromLatLon(
+                        loggedInUser.lat!!,
+                        loggedInUser.lon!!,
+                        it.lat,
+                        it.lon
+                    )
+                if (distance.first == "km") (distance.second * 1000) else distance.second
             }.reversed().reversed() as MutableList<Element>
         } else {
             companyList.sortedBy {
-                getDistanceFromLatLon(
-                    loggedInUser.lat!!,
-                    loggedInUser.lon!!,
-                    it.lat,
-                    it.lon
-                ).second
+                val distance =
+                    getDistanceFromLatLon(
+                        loggedInUser.lat!!,
+                        loggedInUser.lon!!,
+                        it.lat,
+                        it.lon
+                    )
+                if (distance.first == "km") (distance.second * 1000) else distance.second
             }.reversed() as MutableList<Element>
         }
         notifyDataSetChanged()
     }
 
-    //@SuppressLint("NotifyDataSetChanged")
-    //fun sortPeople() {
-    //    companyList = if(isSortedByPeople()) {
-    //        companyList.sortedBy { }.reversed().reversed() as MutableList<Element>
-    //    } else {
-    //        companyList.sortedBy { }.reversed() as MutableList<Element>
-    //    }
-    //    notifyDataSetChanged()
-    //}
+    @SuppressLint("NotifyDataSetChanged")
+    fun sortPeople() {
+        companyList = if(isSortedByPeople()) {
+            companyList.sortedBy { getUsers(it) }.reversed().reversed() as MutableList<Element>
+        } else {
+            companyList.sortedBy { getUsers(it) }.reversed() as MutableList<Element>
+        }
+        notifyDataSetChanged()
+    }
+
+    private fun getUsers(company: Element): Int {
+        val companyWithMembers = companyViewModel.getCompanyById(company.id.toString())
+        return if (companyWithMembers != null) companyWithMembers.users.toInt() else 0
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataNearestDescending(lat: Double, lon: Double) {
@@ -135,8 +150,8 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setElements(elements: MutableList<Element>) {
-        companyList = filterNoNameCompanies(elements)
+    fun setCompanies(companies: MutableList<Element>) {
+        companyList = filterNoNameCompanies(companies)
         notifyDataSetChanged()
     }
 

@@ -72,8 +72,17 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     apiService.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
                     companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
                         if (elements.isNotEmpty()) {
-                            adapter.setElements(elements)
+                            adapter.setCompanies(elements)
                             adapter.sortDataNearestDescending(location.latitude, location.longitude)
+                            binding.sortAbc.setOnClickListener {
+                                adapter.sortAlphabetically()
+                            }
+                            binding.sortDistance.setOnClickListener {
+                                adapter.sortDataByDistance()
+                            }
+                            binding.sortPeople.setOnClickListener {
+                                adapter.sortPeople()
+                            }
                         }
                         binding.list.adapter = adapter
                     }
