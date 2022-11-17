@@ -110,7 +110,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     loggedInUser.lon = location.longitude
                     val lat = location.latitude
                     val lon = location.longitude
-                    apiService.fetchNearbyCompanies(lat,lon, requireContext(), nearbyCompanyViewModel)
+                    apiService.fetchNearbyCompanies(lat, lon, requireContext(), nearbyCompanyViewModel)
                     nearbyCompanyViewModel.readData.observe(viewLifecycleOwner) { elements ->
                         if (elements.isEmpty()) {
                             Toast.makeText(requireContext(), "No data has been retrieved!", Toast.LENGTH_SHORT).show()

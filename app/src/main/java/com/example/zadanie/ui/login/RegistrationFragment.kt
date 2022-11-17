@@ -12,7 +12,6 @@ import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentRegistrationBinding
 
 class RegistrationFragment : Fragment() {
-
     private var _binding: FragmentRegistrationBinding? = null
     private val binding get() = _binding!!
 
