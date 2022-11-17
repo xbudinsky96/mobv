@@ -24,4 +24,10 @@ class NearbyCompanyViewModel(application: Application): AndroidViewModel(applica
             repository.addCompany(element)
         }
     }
+
+    fun deleteCompanies() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteCompanies()
+        }
+    }
 }

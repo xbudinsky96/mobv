@@ -42,7 +42,7 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     override fun onBindViewHolder(holder: ElementViewHolder, position: Int) {
         val item = companyList[position]
-        val users = if (item.users.toInt() > 1) " users" else " user"
+        val users = if (item.users.toInt() != 1) " users" else " user"
 
         val currentDistance = if (loggedInUser.lat != null && loggedInUser.lon != null) {
             val distance = getDistanceFromLatLon(

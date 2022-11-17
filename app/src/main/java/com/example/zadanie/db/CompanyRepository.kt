@@ -11,8 +11,8 @@ class CompanyRepository(private val companyDao: CompanyDao) {
         companyDao.addCompany(companyWithMembers)
     }
 
-    suspend fun deleteCompany(companyWithMembers: CompanyWithMembers) {
-        companyDao.deleteCompany(companyWithMembers)
+    suspend fun deleteCompanies() {
+        companyDao.deleteCompanies()
     }
 
     fun getCompanyById(id: String): CompanyWithMembers {
@@ -25,5 +25,9 @@ class NearbyCompanyRepository(private val companyDao: NearbyCompanyDao) {
 
     suspend fun addCompany(element: Element) {
         companyDao.addCompany(element)
+    }
+
+    suspend fun deleteCompanies() {
+        companyDao.deleteCompanies()
     }
 }

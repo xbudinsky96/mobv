@@ -53,7 +53,6 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         _binding = FragmentCheckInDetailBinding.inflate(inflater, container, false)
         nearbyCompanyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
-        apiService.getCompaniesWithMembers(this)
 
         val specifyButton = binding.specify
         val showOnMap = binding.showonmap

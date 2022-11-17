@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zadanie.R
+import com.example.zadanie.api.apiService
 import com.example.zadanie.fragment.CheckInFragmentDirections
 import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.CompanyWithMembers
@@ -58,7 +59,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
             )
             "${distance.second} ${distance.first}"
         } else ""
-        val users = if (getUsers(item) > 1) "users" else "user"
+        val users = if (getUsers(item) != 1) "users" else "user"
         holder.companyText.text = item.tags.name + " - ${getUsers(item)} $users \n$currentDistance"
         holder.companyFrame.setOnClickListener {
             val action = CheckInFragmentDirections.actionCheckInFragmentToCheckInDetailFragment(
@@ -124,6 +125,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     }
 
     private fun getUsers(company: Element): Int {
+        apiService.getCompaniesWithMembers(fragment)
         val companyWithMembers = companyViewModel.getCompanyById(company.id.toString())
         return if (companyWithMembers != null) companyWithMembers.users.toInt() else 0
     }

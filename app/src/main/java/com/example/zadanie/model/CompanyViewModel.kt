@@ -35,9 +35,9 @@ class CompanyViewModel(application: Application): AndroidViewModel(application) 
         }
     }
 
-    fun deleteCompany(company: CompanyWithMembers) {
+    fun deleteCompanies() {
         viewModelScope.launch {
-            repository.deleteCompany(company)
+            repository.deleteCompanies()
         }
     }
 }

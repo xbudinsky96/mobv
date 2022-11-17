@@ -59,6 +59,7 @@ class ApiService {
             override fun onResponse(call: Call<Company>, response: Response<Company>) {
                 val body = response.body()
                 if(body != null) {
+                    companyViewModel.deleteCompanies()
                     insertCompaniesToDataBase(companyViewModel, body.elements)
                 }
                 else {
@@ -136,6 +137,7 @@ class ApiService {
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
+                        companyViewModel.deleteCompanies()
                         insertCompaniesToDataBase(companyViewModel, body)
                     } else {
                         Toast.makeText(context, "No companies found!", Toast.LENGTH_SHORT).show()
@@ -184,7 +186,6 @@ class ApiService {
                     fragment.findNavController().navigate(
                         CheckInDetailFragmentDirections.actionCheckInDetailFragmentToHomeFragment(company.id)
                     )
-                    getCompaniesWithMembers(fragment)
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
