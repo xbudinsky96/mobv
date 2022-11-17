@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
@@ -175,6 +177,7 @@ class ApiService {
             auth
         )
         checkInCompany.enqueue(object: Callback<CheckInResponse> {
+            @RequiresApi(Build.VERSION_CODES.M)
             override fun onResponse(
                 call: Call<CheckInResponse>,
                 response: Response<CheckInResponse>
@@ -186,6 +189,10 @@ class ApiService {
                     fragment.findNavController().navigate(
                         CheckInDetailFragmentDirections.actionCheckInDetailFragmentToHomeFragment(company.id)
                     )
+
+                    if (loggedInUser.lat != null && loggedInUser.lon != null) {
+                        fragmentCheckInDetail?.createFence(loggedInUser.lat!!, loggedInUser.lon!!)
+                    }
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
@@ -253,17 +260,16 @@ class ApiService {
                         if (userFromDB == null) {
                             loggedInUser.name = userName
                             usersViewModel.addUser(loggedInUser)
+                            findNavController(fragment).navigate(LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0))
                         } else {
                             loggedInUser.companyId = userFromDB.companyId
                             usersViewModel.updateUser(true, loggedInUser)
                             try {
-                                val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(
-                                    loggedInUser.companyId?.toLong()!!)
-                                findNavController(fragment).navigate(action)
+                                findNavController(fragment).navigate(LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(
+                                    loggedInUser.companyId?.toLong()!!))
                             }
                             catch (e: Exception) {
-                                val action = LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0)
-                                findNavController(fragment).navigate(action)
+                                findNavController(fragment).navigate(LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0))
                             }
 
                         }
@@ -323,8 +329,7 @@ class ApiService {
                             loggedInUser.isLogged = true
                             loggedInUser.salt = salt
                             usersViewModel.addUser(loggedInUser)
-                            val action = RegistrationFragmentDirections.actionRegistrationFragmentToCompanyFragment()
-                            fragment.findNavController().navigate(action)
+                            fragment.findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToCompanyFragment())
                             Toast.makeText(fragment.requireContext(), "Successful registration!", Toast.LENGTH_SHORT).show()
                         }
                         else {
