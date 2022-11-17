@@ -45,6 +45,10 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private val args: CheckInDetailFragmentArgs by navArgs()
     private val SEARCHPREFIX = "https://www.google.com/maps/@"
 
+    companion object {
+        const val PERMISSION_LOCATION_REQUEST_CODE = 1
+    }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -102,6 +106,8 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
                 }
                 else {
+                    loggedInUser.lat = location.latitude
+                    loggedInUser.lon = location.longitude
                     val lat = location.latitude
                     val lon = location.longitude
                     apiService.fetchNearbyCompanies(lat,lon, requireContext(), nearbyCompanyViewModel)
@@ -192,7 +198,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         EasyPermissions.requestPermissions(
             this,
             "This application cannot work without Location Permission.",
-            CheckInFragment.PERMISSION_LOCATION_REQUEST_CODE,
+            PERMISSION_LOCATION_REQUEST_CODE,
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     }

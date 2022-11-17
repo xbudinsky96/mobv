@@ -17,6 +17,7 @@ import com.example.zadanie.adapter.NearbyCompaniesAdapter
 import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentCheckInBinding
 import com.example.zadanie.model.NearbyCompanyViewModel
+import com.example.zadanie.model.loggedInUser
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
@@ -69,6 +70,8 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
                 }
                 else {
+                    loggedInUser.lat = location.latitude
+                    loggedInUser.lon = location.longitude
                     apiService.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
                     companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
                         if (elements.isNotEmpty()) {

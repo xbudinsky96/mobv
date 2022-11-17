@@ -250,8 +250,6 @@ class ApiService {
                         Toast.makeText(fragment.requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
                         loggedInUser = user
                         loggedInUser.isLogged = true
-                        loggedInUser.lat = fragment.location?.latitude
-                        loggedInUser.lon = fragment.location?.longitude
                         if (userFromDB == null) {
                             loggedInUser.name = userName
                             usersViewModel.addUser(loggedInUser)
@@ -322,8 +320,6 @@ class ApiService {
                         if (newUser.uid != "-1") {
                             loggedInUser = newUser
                             loggedInUser.name = userName
-                            loggedInUser.lat = fragment.location?.latitude
-                            loggedInUser.lon = fragment.location?.longitude
                             loggedInUser.isLogged = true
                             loggedInUser.salt = salt
                             usersViewModel.addUser(loggedInUser)

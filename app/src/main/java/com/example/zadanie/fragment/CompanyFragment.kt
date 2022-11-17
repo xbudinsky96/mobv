@@ -20,7 +20,6 @@ import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.loggedInUser
-import com.example.zadanie.ui.login.LoginFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
@@ -33,6 +32,10 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
     private lateinit var binding: FragmentCompanyBinding
     private lateinit var companyViewModel: CompanyViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
+    companion object {
+        const val PERMISSION_LOCATION_REQUEST_CODE = 1
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingInflatedId")
@@ -155,7 +158,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
         EasyPermissions.requestPermissions(
             this,
             "This application cannot work without Location Permission.",
-            LoginFragment.PERMISSION_LOCATION_REQUEST_CODE,
+            PERMISSION_LOCATION_REQUEST_CODE,
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     }
