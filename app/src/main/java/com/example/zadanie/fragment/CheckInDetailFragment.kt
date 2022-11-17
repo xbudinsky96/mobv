@@ -2,7 +2,9 @@ package com.example.zadanie.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationRequest
 import android.net.Uri
@@ -20,12 +22,12 @@ import androidx.navigation.fragment.navArgs
 import com.example.zadanie.R
 import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentCheckInDetailBinding
+import com.example.zadanie.geofence.GeofenceBroadcastReceiver
 import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.Element
 import com.example.zadanie.model.NearbyCompanyViewModel
 import com.example.zadanie.model.loggedInUser
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
@@ -44,6 +46,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var nearestCompany: Element
     private val args: CheckInDetailFragmentArgs by navArgs()
     private val SEARCHPREFIX = "https://www.google.com/maps/@"
+    private lateinit var geofencingClient: GeofencingClient
 
     companion object {
         const val PERMISSION_LOCATION_REQUEST_CODE = 1
@@ -57,6 +60,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         _binding = FragmentCheckInDetailBinding.inflate(inflater, container, false)
         nearbyCompanyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
+        geofencingClient = LocationServices.getGeofencingClient(requireActivity())
 
         val specifyButton = binding.specify
         val showOnMap = binding.showonmap
@@ -113,7 +117,6 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     apiService.fetchNearbyCompanies(lat, lon, requireContext(), nearbyCompanyViewModel)
                     nearbyCompanyViewModel.readData.observe(viewLifecycleOwner) { elements ->
                         if (elements.isEmpty()) {
-                            Toast.makeText(requireContext(), "No data has been retrieved!", Toast.LENGTH_SHORT).show()
                             pauseAnimation()
                         }
                         else {
@@ -131,13 +134,60 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    @SuppressLint("MissingPermission")
+    fun createFence(lat: Double, lon: Double) {
+        if (!hasLocationPermission()) {
+            Toast.makeText(requireContext(), "Geofence failed, permissions not granted.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val geofenceIntent = PendingIntent.getBroadcast(
+            requireContext(), 0,
+            Intent(requireContext(), GeofenceBroadcastReceiver::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val request = GeofencingRequest.Builder().apply {
+            addGeofence(
+                Geofence.Builder()
+                    .setRequestId("geofence " + loggedInUser.uid)
+                    .setCircularRegion(lat, lon, 300F)
+                    .setExpirationDuration(1000L * 60 * 60 * 24)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .build()
+            )
+        }.build()
+
+        geofencingClient.addGeofences(request, geofenceIntent).run {
+            addOnSuccessListener {
+                Toast.makeText(requireContext(), "Geofence created.", Toast.LENGTH_SHORT).show()
+            }
+            addOnFailureListener {
+                Toast.makeText(requireContext(), "Geofence failed to create.", Toast.LENGTH_SHORT).show()
+                it.printStackTrace()
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
     fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
         val companyWithMembers = companyViewModel.getCompanyById(foundCompany.id.toString())
         val users = if (companyWithMembers != null) "Users checked in: " + companyWithMembers.users else "Users checked in: 0"
-        val openingHours = if(foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else "Opening hours not provided"
-        val tel = if(foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else "TEL: Not provided"
-        val web = if(foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB: " + foundCompany.tags.website else "WEB: Not provided"
-        val contact = if(tel != null && tel != "" || web != null && web != "") "Contact us: \n" else "Contact not provided"
+        val openingHours = if (foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else "Opening hours not provided"
+        val tel = if (foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else "TEL: Not provided"
+        val web = if (foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB:" else "WEB: Not provided"
+        val webLink = if (foundCompany.tags.website != null && foundCompany.tags.website != "") foundCompany.tags.website else ""
+        val contact = if (tel != null && tel != "" || web != null && web != "") "Contact us: \n" else "Contact not provided"
+
+        if (webLink != "") {
+            binding.webLink.text = webLink
+            binding.webLink.setTextColor(Color.BLUE)
+            binding.webLink.setOnClickListener {
+                val link: Uri = Uri.parse(webLink)
+                val goToWeb = Intent(Intent.ACTION_VIEW, link)
+                startActivity(goToWeb)
+            }
+        }
 
         binding.compName.text = foundCompany.tags.name
         binding.compType.text = foundCompany.tags.amenity.replace("_", " ")
