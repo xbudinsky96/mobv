@@ -18,8 +18,7 @@ import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentCheckInBinding
 import com.example.zadanie.model.NearbyCompanyViewModel
 import com.example.zadanie.model.loggedInUser
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
