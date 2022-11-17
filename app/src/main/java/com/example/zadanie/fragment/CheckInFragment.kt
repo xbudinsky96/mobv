@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.zadanie.adapter.NearbyCompaniesAdapter
 import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentCheckInBinding
@@ -38,6 +39,7 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var companyViewModel: NearbyCompanyViewModel
     private val adapter = NearbyCompaniesAdapter(this)
+    private lateinit var pullToRefresh: SwipeRefreshLayout
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingPermission")
@@ -48,11 +50,17 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         // Inflate the layout for this fragment
         _binding = FragmentCheckInBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
+        pullToRefresh = binding.refreshLayout
 
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
 
         getLocation()
+        pullToRefresh.setOnRefreshListener {
+            pullToRefresh.isRefreshing = true
+            getLocation()
+            pullToRefresh.isRefreshing = false
+        }
 
         return binding.root
     }

@@ -19,6 +19,7 @@ import com.example.zadanie.adapter.CompanyAdapter
 import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentCompanyBinding
 import com.example.zadanie.model.CompanyViewModel
+import com.example.zadanie.model.UsersViewModel
 import com.example.zadanie.model.loggedInUser
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -32,6 +33,8 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
     private lateinit var binding: FragmentCompanyBinding
     private lateinit var companyViewModel: CompanyViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var pullToRefresh: SwipeRefreshLayout
+    private lateinit var usersViewModel: UsersViewModel
 
     companion object {
         const val PERMISSION_LOCATION_REQUEST_CODE = 1
@@ -47,7 +50,9 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
         binding = FragmentCompanyBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        val pullToRefresh: SwipeRefreshLayout = binding.refreshLayout
+        usersViewModel = ViewModelProvider(this)[UsersViewModel::class.java]
+        pullToRefresh = binding.refreshLayout
+
         val recyclerView = binding.recyclerView
         val sortButtonAlphabetic: Button = binding.sortAbc
         val sortDistance = binding.sortDistance
@@ -141,6 +146,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
                 else {
                     loggedInUser.lon = location.longitude
                     loggedInUser.lat = location.latitude
+                    usersViewModel.updateUser(true, loggedInUser)
                 }
             }
         } else {
@@ -168,7 +174,6 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 

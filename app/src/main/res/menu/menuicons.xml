@@ -6,7 +6,7 @@
         android:id="@+id/logout_app"
         android:title="@string/logout"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="collapseActionView" />
 
     <item
     android:id="@+id/manage_friends"
