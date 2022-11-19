@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".fragment.CheckInDetailFragment">
 
+    <com.mapbox.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="3000dp"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:mapbox_cameraZoom="16.0" />
+
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
         android:layout_width="3000dp"

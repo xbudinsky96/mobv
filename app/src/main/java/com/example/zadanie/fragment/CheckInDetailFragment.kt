@@ -3,8 +3,13 @@ package com.example.zadanie.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationRequest
 import android.net.Uri
@@ -13,7 +18,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -31,6 +38,11 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.mapbox.geojson.Point
+import com.mapbox.maps.*
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlin.math.pow
@@ -47,6 +59,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private val args: CheckInDetailFragmentArgs by navArgs()
     private val SEARCHPREFIX = "https://www.google.com/maps/@"
     private lateinit var geofencingClient: GeofencingClient
+    private var mapView: MapView? = null
 
     companion object {
         const val PERMISSION_LOCATION_REQUEST_CODE = 1
@@ -61,6 +74,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         nearbyCompanyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
+        mapView = binding.mapView
 
         val specifyButton = binding.specify
         val showOnMap = binding.showonmap
@@ -131,6 +145,61 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             }
         } else {
             requestLocationPermission()
+        }
+    }
+
+    private fun setPositionOnMap(lat: Double, lon: Double) {
+        val cameraPosition = CameraOptions.Builder()
+            .zoom(12.0)
+            .center(Point.fromLngLat(lon, lat))
+            .build()
+        mapView?.getMapboxMap()?.setCamera(cameraPosition)
+        mapView?.getMapboxMap()?.loadStyleUri(
+            Style.MAPBOX_STREETS
+        ) { addAnnotationToMap(lat, lon) }
+    }
+
+    private fun addAnnotationToMap(lat: Double, lon: Double) {
+// Create an instance of the Annotation API and get the PointAnnotationManager.
+        bitmapFromDrawableRes(
+            this.requireContext(),
+            R.drawable.ic_baseline_where_to_vote_24
+        )?.let {
+            val annotationApi = mapView?.annotations
+            val pointAnnotationManager = annotationApi?.createPointAnnotationManager(mapView!!)
+// Set options for the resulting symbol layer.
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+// Define a geographic coordinate.
+                .withPoint(Point.fromLngLat(lon, lat))
+// Specify the bitmap you assigned to the point annotation
+// The bitmap will be added to map style automatically.
+                .withIconImage(it)
+// Add the resulting pointAnnotation to the map.
+            pointAnnotationManager?.create(pointAnnotationOptions)
+        }
+    }
+
+    private fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
+        convertDrawableToBitmap(AppCompatResources.getDrawable(context, resourceId))
+
+    private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
+        if (sourceDrawable == null) {
+            return null
+        }
+        return if (sourceDrawable is BitmapDrawable) {
+            sourceDrawable.bitmap
+        } else {
+// copying drawable object to not manipulate on the same reference
+            val constantState = sourceDrawable.constantState ?: return null
+            val drawable = constantState.newDrawable().mutate()
+            val bitmap: Bitmap = Bitmap.createBitmap(
+                drawable.intrinsicWidth, drawable.intrinsicHeight,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            bitmap
         }
     }
 
@@ -207,6 +276,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             val show = Intent(Intent.ACTION_VIEW, queryUrl)
             startActivity(show)
         }
+        setPositionOnMap(latitude, longitude)
     }
 
     private fun setConfirmButton() {
