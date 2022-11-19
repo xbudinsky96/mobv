@@ -68,4 +68,6 @@
     <string name="show_details">show details</string>
     <string name="check_out">Check out</string>
     <string name="check_in">Check in</string>
+    <string name="by_name">by name</string>
+    <string name="by_company">by company</string>
 </resources>
