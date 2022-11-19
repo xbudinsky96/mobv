@@ -19,6 +19,16 @@ class FriendListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFriendListBinding.inflate(inflater, container, false)
+        val sortName = binding.byname
+        val sortCompany = binding.bycompany
+
+        sortName.setOnClickListener {
+            adapter.sortFriendsByName()
+        }
+
+        sortCompany.setOnClickListener {
+            adapter.sortFriendsByCompany()
+        }
 
         apiService.showFriends(this, adapter)
 

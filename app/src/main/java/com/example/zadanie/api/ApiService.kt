@@ -5,28 +5,26 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.text.Layout
+import android.text.Layout.Directions
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
+import com.example.zadanie.R
 import com.example.zadanie.adapter.FriendsAdapter
-import com.example.zadanie.fragment.CheckInDetailFragment
-import com.example.zadanie.fragment.CheckInDetailFragmentDirections
-import com.example.zadanie.fragment.FriendListFragment
-import com.example.zadanie.fragment.HomeFragment
+import com.example.zadanie.fragment.*
 import com.example.zadanie.model.*
 import com.example.zadanie.ui.login.LoginFragment
 import com.example.zadanie.ui.login.LoginFragmentDirections
 import com.example.zadanie.ui.login.RegistrationFragment
 import com.example.zadanie.ui.login.RegistrationFragmentDirections
-import okhttp3.internal.and
+import com.example.zadanie.utilities.getSalt
+import com.example.zadanie.utilities.hashPassword
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-import java.security.SecureRandom
 
 val apiService = ApiService()
 class ApiService {
@@ -147,7 +145,6 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
-                    getCompaniesWithMembers(fragment)
                 }
                 else {
                     Toast.makeText(context, "Response not successful!", Toast.LENGTH_SHORT).show()
@@ -230,7 +227,6 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
-                    checkOutCompany(fragment)
                 }
                 else {
                     Toast.makeText(fragment.requireContext(), "Failed to check out!", Toast.LENGTH_SHORT).show()
@@ -265,11 +261,11 @@ class ApiService {
                             loggedInUser.companyId = userFromDB.companyId
                             usersViewModel.updateUser(true, loggedInUser)
                             try {
-                                findNavController(fragment).navigate(LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(
+                                findNavController(fragment).navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment(
                                     loggedInUser.companyId?.toLong()!!))
                             }
                             catch (e: Exception) {
-                                findNavController(fragment).navigate(LoginFragmentDirections.actionLoginFragmentToCheckInDetailFragment(0))
+                                findNavController(fragment).navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment(0))
                             }
 
                         }
@@ -359,10 +355,14 @@ class ApiService {
                     if (newCredentials != null) {
                         loggedInUser = newCredentials
                         usersViewModel.updateUser(true, loggedInUser)
+                        Toast.makeText(context, "Token refreshed. Try again!!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 else {
-                    Toast.makeText(context, "Couldn't refresh token!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Couldn't refresh token! Please log in again!", Toast.LENGTH_SHORT).show()
+                    apiService.logoutUser(fragment)
+                    fragment.findNavController().navigate(R.id.action_loginFragment_self3)
+                    return
                 }
             }
 
@@ -383,7 +383,6 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
-                    addFriend(name, fragment)
                 }
                 else {
                     Toast.makeText(fragment.requireContext(), "Could not add friend!", Toast.LENGTH_SHORT).show()
@@ -406,7 +405,6 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
-                    deleteFriend(name, fragment)
                 }
                 else {
                     Toast.makeText(fragment.requireContext(), "Could not remove friend!", Toast.LENGTH_SHORT).show()
@@ -439,7 +437,6 @@ class ApiService {
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
-                    showFriends(fragment, adapter)
                 }
             }
 
@@ -449,26 +446,4 @@ class ApiService {
         })
     }
 
-    private fun hashPassword(password: String, salt: ByteArray): String {
-        try {
-            val md = MessageDigest.getInstance("SHA-512")
-            md.update(salt)
-            val bytes = md.digest(password.encodeToByteArray())
-            val sb: StringBuilder = StringBuilder()
-            for (element in bytes) {
-                sb.append(((element.and(0xff)) + 0x100).toString(16)).substring(1)
-            }
-            return sb.toString()
-        }
-        catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-        }
-        return ""
-    }
-
-    private fun getSalt(): ByteArray {
-        val salt = ByteArray(16)
-        SecureRandom().nextBytes(salt)
-        return salt
-    }
 }

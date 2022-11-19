@@ -1,5 +1,9 @@
 package com.example.zadanie.utilities
 
+import okhttp3.internal.and
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+import java.security.SecureRandom
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -26,4 +30,27 @@ fun getDistanceFromLatLon(lat1: Double, lon1: Double, lat2: Double, lon2: Double
 
 private fun deg2rad(deg: Double): Double {
     return deg * (Math.PI/180)
+}
+
+fun hashPassword(password: String, salt: ByteArray): String {
+    try {
+        val md = MessageDigest.getInstance("SHA-512")
+        md.update(salt)
+        val bytes = md.digest(password.encodeToByteArray())
+        val sb: StringBuilder = StringBuilder()
+        for (element in bytes) {
+            sb.append(((element.and(0xff)) + 0x100).toString(16)).substring(1)
+        }
+        return sb.toString()
+    }
+    catch (e: NoSuchAlgorithmException) {
+        e.printStackTrace()
+    }
+    return ""
+}
+
+fun getSalt(): ByteArray {
+    val salt = ByteArray(16)
+    SecureRandom().nextBytes(salt)
+    return salt
 }

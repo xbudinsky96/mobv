@@ -18,7 +18,8 @@ import java.util.*
 
 class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<FriendsAdapter.FriendViewHolder>() {
     private lateinit var friendList: MutableList<Friend>
-    private var dataIsSorted: Boolean = false
+    private var sortedByName: Boolean = false
+    private var sortedByCompany: Boolean = false
     private lateinit var context: Context
 
     class FriendViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -57,7 +58,7 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortFriendsByName(){
-        friendList = if(isSorted()) {
+        friendList = if(isSortedByName()) {
             friendList.sortedBy { it.user_name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Friend>
         } else {
             friendList.sortedBy { it.user_name.lowercase(Locale.ROOT) }.reversed() as MutableList<Friend>
@@ -65,9 +66,24 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
         notifyDataSetChanged()
     }
 
-    private fun isSorted(): Boolean {
-        dataIsSorted = dataIsSorted.not()
-        return dataIsSorted
+    @SuppressLint("NotifyDataSetChanged")
+    fun sortFriendsByCompany(){
+        friendList = if(isSortedByCompany()) {
+            friendList.sortedBy { if (it.bar_name == null) "" else it.bar_name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Friend>
+        } else {
+            friendList.sortedBy { if (it.bar_name == null) "" else it.bar_name.lowercase(Locale.ROOT) }.reversed() as MutableList<Friend>
+        }
+        notifyDataSetChanged()
+    }
+
+    private fun isSortedByName(): Boolean {
+        sortedByName = sortedByName.not()
+        return sortedByName
+    }
+
+    private fun isSortedByCompany(): Boolean {
+        sortedByCompany = sortedByCompany.not()
+        return sortedByCompany
     }
 
     @SuppressLint("NotifyDataSetChanged")
