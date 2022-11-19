@@ -135,11 +135,17 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             pauseAnimation()
                         }
                         else {
-                            setCoordinates(lat, lon)
                             cancelAnimation()
                             nearestCompany = getNearestCompany(elements, lat, lon)
-                            setConfirmButton()
-                            setDetails(nearestCompany, binding)
+                            if (nearestCompany.tags.name != null && nearestCompany.tags.name != "") {
+                                setCoordinates(nearestCompany.lat, nearestCompany.lon)
+                                setConfirmButton()
+                                setDetails(nearestCompany, binding)
+                            }
+                            else {
+                                binding.compName.text = "No company"
+                                Toast.makeText(requireContext(), "No companies found!", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }

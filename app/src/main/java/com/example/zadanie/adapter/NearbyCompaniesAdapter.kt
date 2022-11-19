@@ -16,7 +16,6 @@ import com.example.zadanie.R
 import com.example.zadanie.api.apiService
 import com.example.zadanie.fragment.CheckInFragmentDirections
 import com.example.zadanie.model.CompanyViewModel
-import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.Element
 import com.example.zadanie.model.loggedInUser
 import com.example.zadanie.utilities.getDistanceFromLatLon
@@ -132,7 +131,11 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataNearestDescending(lat: Double, lon: Double) {
-        companyList = companyList.sortedBy { getDistanceFromLatLon(lat, lon, it.lat, it.lon).second } as MutableList<Element>
+        if (companyList == null || companyList.isNotEmpty()) {
+            companyList = companyList.sortedBy { getDistanceFromLatLon(lat, lon, it.lat, it.lon).second } as MutableList<Element>
+        } else {
+            Toast.makeText(fragment.requireContext(), "No companies found!", Toast.LENGTH_SHORT).show()
+        }
         notifyDataSetChanged()
     }
 
