@@ -75,6 +75,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         mapView = binding.mapView
+        mapView?.isVisible = false
 
         val specifyButton = binding.specify
         val showOnMap = binding.showonmap
@@ -149,6 +150,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun setPositionOnMap(lat: Double, lon: Double) {
+        mapView!!.isVisible = true
         val cameraPosition = CameraOptions.Builder()
             .zoom(12.0)
             .center(Point.fromLngLat(lon, lat))
@@ -160,21 +162,15 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun addAnnotationToMap(lat: Double, lon: Double) {
-// Create an instance of the Annotation API and get the PointAnnotationManager.
         bitmapFromDrawableRes(
             this.requireContext(),
             R.drawable.ic_baseline_where_to_vote_24
         )?.let {
             val annotationApi = mapView?.annotations
-            val pointAnnotationManager = annotationApi?.createPointAnnotationManager(mapView!!)
-// Set options for the resulting symbol layer.
+            val pointAnnotationManager = annotationApi?.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-// Define a geographic coordinate.
                 .withPoint(Point.fromLngLat(lon, lat))
-// Specify the bitmap you assigned to the point annotation
-// The bitmap will be added to map style automatically.
                 .withIconImage(it)
-// Add the resulting pointAnnotation to the map.
             pointAnnotationManager?.create(pointAnnotationOptions)
         }
     }
@@ -189,7 +185,6 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         return if (sourceDrawable is BitmapDrawable) {
             sourceDrawable.bitmap
         } else {
-// copying drawable object to not manipulate on the same reference
             val constantState = sourceDrawable.constantState ?: return null
             val drawable = constantState.newDrawable().mutate()
             val bitmap: Bitmap = Bitmap.createBitmap(
