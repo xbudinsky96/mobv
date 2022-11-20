@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.text.Layout
-import android.text.Layout.Directions
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -127,7 +125,6 @@ class ApiService {
     fun getCompaniesWithMembers(fragment: Fragment) {
         val companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
         val context = fragment.requireContext()
-        val auth = "Bearer " + loggedInUser.access
         val companies = mPageAPI.getCompaniesWithMembers(loggedInUser.uid, auth)
         companies.enqueue(object: Callback<MutableList<CompanyWithMembers>> {
             override fun onResponse(
@@ -158,7 +155,6 @@ class ApiService {
     }
 
     fun checkInCompany(company: Element, fragmentHome: HomeFragment?, fragmentCheckInDetail: CheckInDetailFragment?) {
-        val auth = "Bearer " + loggedInUser.access
         val fragment = fragmentCheckInDetail ?: fragmentHome
         val usersViewModel = ViewModelProvider(fragment!!)[UsersViewModel::class.java]
         val context = fragment.requireContext()
@@ -206,7 +202,6 @@ class ApiService {
     }
 
     fun checkOutCompany(fragment: Fragment) {
-        val auth = "Bearer " + loggedInUser.access
         val companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
         val userViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
         val company = companyViewModel.getCompanyById(loggedInUser.companyId.toString())
@@ -355,13 +350,13 @@ class ApiService {
                     if (newCredentials != null) {
                         loggedInUser = newCredentials
                         usersViewModel.updateUser(true, loggedInUser)
-                        Toast.makeText(context, "Token refreshed. Try again!!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Token refreshed. Try again!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 else {
                     Toast.makeText(context, "Couldn't refresh token! Please log in again!", Toast.LENGTH_SHORT).show()
                     apiService.logoutUser(fragment)
-                    fragment.findNavController().navigate(R.id.action_loginFragment_self3)
+                    fragment.findNavController().navigate(R.id.action_toLoginFragment)
                     return
                 }
             }
@@ -374,7 +369,6 @@ class ApiService {
     }
 
     fun addFriend(name: String, fragment: Fragment) {
-        val auth = "Bearer " + loggedInUser.access
         val addFriend = mPageAPI.addFriend(PostAddDeleteUser(name), loggedInUser.uid, auth)
         addFriend.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -396,7 +390,6 @@ class ApiService {
     }
 
     fun deleteFriend(name: String, fragment: Fragment) {
-        val auth = "Bearer " + loggedInUser.access
         val deleteFriend = mPageAPI.deleteFriend(PostAddDeleteUser(name), loggedInUser.uid, auth)
         deleteFriend.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -418,7 +411,6 @@ class ApiService {
     }
 
     fun showFriends(fragment: FriendListFragment, adapter: FriendsAdapter) {
-        val auth = "Bearer " + loggedInUser.access
         val showFriends = mPageAPI.showFriends(loggedInUser.uid, auth)
         showFriends.enqueue(object: Callback<MutableList<Friend>> {
             override fun onResponse(

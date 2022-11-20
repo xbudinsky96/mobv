@@ -5,6 +5,7 @@ import retrofit2.Call
 import retrofit2.http.*
 
 private const val apiKey = "c95332ee022df8c953ce470261efc695ecf3e784"
+val auth = "Bearer " + loggedInUser.access
 interface ApiInterface {
 
     @POST("user/create.php")
