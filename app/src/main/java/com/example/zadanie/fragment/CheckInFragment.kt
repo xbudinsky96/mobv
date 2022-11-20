@@ -77,29 +77,33 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
                 }
                 else {
-                    loggedInUser.lat = location.latitude
-                    loggedInUser.lon = location.longitude
-                    apiService.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
-                    companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
-                        if (elements.isNotEmpty()) {
-                            adapter.setCompanies(elements)
-                            adapter.sortDataNearestDescending(location.latitude, location.longitude)
-                            binding.sortAbc.setOnClickListener {
-                                adapter.sortAlphabetically()
-                            }
-                            binding.sortDistance.setOnClickListener {
-                                adapter.sortDataByDistance()
-                            }
-                            binding.sortPeople.setOnClickListener {
-                                adapter.sortPeople()
-                            }
-                        }
-                        binding.list.adapter = adapter
-                    }
+                    setData(location)
                 }
             }
         } else {
             requestLocationPermission()
+        }
+    }
+
+    private fun setData(location: Location) {
+        loggedInUser.lat = location.latitude
+        loggedInUser.lon = location.longitude
+        apiService.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
+        companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
+            if (elements.isNotEmpty()) {
+                adapter.setCompanies(elements)
+                adapter.sortDataNearestDescending(location.latitude, location.longitude)
+                binding.sortAbc.setOnClickListener {
+                    adapter.sortAlphabetically()
+                }
+                binding.sortDistance.setOnClickListener {
+                    adapter.sortDataByDistance()
+                }
+                binding.sortPeople.setOnClickListener {
+                    adapter.sortPeople()
+                }
+            }
+            binding.list.adapter = adapter
         }
     }
 

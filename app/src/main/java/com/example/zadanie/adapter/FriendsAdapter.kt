@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -48,9 +47,7 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
                 )
                 fragment.findNavController().navigate(action)
             }
-            catch (e: Exception) {
-                Toast.makeText(fragment.requireContext(), "Friend is not checked in to a company!", Toast.LENGTH_SHORT).show()
-            }
+            catch (_: Exception) { }
         }
     }
 
@@ -58,22 +55,30 @@ class FriendsAdapter(private val fragment: Fragment): RecyclerView.Adapter<Frien
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortFriendsByName(){
-        friendList = if(isSortedByName()) {
-            friendList.sortedBy { it.user_name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Friend>
-        } else {
-            friendList.sortedBy { it.user_name.lowercase(Locale.ROOT) }.reversed() as MutableList<Friend>
-        }
-        notifyDataSetChanged()
+        try {
+            friendList = if (isSortedByName()) {
+                friendList.sortedBy { it.user_name.lowercase(Locale.ROOT) }.reversed()
+                    .reversed() as MutableList<Friend>
+            } else {
+                friendList.sortedBy { it.user_name.lowercase(Locale.ROOT) }
+                    .reversed() as MutableList<Friend>
+            }
+            notifyDataSetChanged()
+        } catch (_: Exception) { }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortFriendsByCompany(){
-        friendList = if(isSortedByCompany()) {
-            friendList.sortedBy { if (it.bar_name == null) "" else it.bar_name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Friend>
-        } else {
-            friendList.sortedBy { if (it.bar_name == null) "" else it.bar_name.lowercase(Locale.ROOT) }.reversed() as MutableList<Friend>
-        }
-        notifyDataSetChanged()
+        try {
+            friendList = if (isSortedByCompany()) {
+                friendList.sortedBy { if (it.bar_name == null) "" else it.bar_name.lowercase(Locale.ROOT) }
+                    .reversed().reversed() as MutableList<Friend>
+            } else {
+                friendList.sortedBy { if (it.bar_name == null) "" else it.bar_name.lowercase(Locale.ROOT) }
+                    .reversed() as MutableList<Friend>
+            }
+            notifyDataSetChanged()
+        } catch (_: Exception) { }
     }
 
     private fun isSortedByName(): Boolean {

@@ -72,55 +72,64 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortAlphabetically() {
-        companyList = if(isSortedByName()) {
-            companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<Element>
-        } else {
-            companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed() as MutableList<Element>
-        }
-        notifyDataSetChanged()
+        try {
+            companyList = if (isSortedByName()) {
+                companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }.reversed()
+                    .reversed() as MutableList<Element>
+            } else {
+                companyList.sortedBy { it.tags.name.lowercase(Locale.ROOT) }
+                    .reversed() as MutableList<Element>
+            }
+            notifyDataSetChanged()
+        } catch (_: Exception) { }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataByDistance() {
-        if (loggedInUser.lat == null || loggedInUser.lon == null) {
-            Toast.makeText(context, "Location service not permitted!", Toast.LENGTH_SHORT).show()
-            return
-        }
+        try {
+            if (loggedInUser.lat == null || loggedInUser.lon == null) {
+                Toast.makeText(context, "Location service not permitted!", Toast.LENGTH_SHORT)
+                    .show()
+                return
+            }
 
-        companyList = if(isSortedByDistance()) {
-            companyList.sortedBy {
-                val distance =
-                    getDistanceFromLatLon(
-                        loggedInUser.lat!!,
-                        loggedInUser.lon!!,
-                        it.lat,
-                        it.lon
-                    )
-                if (distance.first == "km") (distance.second * 1000) else distance.second
-            }.reversed().reversed() as MutableList<Element>
-        } else {
-            companyList.sortedBy {
-                val distance =
-                    getDistanceFromLatLon(
-                        loggedInUser.lat!!,
-                        loggedInUser.lon!!,
-                        it.lat,
-                        it.lon
-                    )
-                if (distance.first == "km") (distance.second * 1000) else distance.second
-            }.reversed() as MutableList<Element>
-        }
-        notifyDataSetChanged()
+            companyList = if (isSortedByDistance()) {
+                companyList.sortedBy {
+                    val distance =
+                        getDistanceFromLatLon(
+                            loggedInUser.lat!!,
+                            loggedInUser.lon!!,
+                            it.lat,
+                            it.lon
+                        )
+                    if (distance.first == "km") (distance.second * 1000) else distance.second
+                }.reversed().reversed() as MutableList<Element>
+            } else {
+                companyList.sortedBy {
+                    val distance =
+                        getDistanceFromLatLon(
+                            loggedInUser.lat!!,
+                            loggedInUser.lon!!,
+                            it.lat,
+                            it.lon
+                        )
+                    if (distance.first == "km") (distance.second * 1000) else distance.second
+                }.reversed() as MutableList<Element>
+            }
+            notifyDataSetChanged()
+        } catch (_: Exception) { }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortPeople() {
-        companyList = if(isSortedByPeople()) {
-            companyList.sortedBy { getUsers(it) }.reversed().reversed() as MutableList<Element>
-        } else {
-            companyList.sortedBy { getUsers(it) }.reversed() as MutableList<Element>
-        }
-        notifyDataSetChanged()
+        try {
+            companyList = if (isSortedByPeople()) {
+                companyList.sortedBy { getUsers(it) }.reversed().reversed() as MutableList<Element>
+            } else {
+                companyList.sortedBy { getUsers(it) }.reversed() as MutableList<Element>
+            }
+            notifyDataSetChanged()
+        } catch (_: Exception) { }
     }
 
     private fun getUsers(company: Element): Int {
@@ -131,11 +140,9 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataNearestDescending(lat: Double, lon: Double) {
-        if (companyList == null || companyList.isNotEmpty()) {
+        try {
             companyList = companyList.sortedBy { getDistanceFromLatLon(lat, lon, it.lat, it.lon).second } as MutableList<Element>
-        } else {
-            Toast.makeText(fragment.requireContext(), "No companies found!", Toast.LENGTH_SHORT).show()
-        }
+        } catch (_: Exception) { }
         notifyDataSetChanged()
     }
 
@@ -156,8 +163,10 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
 
     @SuppressLint("NotifyDataSetChanged")
     fun setCompanies(companies: MutableList<Element>) {
-        companyList = filterNoNameCompanies(companies)
-        notifyDataSetChanged()
+        try {
+            companyList = filterNoNameCompanies(companies)
+            notifyDataSetChanged()
+        } catch (_: Exception) { }
     }
 
     private fun filterNoNameCompanies(companies: MutableList<Element>): MutableList<Element> {

@@ -6,7 +6,7 @@
     app:startDestination="@id/loginFragment">
 
     <action
-        android:id="@+id/action_loginFragment_self3"
+        android:id="@+id/action_toLoginFragment"
         app:destination="@id/loginFragment" />
     <fragment
         android:id="@+id/homeFragment"

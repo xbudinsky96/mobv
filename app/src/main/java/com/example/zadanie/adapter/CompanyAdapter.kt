@@ -67,55 +67,66 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortAlphabetically() {
-        companyList = if(isSortedByName()) {
-            companyList.sortedBy { it.bar_name.lowercase(Locale.ROOT) }.reversed().reversed() as MutableList<CompanyWithMembers>
-        } else {
-            companyList.sortedBy { it.bar_name.lowercase(Locale.ROOT) }.reversed() as MutableList<CompanyWithMembers>
-        }
-        notifyDataSetChanged()
+        try {
+            companyList = if (isSortedByName()) {
+                companyList.sortedBy { it.bar_name.lowercase(Locale.ROOT) }.reversed()
+                    .reversed() as MutableList<CompanyWithMembers>
+            } else {
+                companyList.sortedBy { it.bar_name.lowercase(Locale.ROOT) }
+                    .reversed() as MutableList<CompanyWithMembers>
+            }
+            notifyDataSetChanged()
+        } catch (_: Exception) { }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortDataByDistance() {
-        if (loggedInUser.lat == null || loggedInUser.lon == null) {
-            Toast.makeText(context, "Location service not permitted!", Toast.LENGTH_SHORT).show()
-            return
+        try {
+            if (loggedInUser.lat == null || loggedInUser.lon == null) {
+                Toast.makeText(context, "Location service not permitted!", Toast.LENGTH_SHORT)
+                    .show()
+                return
+            }
+            companyList = if (isSortedByDistance()) {
+                companyList.sortedBy {
+                    val distance =
+                        getDistanceFromLatLon(
+                            loggedInUser.lat!!,
+                            loggedInUser.lon!!,
+                            it.lat.toDouble(),
+                            it.lon.toDouble()
+                        )
+                    if (distance.first == "km") (distance.second * 1000) else distance.second
+                }.reversed().reversed() as MutableList<CompanyWithMembers>
+            } else {
+                companyList.sortedBy {
+                    val distance =
+                        getDistanceFromLatLon(
+                            loggedInUser.lat!!,
+                            loggedInUser.lon!!,
+                            it.lat.toDouble(),
+                            it.lon.toDouble()
+                        )
+                    if (distance.first == "km") (distance.second * 1000) else distance.second
+                }.reversed() as MutableList<CompanyWithMembers>
+            }
+            notifyDataSetChanged()
         }
-
-        companyList = if(isSortedByDistance()) {
-            companyList.sortedBy {
-                val distance =
-                getDistanceFromLatLon(
-                    loggedInUser.lat!!,
-                    loggedInUser.lon!!,
-                    it.lat.toDouble(),
-                    it.lon.toDouble()
-                )
-                if (distance.first == "km") (distance.second * 1000) else distance.second
-            }.reversed().reversed() as MutableList<CompanyWithMembers>
-        } else {
-            companyList.sortedBy {
-                val distance =
-                    getDistanceFromLatLon(
-                    loggedInUser.lat!!,
-                    loggedInUser.lon!!,
-                    it.lat.toDouble(),
-                    it.lon.toDouble()
-                )
-                if (distance.first == "km") (distance.second * 1000) else distance.second
-            }.reversed() as MutableList<CompanyWithMembers>
-        }
-        notifyDataSetChanged()
+        catch (_: Exception) { }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortPeople() {
-        companyList = if(isSortedByPeople()) {
-            companyList.sortedBy { it.users }.reversed().reversed() as MutableList<CompanyWithMembers>
-        } else {
-            companyList.sortedBy { it.users }.reversed() as MutableList<CompanyWithMembers>
+        try {
+            companyList = if (isSortedByPeople()) {
+                companyList.sortedBy { it.users }.reversed()
+                    .reversed() as MutableList<CompanyWithMembers>
+            } else {
+                companyList.sortedBy { it.users }.reversed() as MutableList<CompanyWithMembers>
+            }
+            notifyDataSetChanged()
         }
-        notifyDataSetChanged()
+        catch (_: Exception) { }
     }
 
     private fun isSortedByName(): Boolean {

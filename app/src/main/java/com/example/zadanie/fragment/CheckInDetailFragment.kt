@@ -34,6 +34,7 @@ import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.Element
 import com.example.zadanie.model.NearbyCompanyViewModel
 import com.example.zadanie.model.loggedInUser
+import com.example.zadanie.utilities.getDistanceFromLatLon
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
@@ -45,8 +46,6 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
@@ -125,33 +124,38 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
                 }
                 else {
-                    loggedInUser.lat = location.latitude
-                    loggedInUser.lon = location.longitude
-                    val lat = location.latitude
-                    val lon = location.longitude
-                    apiService.fetchNearbyCompanies(lat, lon, requireContext(), nearbyCompanyViewModel)
-                    nearbyCompanyViewModel.readData.observe(viewLifecycleOwner) { elements ->
-                        if (elements.isEmpty()) {
-                            pauseAnimation()
-                        }
-                        else {
-                            cancelAnimation()
-                            nearestCompany = getNearestCompany(elements, lat, lon)
-                            if (nearestCompany.tags.name != null && nearestCompany.tags.name != "") {
-                                setCoordinates(nearestCompany.lat, nearestCompany.lon)
-                                setConfirmButton()
-                                setDetails(nearestCompany, binding)
-                            }
-                            else {
-                                binding.compName.text = "No company"
-                                Toast.makeText(requireContext(), "No companies found!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
+                    setData(location)
                 }
             }
         } else {
             requestLocationPermission()
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setData(location: Location) {
+        loggedInUser.lat = location.latitude
+        loggedInUser.lon = location.longitude
+        val lat = location.latitude
+        val lon = location.longitude
+        apiService.fetchNearbyCompanies(lat, lon, requireContext(), nearbyCompanyViewModel)
+        nearbyCompanyViewModel.readData.observe(viewLifecycleOwner) { elements ->
+            if (elements.isEmpty()) {
+                pauseAnimation()
+            }
+            else {
+                cancelAnimation()
+                nearestCompany = getNearestCompany(elements, lat, lon)
+                if (nearestCompany.tags.name != null && nearestCompany.tags.name != "") {
+                    setCoordinates(nearestCompany.lat, nearestCompany.lon)
+                    setConfirmButton()
+                    setDetails(nearestCompany, binding)
+                }
+                else {
+                    binding.compName.text = "No company"
+                    Toast.makeText(requireContext(), "No companies found!", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -301,12 +305,8 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun getNearestCompany(companyList: MutableList<Element>, lat: Double, lon: Double): Element {
-        val nearestCompany = companyList.sortedBy { getDistance(lat, lon, it.lat, it.lon) } as MutableList<Element>
+        val nearestCompany = companyList.sortedBy { getDistanceFromLatLon(lat, lon, it.lat, it.lon).second } as MutableList<Element>
         return nearestCompany[0]
-    }
-
-    private fun getDistance(lat: Double, lon: Double, currLat: Double, currLon: Double): Double {
-        return sqrt((lat - currLat).pow(2) + (lon - currLon).pow(2))
     }
 
     private fun hasLocationPermission() =

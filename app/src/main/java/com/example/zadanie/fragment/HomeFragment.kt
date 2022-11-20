@@ -21,6 +21,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     val binding get() = _binding!!
     private val args: HomeFragmentArgs by navArgs()
     private lateinit var companyViewModel: CompanyViewModel
+    private val SEARCHPREFIX = "https://www.google.com/maps/@"
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -36,30 +37,34 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCheckInDetailFragment(args.companyId))
         }
         else {
-            try {
-                val company = companyViewModel.getCompanyById(args.companyId.toString())
-                binding.companyName.text = company.bar_name
-                binding.nameTitle.text = loggedInUser.name
-                binding.showOnMap.isEnabled = true
-                binding.showOnMap.setOnClickListener {
-                    val queryUrl: Uri = Uri.parse("https://www.google.com/maps/@${company.lat},${company.lon},16z")
-                    val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
-                    startActivity(showOnMap)
-                }
-            }
-            catch (e: Exception) {
-                apiService.getCompanyByID(null, this, args.companyId)
-            }
-
-            binding.checkOut.setOnClickListener {
-                apiService.checkOutCompany(this)
-                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCheckInDetailFragment(0))
-            }
-            binding.showDetails.setOnClickListener {
-                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCheckInDetailFragment(args.companyId))
-            }
+            setData()
         }
         return binding.root
+    }
+
+    private fun setData() {
+        try {
+            val company = companyViewModel.getCompanyById(args.companyId.toString())
+            binding.companyName.text = company.bar_name
+            binding.nameTitle.text = loggedInUser.name
+            binding.showOnMap.isEnabled = true
+            binding.showOnMap.setOnClickListener {
+                val queryUrl: Uri = Uri.parse("$SEARCHPREFIX${company.lat},${company.lon},16z")
+                val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
+                startActivity(showOnMap)
+            }
+        }
+        catch (e: Exception) {
+            apiService.getCompanyByID(null, this, args.companyId)
+        }
+
+        binding.checkOut.setOnClickListener {
+            apiService.checkOutCompany(this)
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCheckInDetailFragment(0))
+        }
+        binding.showDetails.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCheckInDetailFragment(args.companyId))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
