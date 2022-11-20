@@ -25,6 +25,7 @@ import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
 val apiService = ApiService()
+
 class ApiService {
 
     private val mPageAPI = Retrofit.Builder()
@@ -123,6 +124,7 @@ class ApiService {
     }
 
     fun getCompaniesWithMembers(fragment: Fragment) {
+        val auth = "Bearer " + loggedInUser.access
         val companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
         val context = fragment.requireContext()
         val companies = mPageAPI.getCompaniesWithMembers(loggedInUser.uid, auth)
@@ -155,6 +157,7 @@ class ApiService {
     }
 
     fun checkInCompany(company: Element, fragmentHome: HomeFragment?, fragmentCheckInDetail: CheckInDetailFragment?) {
+        val auth = "Bearer " + loggedInUser.access
         val fragment = fragmentCheckInDetail ?: fragmentHome
         val usersViewModel = ViewModelProvider(fragment!!)[UsersViewModel::class.java]
         val context = fragment.requireContext()
@@ -170,7 +173,7 @@ class ApiService {
             auth
         )
         checkInCompany.enqueue(object: Callback<CheckInResponse> {
-            @RequiresApi(Build.VERSION_CODES.M)
+            @RequiresApi(Build.VERSION_CODES.S)
             override fun onResponse(
                 call: Call<CheckInResponse>,
                 response: Response<CheckInResponse>
@@ -202,11 +205,10 @@ class ApiService {
     }
 
     fun checkOutCompany(fragment: Fragment) {
-        val companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
+        val auth = "Bearer " + loggedInUser.access
         val userViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
-        val company = companyViewModel.getCompanyById(loggedInUser.companyId.toString())
         val leaveCompany = mPageAPI.checkOutCompany(
-            PostLogoutCompany("", company.bar_name, company.bar_type, company.lat.toDouble(), company.lon.toDouble()),
+            PostLogoutCompany("", "", "", 0.0, 0.0),
             loggedInUser.uid,
             auth
         )
@@ -262,7 +264,6 @@ class ApiService {
                             catch (e: Exception) {
                                 findNavController(fragment).navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment(0))
                             }
-
                         }
                     }
                     else {
@@ -353,11 +354,14 @@ class ApiService {
                         Toast.makeText(context, "Token refreshed. Try again!", Toast.LENGTH_SHORT).show()
                     }
                 }
-                else {
+                else if (response.code() == 401) {
                     Toast.makeText(context, "Couldn't refresh token! Please log in again!", Toast.LENGTH_SHORT).show()
                     apiService.logoutUser(fragment)
                     fragment.findNavController().navigate(R.id.action_toLoginFragment)
                     return
+                }
+                else {
+                    Toast.makeText(context, "Couldn't refresh token! Please check your connection or log in again!", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -369,6 +373,7 @@ class ApiService {
     }
 
     fun addFriend(name: String, fragment: Fragment) {
+        val auth = "Bearer " + loggedInUser.access
         val addFriend = mPageAPI.addFriend(PostAddDeleteUser(name), loggedInUser.uid, auth)
         addFriend.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -390,6 +395,7 @@ class ApiService {
     }
 
     fun deleteFriend(name: String, fragment: Fragment) {
+        val auth = "Bearer " + loggedInUser.access
         val deleteFriend = mPageAPI.deleteFriend(PostAddDeleteUser(name), loggedInUser.uid, auth)
         deleteFriend.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -411,6 +417,7 @@ class ApiService {
     }
 
     fun showFriends(fragment: FriendListFragment, adapter: FriendsAdapter) {
+        val auth = "Bearer " + loggedInUser.access
         val showFriends = mPageAPI.showFriends(loggedInUser.uid, auth)
         showFriends.enqueue(object: Callback<MutableList<Friend>> {
             override fun onResponse(

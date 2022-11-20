@@ -3,6 +3,8 @@ package com.example.zadanie.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_MUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -208,7 +210,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("MissingPermission")
     fun createFence(lat: Double, lon: Double) {
         if (!hasLocationPermission()) {
@@ -218,7 +220,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val geofenceIntent = PendingIntent.getBroadcast(
             requireContext(), 0,
             Intent(requireContext(), GeofenceBroadcastReceiver::class.java),
-            PendingIntent.FLAG_IMMUTABLE
+            FLAG_UPDATE_CURRENT or FLAG_MUTABLE
         )
 
         val request = GeofencingRequest.Builder().apply {
