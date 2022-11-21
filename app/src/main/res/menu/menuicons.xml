@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/logout_app"
-        android:title="@string/logout"
-        android:orderInCategory="100"
-        app:showAsAction="collapseActionView" />
-
-    <item
     android:id="@+id/manage_friends"
     android:title="@string/friends"
     android:orderInCategory="1"
@@ -30,6 +24,12 @@
         android:id="@+id/companies_with_members"
         android:title="@string/companies_with_members"
         android:orderInCategory="4"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/logout_app"
+        android:title="@string/logout"
+        android:orderInCategory="5"
         app:showAsAction="collapseActionView" />
 
 </menu>
