@@ -72,6 +72,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         setHasOptionsMenu(true)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     @Deprecated("Deprecated in Java",
         ReplaceWith("inflater.inflate(R.menu.menuicons, menu)", "com.example.zadanie.R")
     )

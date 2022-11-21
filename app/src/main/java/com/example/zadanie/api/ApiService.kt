@@ -162,7 +162,7 @@ class ApiService {
         val usersViewModel = ViewModelProvider(fragment!!)[UsersViewModel::class.java]
         val context = fragment.requireContext()
         val checkInCompany = mPageAPI.checkInCompany(
-            PostLoginCompany(
+            PostLoginLogoutCompany(
                 company.id.toString(),
                 company.tags.name,
                 company.tags.amenity,
@@ -208,7 +208,7 @@ class ApiService {
         val auth = "Bearer " + loggedInUser.access
         val userViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
         val leaveCompany = mPageAPI.checkOutCompany(
-            PostLogoutCompany("", "", "", 0.0, 0.0),
+            PostLoginLogoutCompany("", "", "", 0.0, 0.0),
             loggedInUser.uid,
             auth
         )

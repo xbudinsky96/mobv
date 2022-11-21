@@ -30,7 +30,8 @@ import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 
 class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.PermissionCallbacks {
-    private lateinit var binding: FragmentCompanyBinding
+    private var _binding: FragmentCompanyBinding? = null
+    private val binding get() = _binding!!
     private lateinit var companyViewModel: CompanyViewModel
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var pullToRefresh: SwipeRefreshLayout
@@ -47,7 +48,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCompanyBinding.inflate(inflater, container, false)
+        _binding = FragmentCompanyBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[CompanyViewModel::class.java]
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         usersViewModel = ViewModelProvider(this)[UsersViewModel::class.java]
@@ -95,6 +96,11 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     @Deprecated("Deprecated in Java",

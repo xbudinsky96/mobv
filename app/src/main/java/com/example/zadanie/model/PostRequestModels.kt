@@ -9,15 +9,7 @@ data class PostRefreshToken(
     val refresh: String
 )
 
-data class PostLoginCompany(
-    val id: String,
-    val name: String,
-    val type: String,
-    val lat: Double,
-    val lon: Double
-)
-
-data class PostLogoutCompany(
+data class PostLoginLogoutCompany(
     val id: String,
     val name: String,
     val type: String,

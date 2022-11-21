@@ -47,7 +47,6 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         _binding = FragmentCheckInBinding.inflate(inflater, container, false)
         companyViewModel = ViewModelProvider(this)[NearbyCompanyViewModel::class.java]
         pullToRefresh = binding.refreshLayout

@@ -58,8 +58,9 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
             )
             "${distance.second} ${distance.first}"
         } else ""
-        val users = if (getUsers(item) != 1) "users" else "user"
-        holder.companyText.text = item.tags.name + " - ${getUsers(item)} $users \n$currentDistance"
+        val numberOfUsers = getUsers(item)
+        val usersLabel = if (numberOfUsers != 1) "users" else "user"
+        holder.companyText.text = item.tags.name + " - $numberOfUsers $usersLabel \n$currentDistance"
         holder.companyFrame.setOnClickListener {
             val action = CheckInFragmentDirections.actionCheckInFragmentToCheckInDetailFragment(
                 item.id
@@ -68,7 +69,14 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
         }
     }
 
-    override fun getItemCount() = companyList.size
+    override fun getItemCount(): Int {
+        try {
+            return companyList.size
+        }
+        catch (e: Exception) {
+            return 0
+        }
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     fun sortAlphabetically() {
