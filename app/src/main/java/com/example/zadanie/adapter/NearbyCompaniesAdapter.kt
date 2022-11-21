@@ -141,7 +141,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     }
 
     private fun getUsers(company: Element): Int {
-        apiService.getCompaniesWithMembers(fragment)
+        apiService.getCompaniesWithMembers(fragment, null)
         val companyWithMembers = companyViewModel.getCompanyById(company.id.toString())
         return if (companyWithMembers != null) companyWithMembers.users.toInt() else 0
     }

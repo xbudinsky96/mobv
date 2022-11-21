@@ -58,7 +58,6 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         pullToRefresh.setOnRefreshListener {
             pullToRefresh.isRefreshing = true
             getLocation()
-            pullToRefresh.isRefreshing = false
         }
 
         return binding.root
@@ -77,6 +76,7 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 }
                 else {
                     setData(location)
+                    pullToRefresh.isRefreshing = false
                 }
             }
         } else {

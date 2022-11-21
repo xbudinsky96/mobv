@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.zadanie.R
 import com.example.zadanie.adapter.FriendsAdapter
 import com.example.zadanie.fragment.*
@@ -123,7 +124,7 @@ class ApiService {
         })
     }
 
-    fun getCompaniesWithMembers(fragment: Fragment) {
+    fun getCompaniesWithMembers(fragment: Fragment, pullToRefresh: SwipeRefreshLayout?) {
         val auth = "Bearer " + loggedInUser.access
         val companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
         val context = fragment.requireContext()
@@ -133,6 +134,9 @@ class ApiService {
                 call: Call<MutableList<CompanyWithMembers>>,
                 response: Response<MutableList<CompanyWithMembers>>
             ) {
+                if (pullToRefresh != null) {
+                    pullToRefresh.isRefreshing = false
+                }
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {

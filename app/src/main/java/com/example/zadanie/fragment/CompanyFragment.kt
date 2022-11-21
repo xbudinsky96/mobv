@@ -89,8 +89,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
 
     private fun fetchDataFromAPI(pullToRefresh: SwipeRefreshLayout) {
         pullToRefresh.isRefreshing = true
-        apiService.getCompaniesWithMembers(this)
-        pullToRefresh.isRefreshing = false
+        apiService.getCompaniesWithMembers(this, pullToRefresh)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
