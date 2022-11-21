@@ -164,7 +164,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun setPositionOnMap(lat: Double, lon: Double) {
         mapView!!.isVisible = true
         val cameraPosition = CameraOptions.Builder()
-            .zoom(12.0)
+            .zoom(15.0)
             .center(Point.fromLngLat(lon, lat))
             .build()
         mapView?.getMapboxMap()?.setCamera(cameraPosition)
@@ -249,16 +249,23 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     fun setDetails(foundCompany: Element, binding: FragmentCheckInDetailBinding) {
         val companyWithMembers = companyViewModel.getCompanyById(foundCompany.id.toString())
         val users = if (companyWithMembers != null) "Users checked in: " + companyWithMembers.users else "Users checked in: 0"
-        val openingHours = if (foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "") "Opening hours:" + "\n\n" + foundCompany.tags.opening_hours.replace(", ", "\n") else "Opening hours not provided"
+        val openingHours =
+            if (foundCompany.tags.opening_hours != null && foundCompany.tags.opening_hours != "")
+                "Opening hours:" + "\n" + foundCompany.tags.opening_hours
+                    .replace(", ", "\n")
+                    .replace("; ", "\n")
+            else "Opening hours not provided"
+
         val tel = if (foundCompany.tags.phone != null && foundCompany.tags.phone != "") "TEL: " + foundCompany.tags.phone else "TEL: Not provided"
         val web = if (foundCompany.tags.website != null && foundCompany.tags.website != "") "WEB:" else "WEB: Not provided"
         val webLink = if (foundCompany.tags.website != null && foundCompany.tags.website != "") foundCompany.tags.website else ""
-        val contact = if (tel != null && tel != "" || web != null && web != "") "Contact us: \n" else "Contact not provided"
+        val contact = "Contact us"
 
         if (webLink != "") {
-            binding.webLink.text = webLink
-            binding.webLink.setTextColor(Color.BLUE)
-            binding.webLink.setOnClickListener {
+            val webUrl = binding.webLink
+            webUrl.text = webLink
+            webUrl.setTextColor(Color.BLUE)
+            webUrl.setOnClickListener {
                 val link: Uri = Uri.parse(webLink)
                 val goToWeb = Intent(Intent.ACTION_VIEW, link)
                 startActivity(goToWeb)
@@ -388,6 +395,10 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
         R.id.companies_with_members -> {
             findNavController().navigate(CheckInDetailFragmentDirections.actionCheckInDetailFragmentToCompanyFragment())
+            true
+        }
+        R.id.check_in -> {
+            findNavController().navigate(CheckInDetailFragmentDirections.actionCheckInDetailFragmentToCheckInFragment())
             true
         }
         else -> { super.onOptionsItemSelected(item) }
