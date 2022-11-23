@@ -1,15 +1,15 @@
-package com.example.zadanie.ui.login
+package com.example.zadanie.fragment
 
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentRegistrationBinding
+import com.google.android.material.snackbar.Snackbar
 
 class RegistrationFragment : Fragment() {
     private var _binding: FragmentRegistrationBinding? = null
@@ -37,11 +37,11 @@ class RegistrationFragment : Fragment() {
                     apiService.registerUser(userNameString, passString, this)
                 }
                 else {
-                    Toast.makeText(context, "Passwords don't match!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(requireView(), "Passwords don't match!", Snackbar.LENGTH_SHORT).show()
                 }
             }
             else {
-                Toast.makeText(context, "Enter a username and a password!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Enter a username and a password!", Snackbar.LENGTH_SHORT).show()
             }
         }
 

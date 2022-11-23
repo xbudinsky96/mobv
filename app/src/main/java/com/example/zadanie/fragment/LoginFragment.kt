@@ -1,15 +1,15 @@
-package com.example.zadanie.ui.login
+package com.example.zadanie.fragment
 
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentLoginBinding
+import com.google.android.material.snackbar.Snackbar
 
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
@@ -40,7 +40,7 @@ class LoginFragment : Fragment() {
                 apiService.loginUser(userName.toString(), password.toString(), this)
             }
             else {
-                Toast.makeText(context, "Enter a username and a password!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(this.requireView(), "Enter a username and a password!", Snackbar.LENGTH_SHORT).show()
             }
         }
 
