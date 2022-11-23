@@ -14,9 +14,10 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="2dp"
         android:text="@string/abc"
+        app:layout_constraintEnd_toStartOf="@+id/sortDistance"
+        app:layout_constraintHorizontal_bias="0.214"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
         tools:ignore="NotSibling,RtlHardcoded" />
 
     <Button
@@ -24,12 +25,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
-        android:layout_marginStart="148dp"
         android:layout_marginTop="2dp"
+        android:layout_marginEnd="28dp"
         android:text="@string/distance"
-        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintEnd_toStartOf="@+id/sortPeople"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
         tools:ignore="NotSibling,RtlHardcoded" />
 
     <Button
@@ -38,10 +39,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
         android:layout_marginTop="2dp"
+        android:layout_marginEnd="28dp"
         android:text="@string/people"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.896"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="NotSibling,RtlHardcoded" />
 

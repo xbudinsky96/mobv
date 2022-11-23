@@ -163,10 +163,11 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun setPositionOnMap(lat: Double, lon: Double) {
+        println("LATLON: " + lat + ", " + lon)
         mapView!!.isVisible = true
         val cameraPosition = CameraOptions.Builder()
             .zoom(15.0)
-            .center(Point.fromLngLat(lon, lat))
+            .center(Point.fromLngLat(lon, lat - 0.0010000))
             .build()
         mapView?.getMapboxMap()?.setCamera(cameraPosition)
         mapView?.getMapboxMap()?.loadStyleUri(

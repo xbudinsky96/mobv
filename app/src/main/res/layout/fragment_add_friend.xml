@@ -10,12 +10,12 @@
         android:id="@+id/addFriend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="60dp"
         android:layout_marginBottom="56dp"
         android:text="Manage friends"
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/friendName"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -29,10 +29,10 @@
         android:layout_width="282dp"
         android:layout_height="48dp"
         android:layout_marginTop="56dp"
-        android:layout_marginEnd="64dp"
         android:hint="@string/friend_s_name"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addFriend" />
 
     <Button
@@ -40,9 +40,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="56dp"
-        android:layout_marginEnd="160dp"
         android:text="@string/addFriend"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/friendName" />
 
     <Button
@@ -50,9 +50,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="128dp"
-        android:layout_marginEnd="140dp"
         android:text="@string/my_friends"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addButton" />
 
     <Button
@@ -60,8 +60,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="128dp"
         android:text="Remove friend"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>
