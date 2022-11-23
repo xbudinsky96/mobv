@@ -84,33 +84,38 @@ class ApiService {
             @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call<Company>, response: Response<Company>) {
                 val body = response.body()
-                if(body != null) {
+                if (body != null) {
                     val foundCompany = body.elements[0]
                     val latitude = foundCompany.lat
                     val longitude = foundCompany.lon
 
                     if (fragmentCheckInDetail != null) {
-                        val binding = fragmentCheckInDetail.binding
-                        fragmentCheckInDetail.setDetails(foundCompany, binding)
-                        binding.confirm.setOnClickListener {
-                            if (context != null) {
-                                checkInCompany(foundCompany, null, fragmentCheckInDetail)
+                        try {
+                            val binding = fragmentCheckInDetail.binding
+                            fragmentCheckInDetail.setDetails(foundCompany, binding)
+                            binding.confirm.setOnClickListener {
+                                if (context != null) {
+                                    checkInCompany(foundCompany, null, fragmentCheckInDetail)
+                                }
                             }
-                        }
-                        binding.confirm.isEnabled = true
-                        fragmentCheckInDetail.setCoordinates(latitude, longitude)
+                            binding.confirm.isEnabled = true
+                            fragmentCheckInDetail.setCoordinates(latitude, longitude)
+                        } catch (_: Exception) {}
                     }
 
                     if (fragmentHome != null) {
-                        val binding = fragmentHome.binding
-                        binding.companyName.text = foundCompany.tags.name
-                        binding.nameTitle.text = loggedInUser.name
-                        binding.showOnMap.isEnabled = true
-                        binding.showOnMap.setOnClickListener {
-                            val queryUrl: Uri = Uri.parse("https://www.google.com/maps/@${latitude},${longitude},16z")
-                            val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
-                            context?.startActivity(showOnMap)
-                        }
+                        try {
+                            val binding = fragmentHome.binding
+                            binding.companyName.text = foundCompany.tags.name
+                            binding.nameTitle.text = loggedInUser.name
+                            binding.showOnMap.isEnabled = true
+                            binding.showOnMap.setOnClickListener {
+                                val queryUrl: Uri =
+                                    Uri.parse("https://www.google.com/maps/@${latitude},${longitude},16z")
+                                val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
+                                context?.startActivity(showOnMap)
+                            }
+                        } catch (_: Exception) {}
                     }
                 }
                 else {
@@ -183,12 +188,9 @@ class ApiService {
                 response: Response<CheckInResponse>
             ) {
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Checked in to " + company.tags.name + "!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Checked in!", Toast.LENGTH_SHORT).show()
                     loggedInUser.companyId = company.id.toString()
                     usersViewModel.updateUser(true, loggedInUser)
-                    fragment.findNavController().navigate(
-                        CheckInDetailFragmentDirections.actionCheckInDetailFragmentToHomeFragment(company.id)
-                    )
 
                     if (loggedInUser.lat != null && loggedInUser.lon != null) {
                         fragmentCheckInDetail?.createFence(loggedInUser.lat!!, loggedInUser.lon!!)

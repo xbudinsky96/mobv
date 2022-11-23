@@ -150,6 +150,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 nearestCompany = getNearestCompany(elements, lat, lon)
                 if (nearestCompany.tags.name != null && nearestCompany.tags.name != "") {
                     setCoordinates(nearestCompany.lat, nearestCompany.lon)
+                    apiService.checkInCompany(nearestCompany, null, this)
                     setConfirmButton()
                     setDetails(nearestCompany, binding)
                 }

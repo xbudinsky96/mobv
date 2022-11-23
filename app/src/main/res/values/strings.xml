@@ -71,4 +71,6 @@
     <string name="by_name">by name</string>
     <string name="by_company">by company</string>
     <string name="mapbox_access_token">sk.eyJ1IjoieGJ1ZGluc2t5IiwiYSI6ImNsYW50MDhvNzBzYmIzeW9iOXl1eWY2d3gifQ._byt29Vb27jDKqnARyM79Q</string>
+    <string name="click_to_check_in_to_nearest_company">Click to check in to nearest company</string>
+    <string name="remove">remove</string>
 </resources>
