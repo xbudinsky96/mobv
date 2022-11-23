@@ -1,13 +1,11 @@
 package com.example.zadanie.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -19,11 +17,11 @@ import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.Element
 import com.example.zadanie.model.loggedInUser
 import com.example.zadanie.utilities.getDistanceFromLatLon
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<NearbyCompaniesAdapter.ElementViewHolder>()  {
     private lateinit var companyList: MutableList<Element>
-    private lateinit var context: Context
     private var isSortedByName: Boolean = false
     private var isSortedByDistance: Boolean = false
     private var isSortedByUsers: Boolean = false
@@ -38,7 +36,6 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
         parent: ViewGroup,
         viewType: Int
     ): ElementViewHolder {
-        context = parent.context
         companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.list, parent, false)
@@ -96,7 +93,7 @@ class NearbyCompaniesAdapter(val fragment: Fragment): RecyclerView.Adapter<Nearb
     fun sortDataByDistance() {
         try {
             if (loggedInUser.lat == null || loggedInUser.lon == null) {
-                Toast.makeText(context, "Location service not permitted!", Toast.LENGTH_SHORT)
+                Snackbar.make(fragment.requireView(), "Location service not permitted!", Snackbar.LENGTH_SHORT)
                     .show()
                 return
             }

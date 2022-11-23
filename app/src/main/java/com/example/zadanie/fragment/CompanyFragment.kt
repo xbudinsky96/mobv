@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Button
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +25,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.android.material.snackbar.Snackbar
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 
@@ -146,7 +146,7 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
                 override fun isCancellationRequested() = false
             }).addOnSuccessListener { location: Location? ->
                 if (location == null) {
-                    Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(requireView(), "Couldn't get location", Snackbar.LENGTH_SHORT).show()
                 }
                 else {
                     loggedInUser.lon = location.longitude
@@ -192,10 +192,10 @@ class CompanyFragment : Fragment(R.layout.fragment_company), EasyPermissions.Per
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        Toast.makeText(
-            requireContext(),
+        Snackbar.make(
+            requireView(),
             "Permission Granted!",
-            Toast.LENGTH_SHORT
+            Snackbar.LENGTH_SHORT
         ).show()
         getLocation()
     }

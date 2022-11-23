@@ -1,13 +1,11 @@
 package com.example.zadanie.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +14,7 @@ import com.example.zadanie.fragment.CompanyFragmentDirections
 import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.loggedInUser
 import com.example.zadanie.utilities.getDistanceFromLatLon
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 import kotlin.math.*
 
@@ -24,7 +23,6 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     private var isSortedByName: Boolean = false
     private var isSortedByDistance: Boolean = false
     private var isSortedByUsers: Boolean = false
-    private lateinit var context: Context
 
     class ElementViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val companyFrame: LinearLayout = view.findViewById(R.id.frame)
@@ -32,7 +30,6 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ElementViewHolder {
-        context = parent.context
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.list, parent, false)
 
@@ -83,7 +80,7 @@ class CompanyAdapter(private val fragment: Fragment): RecyclerView.Adapter<Compa
     fun sortDataByDistance() {
         try {
             if (loggedInUser.lat == null || loggedInUser.lon == null) {
-                Toast.makeText(context, "Location service not permitted!", Toast.LENGTH_SHORT)
+                Snackbar.make(fragment.requireView(), "Location service not permitted!", Snackbar.LENGTH_SHORT)
                     .show()
                 return
             }

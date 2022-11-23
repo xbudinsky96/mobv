@@ -2,13 +2,13 @@ package com.example.zadanie.fragment
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zadanie.R
 import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentAddFriendBinding
 import com.example.zadanie.model.loggedInUser
+import com.google.android.material.snackbar.Snackbar
 
 class AddFriendFragment : Fragment() {
     private var _binding: FragmentAddFriendBinding? = null
@@ -45,7 +45,7 @@ class AddFriendFragment : Fragment() {
             apiService.addFriend(name, this)
         }
         else {
-            Toast.makeText(requireContext(), "Enter a name!", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "Enter a name!", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -54,7 +54,7 @@ class AddFriendFragment : Fragment() {
             apiService.deleteFriend(name, this)
         }
         else {
-            Toast.makeText(requireContext(), "Enter a name!", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "Enter a name!", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -95,7 +95,7 @@ class AddFriendFragment : Fragment() {
                 findNavController().navigate(AddFriendFragmentDirections.actionAddFriendFragmentToHomeFragment(loggedInUser.companyId?.toLong()!!))
             }
             catch (e: Exception) {
-                Toast.makeText(requireContext(), "You are not checked in!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "You are not checked in!", Snackbar.LENGTH_SHORT).show()
             }
             true
         }

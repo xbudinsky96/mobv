@@ -1,7 +1,6 @@
 package com.example.zadanie.api
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -16,12 +15,9 @@ import com.example.zadanie.R
 import com.example.zadanie.adapter.FriendsAdapter
 import com.example.zadanie.fragment.*
 import com.example.zadanie.model.*
-import com.example.zadanie.ui.login.LoginFragment
-import com.example.zadanie.ui.login.LoginFragmentDirections
-import com.example.zadanie.ui.login.RegistrationFragment
-import com.example.zadanie.ui.login.RegistrationFragmentDirections
 import com.example.zadanie.utilities.getSalt
 import com.example.zadanie.utilities.hashPassword
+import com.google.android.material.snackbar.Snackbar
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -49,7 +45,7 @@ class ApiService {
         elements.forEach { element -> companyViewModel.addCompany(element) }
     }
 
-    fun fetchNearbyCompanies(lat: Double, lon: Double, context: Context, companyViewModel: NearbyCompanyViewModel) {
+    fun fetchNearbyCompanies(lat: Double, lon: Double, fragment: Fragment, companyViewModel: NearbyCompanyViewModel) {
         val query = "[out:json];node(around:500,{lat}, {lon});(node(around:500)[\"amenity\"~\"^pub\$|^bar\$|^restaurant\$|^cafe\$|^fast_food\$|^stripclub\$|^nightclub\$\"];);out body;>;out skel;\n"
             .replace("{lat}", lat.toString())
             .replace("{lon}", lon.toString())
@@ -57,74 +53,104 @@ class ApiService {
         val companies = overPassAPI.getNearbyCompanies(query)
         companies.enqueue(object: Callback<Company> {
             override fun onResponse(call: Call<Company>, response: Response<Company>) {
-                val body = response.body()
-                if(body != null) {
+                val pubs = response.body()
+                if(pubs != null) {
                     companyViewModel.deleteCompanies()
-                    insertCompaniesToDataBase(companyViewModel, body.elements)
+                    insertCompaniesToDataBase(companyViewModel, pubs.elements)
                 }
                 else {
-                    Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "No data has been retrieved!", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Company>, t: Throwable) {
-                Toast.makeText(context, "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(fragment.requireContext(), "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
             }
-
         })
     }
 
-    fun getCompanyByID(fragmentCheckInDetail: CheckInDetailFragment?, fragmentHome: HomeFragment?, id: Long) {
+    fun getCompanyByID(fragmentCheckInDetail: CheckInDetailFragment, id: Long) {
         val query = "[out:json];node({companyId});out body;>;out skel;"
             .replace("{companyId}", id.toString())
 
-        val context = fragmentCheckInDetail?.requireContext() ?: fragmentHome?.requireContext()
         val companies = overPassAPI.getCompanyByID(query)
         companies.enqueue(object: Callback<Company> {
             @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call<Company>, response: Response<Company>) {
-                val body = response.body()
-                if (body != null) {
-                    val foundCompany = body.elements[0]
+                val pubs = response.body()
+                if (pubs != null) {
+                    val foundCompany = pubs.elements[0]
                     val latitude = foundCompany.lat
                     val longitude = foundCompany.lon
 
-                    if (fragmentCheckInDetail != null) {
-                        try {
-                            val binding = fragmentCheckInDetail.binding
-                            fragmentCheckInDetail.setDetails(foundCompany, binding)
-                            binding.confirm.setOnClickListener {
-                                if (context != null) {
-                                    checkInCompany(foundCompany, null, fragmentCheckInDetail)
-                                }
-                            }
-                            binding.confirm.isEnabled = true
-                            fragmentCheckInDetail.setCoordinates(latitude, longitude)
-                        } catch (_: Exception) {}
-                    }
-
-                    if (fragmentHome != null) {
-                        try {
-                            val binding = fragmentHome.binding
-                            binding.companyName.text = foundCompany.tags.name
-                            binding.nameTitle.text = loggedInUser.name
-                            binding.showOnMap.isEnabled = true
-                            binding.showOnMap.setOnClickListener {
-                                val queryUrl: Uri =
-                                    Uri.parse("https://www.google.com/maps/@${latitude},${longitude},16z")
-                                val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
-                                context?.startActivity(showOnMap)
-                            }
-                        } catch (_: Exception) {}
-                    }
+                    try {
+                        val binding = fragmentCheckInDetail.binding
+                        fragmentCheckInDetail.setDetails(foundCompany, binding)
+                        binding.confirm.setOnClickListener {
+                            checkInCompany(foundCompany, fragmentCheckInDetail)
+                        }
+                        binding.confirm.isEnabled = true
+                        fragmentCheckInDetail.setCoordinates(latitude, longitude)
+                    } catch (_: Exception) {}
                 }
                 else {
-                    Toast.makeText(context, "No data has been retrieved!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        fragmentCheckInDetail.requireView(),
+                        "No data has been retrieved!",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<Company>, t: Throwable) {
-                Toast.makeText(context, "Couldn't fetch data!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    fragmentCheckInDetail.requireContext(),
+                    "Couldn't fetch data!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    fun getCompanyByID(homeFragment: HomeFragment, id: Long) {
+        val query = "[out:json];node({companyId});out body;>;out skel;"
+            .replace("{companyId}", id.toString())
+
+        val companies = overPassAPI.getCompanyByID(query)
+        companies.enqueue(object: Callback<Company> {
+            @SuppressLint("SetTextI18n")
+            override fun onResponse(call: Call<Company>, response: Response<Company>) {
+                val pubs = response.body()
+                if (pubs != null) {
+                    val foundCompany = pubs.elements[0]
+                    try {
+                        val binding = homeFragment.binding
+                        binding.companyName.text = foundCompany.tags.name
+                        binding.nameTitle.text = loggedInUser.name
+                        binding.showOnMap.isEnabled = true
+                        binding.showOnMap.setOnClickListener {
+                            val queryUrl: Uri =
+                                Uri.parse("https://www.google.com/maps/@${foundCompany.lat},${foundCompany.lon},16z")
+                            val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
+                            homeFragment.requireContext().startActivity(showOnMap)
+                        }
+                    } catch (_: Exception) {}
+                }
+                else {
+                    Snackbar.make(
+                        homeFragment.requireView(),
+                        "No data has been retrieved!",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Company>, t: Throwable) {
+                Toast.makeText(
+                    homeFragment.requireContext(),
+                    "Couldn't fetch data!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
@@ -132,7 +158,6 @@ class ApiService {
     fun getCompaniesWithMembers(fragment: Fragment, pullToRefresh: SwipeRefreshLayout?) {
         val auth = "Bearer " + loggedInUser.access
         val companyViewModel = ViewModelProvider(fragment)[CompanyViewModel::class.java]
-        val context = fragment.requireContext()
         val companies = mPageAPI.getCompaniesWithMembers(loggedInUser.uid, auth)
         companies.enqueue(object: Callback<MutableList<CompanyWithMembers>> {
             override fun onResponse(
@@ -143,33 +168,31 @@ class ApiService {
                     pullToRefresh.isRefreshing = false
                 }
                 if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null) {
+                    val pubs = response.body()
+                    if (pubs != null) {
                         companyViewModel.deleteCompanies()
-                        insertCompaniesToDataBase(companyViewModel, body)
+                        insertCompaniesToDataBase(companyViewModel, pubs)
                     } else {
-                        Toast.makeText(context, "No companies found!", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(fragment.requireView(), "No companies found!", Snackbar.LENGTH_SHORT).show()
                     }
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
                 }
                 else {
-                    Toast.makeText(context, "Response not successful!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Response not successful!", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<MutableList<CompanyWithMembers>>, t: Throwable) {
-                Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragment.requireView(), "Something went wrong!", Snackbar.LENGTH_SHORT).show()
             }
         })
     }
 
-    fun checkInCompany(company: Element, fragmentHome: HomeFragment?, fragmentCheckInDetail: CheckInDetailFragment?) {
+    fun checkInCompany(company: Element, fragmentCheckInDetail: CheckInDetailFragment) {
         val auth = "Bearer " + loggedInUser.access
-        val fragment = fragmentCheckInDetail ?: fragmentHome
-        val usersViewModel = ViewModelProvider(fragment!!)[UsersViewModel::class.java]
-        val context = fragment.requireContext()
+        val usersViewModel = ViewModelProvider(fragmentCheckInDetail)[UsersViewModel::class.java]
         val checkInCompany = mPageAPI.checkInCompany(
             PostLoginLogoutCompany(
                 company.id.toString(),
@@ -188,24 +211,24 @@ class ApiService {
                 response: Response<CheckInResponse>
             ) {
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Checked in!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragmentCheckInDetail.requireView(), "Checked in!", Snackbar.LENGTH_SHORT).show()
                     loggedInUser.companyId = company.id.toString()
                     usersViewModel.updateUser(true, loggedInUser)
 
                     if (loggedInUser.lat != null && loggedInUser.lon != null) {
-                        fragmentCheckInDetail?.createFence(loggedInUser.lat!!, loggedInUser.lon!!)
+                        fragmentCheckInDetail.createFence(loggedInUser.lat!!, loggedInUser.lon!!)
                     }
                 }
                 else if(response.code() == 401) {
-                    refreshToken(fragment)
+                    refreshToken(fragmentCheckInDetail)
                 }
                 else {
-                    Toast.makeText(context, "Failure!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragmentCheckInDetail.requireView(), "Failure!", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<CheckInResponse>, t: Throwable) {
-                Toast.makeText(context, "Failed to check in!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragmentCheckInDetail.requireView(), "Failed to check in!", Snackbar.LENGTH_SHORT).show()
             }
         })
     }
@@ -226,20 +249,20 @@ class ApiService {
                 if (response.isSuccessful) {
                     loggedInUser.companyId = null
                     userViewModel.updateUser(true, loggedInUser)
-                    Toast.makeText(fragment.requireContext(), "Checked out!", Toast.LENGTH_SHORT).show()
+                    fragment.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCheckInDetailFragment(0))
+                    Snackbar.make(fragment.requireView(), "Checked out!", Snackbar.LENGTH_SHORT).show()
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
                 }
                 else {
-                    Toast.makeText(fragment.requireContext(), "Failed to check out!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Failed to check out!", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<CheckInResponse>, t: Throwable) {
-                Toast.makeText(fragment.requireContext(), "Failure!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragment.requireView(), "Failure!", Snackbar.LENGTH_SHORT).show()
             }
-
         })
     }
 
@@ -253,7 +276,7 @@ class ApiService {
                 if(response.isSuccessful) {
                     val user = response.body()
                     if (user != null && user.uid != "-1") {
-                        Toast.makeText(fragment.requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(fragment.requireView(), "Logged in", Snackbar.LENGTH_SHORT).show()
                         loggedInUser = user
                         loggedInUser.isLogged = true
                         if (userFromDB == null) {
@@ -273,16 +296,16 @@ class ApiService {
                         }
                     }
                     else {
-                        Toast.makeText(fragment.requireContext(), "Wrong username or password!", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(fragment.requireView(), "Wrong username or password!", Snackbar.LENGTH_SHORT).show()
                     }
                 }
                 else {
-                    Toast.makeText(fragment.requireContext(), "Something went wrong! Try again.", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Something went wrong! Try again.", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<User>, t: Throwable) {
-                Toast.makeText(fragment.requireContext(), "Error occurred while logging in user!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragment.requireView(), "Error occurred while logging in user!", Snackbar.LENGTH_SHORT).show()
             }
         })
     }
@@ -300,6 +323,7 @@ class ApiService {
     fun logoutUser(fragment: Fragment) {
         val usersViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
         usersViewModel.updateUser(false, loggedInUser)
+        Snackbar.make(fragment.requireView(), "Logged out!", Snackbar.LENGTH_SHORT).show()
     }
 
     fun getLoggedUser(fragment: Fragment) {
@@ -328,26 +352,25 @@ class ApiService {
                             loggedInUser.salt = salt
                             usersViewModel.addUser(loggedInUser)
                             fragment.findNavController().navigate(RegistrationFragmentDirections.actionRegistrationFragmentToCompanyFragment())
-                            Toast.makeText(fragment.requireContext(), "Successful registration!", Toast.LENGTH_SHORT).show()
+                            Snackbar.make(fragment.requireView(), "Successful registration!", Snackbar.LENGTH_SHORT).show()
                         }
                         else {
-                            Toast.makeText(fragment.requireContext(), "Username is already taken!", Toast.LENGTH_SHORT).show()
+                            Snackbar.make(fragment.requireView(), "Username is already taken!", Snackbar.LENGTH_SHORT).show()
                         }
                     }
                 }
                 else {
-                    Toast.makeText(fragment.requireContext(), "Something went wrong!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Something went wrong!", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<User>, t: Throwable) {
-                Toast.makeText(fragment.requireContext(), "Error occurred while registering user!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragment.requireView(), "Error occurred while registering user!", Snackbar.LENGTH_SHORT).show()
             }
         })
     }
 
     fun refreshToken(fragment: Fragment) {
-        val context = fragment.requireContext()
         val usersViewModel = ViewModelProvider(fragment)[UsersViewModel::class.java]
         val refreshToken = mPageAPI.refreshToken(PostRefreshToken(loggedInUser.refresh), loggedInUser.uid)
         refreshToken.enqueue(object: Callback<User> {
@@ -357,22 +380,22 @@ class ApiService {
                     if (newCredentials != null) {
                         loggedInUser = newCredentials
                         usersViewModel.updateUser(true, loggedInUser)
-                        Toast.makeText(context, "Token refreshed. Try again!", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(fragment.requireView(), "Token refreshed. Try again!", Snackbar.LENGTH_SHORT).show()
                     }
                 }
                 else if (response.code() == 401) {
-                    Toast.makeText(context, "Couldn't refresh token! Please log in again!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Couldn't refresh token! Please log in again!", Snackbar.LENGTH_SHORT).show()
                     apiService.logoutUser(fragment)
                     fragment.findNavController().navigate(R.id.action_toLoginFragment)
                     return
                 }
                 else {
-                    Toast.makeText(context, "Couldn't refresh token! Please check your connection or log in again!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Couldn't refresh token! Please check your connection or log in again!", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<User>, t: Throwable) {
-                Toast.makeText(context, "Error while refreshing token!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragment.requireView(), "Error while refreshing token!", Snackbar.LENGTH_SHORT).show()
             }
 
         })
@@ -384,18 +407,18 @@ class ApiService {
         addFriend.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(fragment.requireContext(), "Friend added successfully!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Friend added successfully!", Snackbar.LENGTH_SHORT).show()
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
                 }
                 else {
-                    Toast.makeText(fragment.requireContext(), "Could not add friend!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Could not add friend!", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(fragment.requireContext(), "Error! Friend has not been added!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragment.requireView(), "Error! Friend has not been added!", Snackbar.LENGTH_SHORT).show()
             }
         })
     }
@@ -406,18 +429,18 @@ class ApiService {
         deleteFriend.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(fragment.requireContext(), "Friend deleted successfully!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Friend deleted successfully!", Snackbar.LENGTH_SHORT).show()
                 }
                 else if(response.code() == 401) {
                     refreshToken(fragment)
                 }
                 else {
-                    Toast.makeText(fragment.requireContext(), "Could not remove friend!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(fragment.requireView(), "Could not remove friend!", Snackbar.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(fragment.requireContext(), "Error! Friend has not been deleted!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragment.requireView(), "Error! Friend has not been deleted!", Snackbar.LENGTH_SHORT).show()
             }
         })
     }
@@ -431,12 +454,12 @@ class ApiService {
                 response: Response<MutableList<Friend>>
             ) {
                 if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null) {
-                        if (body.isEmpty()) {
-                            Toast.makeText(fragment.requireContext(), "You don't have friends yet!", Toast.LENGTH_SHORT).show()
+                    val friends = response.body()
+                    if (friends != null) {
+                        if (friends.isEmpty()) {
+                            Snackbar.make(fragment.requireView(), "You don't have friends yet!", Snackbar.LENGTH_SHORT).show()
                         }
-                        adapter.setUsers(body)
+                        adapter.setUsers(friends)
                         fragment.binding.list.adapter = adapter
                     }
                 }
@@ -446,7 +469,7 @@ class ApiService {
             }
 
             override fun onFailure(call: Call<MutableList<Friend>>, t: Throwable) {
-                Toast.makeText(fragment.requireContext(), "Error! Couldn't load friends!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(fragment.requireView(), "Error! Couldn't load friends!", Snackbar.LENGTH_SHORT).show()
             }
         })
     }

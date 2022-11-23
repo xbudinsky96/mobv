@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +22,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.android.material.snackbar.Snackbar
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import java.util.*
@@ -72,7 +72,7 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 override fun isCancellationRequested() = false
             }).addOnSuccessListener { location: Location? ->
                 if (location == null) {
-                    Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(requireView(), "Couldn't get location", Snackbar.LENGTH_SHORT).show()
                 }
                 else {
                     setData(location)
@@ -87,7 +87,7 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun setData(location: Location) {
         loggedInUser.lat = location.latitude
         loggedInUser.lon = location.longitude
-        apiService.fetchNearbyCompanies(location.latitude, location.longitude, requireContext(), companyViewModel)
+        apiService.fetchNearbyCompanies(location.latitude, location.longitude, this, companyViewModel)
         companyViewModel.readData.observe(viewLifecycleOwner) { elements ->
             if (elements.isNotEmpty()) {
                 adapter.setCompanies(elements)
@@ -139,10 +139,10 @@ class CheckInFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        Toast.makeText(
-            requireContext(),
+        Snackbar.make(
+            requireView(),
             "Permission Granted!",
-            Toast.LENGTH_SHORT
+            Snackbar.LENGTH_SHORT
         ).show()
     }
 

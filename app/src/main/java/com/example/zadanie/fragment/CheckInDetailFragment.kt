@@ -19,7 +19,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
@@ -41,6 +40,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.android.material.snackbar.Snackbar
 import com.mapbox.geojson.Point
 import com.mapbox.maps.*
 import com.mapbox.maps.plugin.annotation.annotations
@@ -98,7 +98,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun getCompany() {
         try {
             if (args.id.toInt() != 0) {
-                apiService.getCompanyByID(this, null, args.id)
+                apiService.getCompanyByID(this, args.id)
                 cancelAnimation()
             }
         } catch (_: Exception) {
@@ -109,7 +109,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val animation = binding.animationView
         animation.setOnClickListener {
             animation.playAnimation()
-            Toast.makeText(requireContext(), "Finding nearest company", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "Finding nearest company", Snackbar.LENGTH_SHORT).show()
             getLocation()
         }
     }
@@ -123,7 +123,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 override fun isCancellationRequested() = false
             }).addOnSuccessListener { location: Location? ->
                 if (location == null) {
-                    Toast.makeText(requireContext(), "Couldn't get location", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(requireView(), "Couldn't get location", Snackbar.LENGTH_SHORT).show()
                 }
                 else {
                     setData(location)
@@ -140,7 +140,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         loggedInUser.lon = location.longitude
         val lat = location.latitude
         val lon = location.longitude
-        apiService.fetchNearbyCompanies(lat, lon, requireContext(), nearbyCompanyViewModel)
+        apiService.fetchNearbyCompanies(lat, lon, this, nearbyCompanyViewModel)
         nearbyCompanyViewModel.readData.observe(viewLifecycleOwner) { elements ->
             if (elements.isEmpty()) {
                 pauseAnimation()
@@ -150,13 +150,13 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 nearestCompany = getNearestCompany(elements, lat, lon)
                 if (nearestCompany.tags.name != null && nearestCompany.tags.name != "") {
                     setCoordinates(nearestCompany.lat, nearestCompany.lon)
-                    apiService.checkInCompany(nearestCompany, null, this)
+                    apiService.checkInCompany(nearestCompany, this)
                     setConfirmButton()
                     setDetails(nearestCompany, binding)
                 }
                 else {
                     binding.compName.text = "No company"
-                    Toast.makeText(requireContext(), "No companies found!", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(requireView(), "No companies found!", Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -216,7 +216,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     @SuppressLint("MissingPermission")
     fun createFence(lat: Double, lon: Double) {
         if (!hasLocationPermission()) {
-            Toast.makeText(requireContext(), "Geofence failed, permissions not granted.", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireView(), "Geofence failed, permissions not granted.", Snackbar.LENGTH_SHORT).show()
             return
         }
         val geofenceIntent = PendingIntent.getBroadcast(
@@ -238,10 +238,9 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         geofencingClient.addGeofences(request, geofenceIntent).run {
             addOnSuccessListener {
-                Toast.makeText(requireContext(), "Geofence created.", Toast.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Geofence created.", Snackbar.LENGTH_SHORT).show()
             }
             addOnFailureListener {
-                Toast.makeText(requireContext(), "Geofence failed to create.", Toast.LENGTH_SHORT).show()
                 it.printStackTrace()
             }
         }
@@ -298,7 +297,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun setConfirmButton() {
         val confirmButton = binding.confirm
         confirmButton.setOnClickListener {
-            apiService.checkInCompany(nearestCompany, null, this)
+            apiService.checkInCompany(nearestCompany, this)
         }
         confirmButton.isEnabled = true
     }
@@ -391,7 +390,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     loggedInUser.companyId?.toLong()!!))
             }
             catch (e: Exception) {
-                Toast.makeText(requireContext(), "You are not checked in!", Toast.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "You are not checked in!", Snackbar.LENGTH_SHORT).show()
             }
             true
         }
