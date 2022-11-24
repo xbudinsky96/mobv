@@ -12,7 +12,6 @@ import androidx.navigation.fragment.navArgs
 import com.example.zadanie.R
 import com.example.zadanie.api.apiService
 import com.example.zadanie.databinding.FragmentHomeBinding
-import com.example.zadanie.model.Company
 import com.example.zadanie.model.CompanyViewModel
 import com.example.zadanie.model.CompanyWithMembers
 import com.example.zadanie.model.loggedInUser

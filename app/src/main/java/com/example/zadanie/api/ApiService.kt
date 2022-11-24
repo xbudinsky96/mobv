@@ -46,7 +46,7 @@ class ApiService {
     }
 
     fun fetchNearbyCompanies(lat: Double, lon: Double, fragment: Fragment, companyViewModel: NearbyCompanyViewModel) {
-        val query = "[out:json];node(around:500,{lat}, {lon});(node(around:500)[\"amenity\"~\"^pub\$|^bar\$|^restaurant\$|^cafe\$|^fast_food\$|^stripclub\$|^nightclub\$\"];);out body;>;out skel;\n"
+        val query = "[out:json];node(around:250,{lat}, {lon});(node(around:250)[\"amenity\"~\"^pub\$|^bar\$|^restaurant\$|^cafe\$|^fast_food\$|^stripclub\$|^nightclub\$\"];);out body;>;out skel;\n"
             .replace("{lat}", lat.toString())
             .replace("{lon}", lon.toString())
 
