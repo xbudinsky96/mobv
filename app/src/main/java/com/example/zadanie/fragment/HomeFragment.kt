@@ -22,7 +22,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     val binding get() = _binding!!
     private val args: HomeFragmentArgs by navArgs()
     private lateinit var companyViewModel: CompanyViewModel
-    private val SEARCHPREFIX = "https://www.google.com/maps/@"
+    private val SEARCHPREFIX = "https://www.google.com/maps/search/?api=1&query=" //"https://www.google.com/maps/place/@"
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -66,7 +66,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.nameTitle.text = loggedInUser.name
         binding.showOnMap.isEnabled = true
         binding.showOnMap.setOnClickListener {
-            val queryUrl: Uri = Uri.parse("$SEARCHPREFIX${company.lat},${company.lon},16z")
+            val queryUrl: Uri = Uri.parse("$SEARCHPREFIX${company.lat},${company.lon}")
             val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
             startActivity(showOnMap)
         }

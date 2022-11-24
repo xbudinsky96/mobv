@@ -58,7 +58,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var nearestCompany: Element
     private val args: CheckInDetailFragmentArgs by navArgs()
-    private val SEARCHPREFIX = "https://www.google.com/maps/@"
+    private val SEARCHPREFIX = "https://www.google.com/maps/search/?api=1&query=" //"https://www.google.com/maps/place/@"
     private lateinit var geofencingClient: GeofencingClient
     private var mapView: MapView? = null
 
@@ -287,7 +287,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val showOnMap = binding.showonmap
         showOnMap.isEnabled = true
         showOnMap.setOnClickListener {
-            val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${latitude},${longitude},16z")
+            val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${latitude},${longitude}")
             val show = Intent(Intent.ACTION_VIEW, queryUrl)
             startActivity(show)
         }
