@@ -129,7 +129,7 @@ class ApiService {
                         binding.nameTitle.text = loggedInUser.name
                         binding.showOnMap.isEnabled = true
                         binding.showOnMap.setOnClickListener {
-                            val queryUrl: Uri =
+                            val queryUrl =
                                 Uri.parse("https://www.google.com/maps/@${foundCompany.lat},${foundCompany.lon},16z")
                             val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
                             homeFragment.requireContext().startActivity(showOnMap)

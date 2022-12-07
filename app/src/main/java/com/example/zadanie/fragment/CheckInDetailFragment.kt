@@ -163,7 +163,6 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun setPositionOnMap(lat: Double, lon: Double) {
-        println("LATLON: " + lat + ", " + lon)
         mapView!!.isVisible = true
         val cameraPosition = CameraOptions.Builder()
             .zoom(15.0)
@@ -267,7 +266,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             webUrl.text = webLink
             webUrl.setTextColor(Color.BLUE)
             webUrl.setOnClickListener {
-                val link: Uri = Uri.parse(webLink)
+                val link = Uri.parse(webLink)
                 val goToWeb = Intent(Intent.ACTION_VIEW, link)
                 startActivity(goToWeb)
             }
@@ -287,7 +286,7 @@ class CheckInDetailFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         val showOnMap = binding.showonmap
         showOnMap.isEnabled = true
         showOnMap.setOnClickListener {
-            val queryUrl: Uri = Uri.parse("${SEARCHPREFIX}${latitude},${longitude}")
+            val queryUrl = Uri.parse("${SEARCHPREFIX}${latitude},${longitude}")
             val show = Intent(Intent.ACTION_VIEW, queryUrl)
             startActivity(show)
         }

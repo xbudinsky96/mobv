@@ -66,7 +66,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.nameTitle.text = loggedInUser.name
         binding.showOnMap.isEnabled = true
         binding.showOnMap.setOnClickListener {
-            val queryUrl: Uri = Uri.parse("$SEARCHPREFIX${company.lat},${company.lon}")
+            val queryUrl = Uri.parse("$SEARCHPREFIX${company.lat},${company.lon}")
             val showOnMap = Intent(Intent.ACTION_VIEW, queryUrl)
             startActivity(showOnMap)
         }
